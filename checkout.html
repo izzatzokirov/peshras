@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Оформление — Peshras</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A0A0F;
+    --accent: #FF7A45;
+    --text: #F5F5F7;
+    --text-muted: #9499A8;
+  }
+  * { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Manrope', sans-serif; }
+  body { background: var(--bg); color: var(--text); }
+  .glass {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+  }
+  .glass-strong {
+    background: rgba(20,20,28,0.9);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  input:checked + span { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- Шапка -->
+<header class="sticky top-0 z-40 glass-strong px-4 py-3 flex items-center">
+  <a href="cart.html" class="w-10 h-10 rounded-2xl glass flex items-center justify-center mr-3 text-xl">←</a>
+  <span class="font-display font-extrabold text-xl">Оформление</span>
+</header>
+
+<!-- Основной контент -->
+<main class="px-4 mt-4 pb-32">
+  
+  <!-- Сводка заказа -->
+  <div class="glass p-4 rounded-2xl mb-4">
+    <h3 class="font-semibold mb-2 flex items-center gap-2">📋 Ваш заказ</h3>
+    <div id="orderSummary" class="text-sm space-y-1"></div>
+    <div class="border-t border-white/10 mt-3 pt-3 flex justify-between font-bold">
+      <span>Итого:</span>
+      <span id="orderTotal" class="text-[var(--accent)]">0 сом.</span>
+    </div>
+  </div>
+
+  <!-- Способ получения -->
+  <div class="glass p-4 rounded-2xl mb-4">
+    <h3 class="font-semibold mb-3 flex items-center gap-2">🚚 Способ получения</h3>
+    <div class="space-y-3">
+      <label class="flex items-center justify-between p-3 rounded-xl glass cursor-pointer">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🛵</span>
+          <div>
+            <div class="font-medium">Доставка</div>
+            <div class="text-xs text-[var(--text-muted)]">Курьер приедет к вам</div>
+          </div>
+        </div>
+        <input type="radio" name="delivery" value="delivery" checked class="w-5 h-5 accent-[var(--accent)]">
+      </label>
+      <label class="flex items-center justify-between p-3 rounded-xl glass cursor-pointer">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🏠</span>
+          <div>
+            <div class="font-medium">Самовывоз</div>
+            <div class="text-xs text-[var(--text-muted)]">Заберите сами</div>
+          </div>
+        </div>
+        <input type="radio" name="delivery" value="pickup" class="w-5 h-5 accent-[var(--accent)]">
+      </label>
+    </div>
+  </div>
+
+  <!-- Адрес доставки (показывается только при доставке) -->
+  <div id="deliveryBlock" class="glass p-4 rounded-2xl mb-4">
+    <h3 class="font-semibold mb-3 flex items-center gap-2">📍 Адрес доставки</h3>
+    <input type="text" id="addressInput" placeholder="Улица, дом, квартира, подъезд" 
+           class="w-full glass px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-[var(--accent)]">
+    <input type="text" id="phoneInput" placeholder="📞 Номер телефона (для связи)" 
+           class="w-full glass px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-[var(--accent)] mt-2">
+  </div>
+
+  <!-- Способ оплаты -->
+  <div class="glass p-4 rounded-2xl mb-4">
+    <h3 class="font-semibold mb-3 flex items-center gap-2">💳 Способ оплаты</h3>
+    <div class="space-y-3">
+      <label class="flex items-center justify-between p-3 rounded-xl glass cursor-pointer">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">💵</span>
+          <span>Наличные курьеру</span>
+        </div>
+        <input type="radio" name="payment" value="cash" checked class="w-5 h-5 accent-[var(--accent)]">
+      </label>
+      <label class="flex items-center justify-between p-3 rounded-xl glass cursor-pointer">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">💳</span>
+          <span>Карта при получении</span>
+        </div>
+        <input type="radio" name="payment" value="card" class="w-5 h-5 accent-[var(--accent)]">
+      </label>
+      <label class="flex items-center justify-between p-3 rounded-xl glass cursor-pointer">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">📱</span>
+          <span>Онлайн-перевод</span>
+        </div>
+        <input type="radio" name="payment" value="online" class="w-5 h-5 accent-[var(--accent)]">
+      </label>
+    </div>
+  </div>
+
+  <!-- Комментарий -->
+  <div class="glass p-4 rounded-2xl mb-4">
+    <h3 class="font-semibold mb-3 flex items-center gap-2">📝 Комментарий</h3>
+    <textarea id="commentInput" rows="2" placeholder="Пожелания к заказу, время доставки..." 
+              class="w-full glass px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-[var(--accent)] resize-none"></textarea>
+  </div>
+
+  <!-- Кнопка подтверждения -->
+  <button id="submitOrder" class="w-full bg-[var(--accent)] text-black py-4 rounded-2xl font-semibold text-lg transition-all active:scale-95">
+    ✅ Подтвердить заказ
+  </button>
+</main>
+
+<script>
+const CART_KEY = 'peshras_cart';
+
+// ⚠️ ВАЖНО: Замените на свои данные от Telegram бота
+const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';  // Токен от @BotFather
+const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';      // ID ресторана (можно получить у @userinfobot)
+
+// Загрузка корзины
+function loadCart() {
+    const saved = localStorage.getItem(CART_KEY);
+    if (!saved) return { restaurantId: null, items: [] };
+    try {
+        return JSON.parse(saved);
+    } catch(e) {
+        return { restaurantId: null, items: [] };
+    }
+}
+
+// Отображение сводки заказа
+function renderOrderSummary() {
+    const cart = loadCart();
+    const summaryDiv = document.getElementById('orderSummary');
+    const totalSpan = document.getElementById('orderTotal');
+    
+    if (!cart.items.length) {
+        summaryDiv.innerHTML = '<p class="text-red-400">Корзина пуста</p>';
+        totalSpan.textContent = '0 сом.';
+        return;
+    }
+    
+    let total = 0;
+    summaryDiv.innerHTML = cart.items.map(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        return `<div class="flex justify-between">
+                  <span>${escapeHtml(item.name)} × ${item.quantity}</span>
+                  <span>${itemTotal} сом.</span>
+                </div>`;
+    }).join('');
+    
+    totalSpan.textContent = `${total} сом.`;
+    return total;
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// Показать/скрыть адрес при смене типа доставки
+function toggleAddressBlock() {
+    const deliveryType = document.querySelector('input[name="delivery"]:checked').value;
+    const block = document.getElementById('deliveryBlock');
+    block.style.display = deliveryType === 'delivery' ? 'block' : 'none';
+}
+
+// Отправка заказа в Telegram
+async function sendOrderToTelegram(orderData) {
+    const message = `
+🆕 **НОВЫЙ ЗАКАЗ | PESHRAS**
+━━━━━━━━━━━━━━━━━━━━━
+
+📋 **Состав заказа:**
+${orderData.items.map(i => `• ${i.name} × ${i.quantity} = ${i.price * i.quantity} сом.`).join('\n')}
+
+━━━━━━━━━━━━━━━━━━━━━
+💰 **Итого:** ${orderData.total} сом.
+🏪 **Ресторан:** ${orderData.restaurantName}
+
+🚚 **Доставка:** ${orderData.deliveryType === 'delivery' ? '🛵 Курьером' : '🏠 Самовывоз'}
+${orderData.deliveryType === 'delivery' ? `📍 **Адрес:** ${orderData.address}\n📞 **Телефон:** ${orderData.phone}` : ''}
+
+💳 **Оплата:** ${orderData.paymentType === 'cash' ? 'Наличные' : orderData.paymentType === 'card' ? 'Карта при получении' : 'Онлайн-перевод'}
+
+📝 **Комментарий:** ${orderData.comment || '—'}
+
+━━━━━━━━━━━━━━━━━━━━━
+🕐 ${new Date().toLocaleString('ru-RU')}
+    `;
+    
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+        
+        if (response.ok) {
+            // Также отправляем кнопку "Подтвердить" (inline keyboard)
+            const confirmUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            const keyboardMessage = {
+                chat_id: TELEGRAM_CHAT_ID,
+                text: `✅ Заказ #${Date.now()} ожидает подтверждения`,
+                reply_markup: {
+                    inline_keyboard: [[
+                        { text: "✅ Подтвердить заказ", callback_data: "confirm_order" },
+                        { text: "❌ Отклонить", callback_data: "reject_order" }
+                    ]]
+                }
+            };
+            await fetch(confirmUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(keyboardMessage)
+            });
+            return true;
+        }
+        return false;
+    } catch(err) {
+        console.error('Telegram error:', err);
+        return false;
+    }
+}
+
+// Обработчик отправки заказа
+document.getElementById('submitOrder').addEventListener('click', async () => {
+    const cart = loadCart();
+    
+    if (!cart.items.length) {
+        alert('❌ Корзина пуста!');
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    const deliveryType = document.querySelector('input[name="delivery"]:checked').value;
+    const paymentType = document.querySelector('input[name="payment"]:checked').value;
+    const address = document.getElementById('addressInput')?.value || '';
+    const phone = document.getElementById('phoneInput')?.value || '';
+    const comment = document.getElementById('commentInput')?.value || '';
+    
+    // Проверка для доставки
+    if (deliveryType === 'delivery') {
+        if (!address.trim()) {
+            alert('⚠️ Введите адрес доставки');
+            return;
+        }
+        if (!phone.trim()) {
+            alert('⚠️ Введите номер телефона для связи');
+            return;
+        }
+    }
+    
+    const total = cart.items.reduce((s, i) => s + (i.price * i.quantity), 0);
+    
+    const orderData = {
+        items: cart.items,
+        total: total,
+        restaurantName: await getRestaurantName(cart.restaurantId),
+        deliveryType: deliveryType,
+        paymentType: paymentType,
+        address: address,
+        phone: phone,
+        comment: comment
+    };
+    
+    // Показываем индикатор загрузки
+    const btn = document.getElementById('submitOrder');
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Отправка...';
+    btn.disabled = true;
+    
+    const success = await sendOrderToTelegram(orderData);
+    
+    if (success) {
+        alert('✅ Заказ успешно отправлен! Ресторан скоро свяжется с вами.');
+        localStorage.removeItem(CART_KEY);
+        window.location.href = 'index.html';
+    } else {
+        alert('❌ Ошибка отправки заказа. Пожалуйста, попробуйте позже или свяжитесь с рестораном по телефону.');
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }
+});
+
+// Получение названия ресторана
+async function getRestaurantName(restaurantId) {
+    try {
+        const API_URL = "https://script.google.com/macros/s/AKfycbyV52su-PBIS-rVV_-EuMb69RrL4jV0xNUnlejLTSsuZIBpXrQYuuBKKurUYWvnf2tTIg/exec";
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        const restaurant = data.restaurants?.find(r => r.id == restaurantId);
+        return restaurant ? restaurant.name : 'Ресторан';
+    } catch(e) {
+        return 'Ресторан';
+    }
+}
+
+// Слушатели для переключения типа доставки
+document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+    radio.addEventListener('change', toggleAddressBlock);
+});
+
+// Инициализация
+renderOrderSummary();
+toggleAddressBlock();
+</script>
+</body>
+</html>
