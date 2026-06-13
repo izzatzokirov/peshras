@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peshras — доставка еды в Исфаре</title>
- 
+
 <!-- Tailwind CSS (CDN) -->
 <script src="https://cdn.tailwindcss.com"></script>
- 
+
 <!-- Шрифты: Manrope (заголовки) + Inter (текст) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
- 
+
 <style>
   :root{
     --bg: #0A0A0F;          /* основной фон, почти чёрный */
@@ -22,12 +22,12 @@
     --text: #F5F5F7;
     --text-muted: #9499A8;
   }
- 
+
   * { font-family: 'Inter', sans-serif; }
   .font-display { font-family: 'Manrope', sans-serif; }
- 
+
   body { background: var(--bg); color: var(--text); }
- 
+
   /* Эффект стекла (glassmorphism) */
   .glass {
     background: rgba(255,255,255,0.05);
@@ -41,12 +41,12 @@
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
   }
- 
+
   /* Скрываем скроллбар для горизонтальных лент */
   .scroll-row::-webkit-scrollbar { display: none; }
   .scroll-row { scrollbar-width: none; scroll-snap-type: x mandatory; }
   .scroll-row > * { scroll-snap-align: start; }
- 
+
   /* Декоративные "пятна" градиента для амбиентного фона */
   .glow {
     position: absolute;
@@ -57,13 +57,13 @@
   }
 </style>
 </head>
- 
+
 <body class="min-h-screen pb-28 relative overflow-x-hidden">
- 
+
   <!-- Амбиентные пятна на фоне (декор, не мешают контенту) -->
   <div class="glow w-72 h-72 bg-[#FF7A45] -top-20 -left-10"></div>
   <div class="glow w-72 h-72 bg-[#34D399] top-40 right-0"></div>
- 
+
   <!-- ===================== ШАПКА (HEADER) ===================== -->
   <header class="sticky top-0 z-40 glass-strong px-4 py-3 flex items-center justify-between">
     <!-- Гамбургер-меню -->
@@ -72,13 +72,13 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
     </button>
- 
+
     <!-- Логотип -->
     <div class="flex items-center gap-2">
       <div class="w-9 h-9 rounded-2xl bg-[var(--accent)] flex items-center justify-center text-lg">🥘</div>
       <span class="font-display font-extrabold text-xl">Peshras</span>
     </div>
- 
+
     <!-- Корзина -->
     <button id="cartBtn" class="relative w-10 h-10 rounded-2xl glass flex items-center justify-center">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@
       <span id="cartCount" class="absolute -top-1 -right-1 bg-[var(--accent)] text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
     </button>
   </header>
- 
+
   <!-- ===================== БОКОВОЕ МЕНЮ (DRAWER) ===================== -->
   <div id="drawerOverlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
   <aside id="drawer" class="fixed top-0 left-0 h-full w-72 z-50 glass-strong p-5 -translate-x-full transition-transform duration-300">
@@ -108,15 +108,15 @@
     </nav>
     <p class="text-xs text-[var(--text-muted)] mt-10">г. Исфара, Согдийская область</p>
   </aside>
- 
+
   <!-- ===================== ОСНОВНОЙ КОНТЕНТ ===================== -->
   <main class="px-4 mt-4">
- 
+
     <!-- Приветствие + поиск -->
     <section class="mb-5">
       <h1 class="font-display text-2xl font-bold mb-1">Ассалому алейкум 👋</h1>
       <p class="text-[var(--text-muted)] text-sm mb-4">Что хочется заказать сегодня?</p>
- 
+
       <div class="relative">
         <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-3.5-3.5"/>
@@ -125,7 +125,7 @@
           class="w-full glass rounded-2xl py-3 pl-12 pr-4 text-sm placeholder:text-[var(--text-muted)] outline-none focus:ring-2 focus:ring-[var(--accent)]">
       </div>
     </section>
- 
+
     <!-- Промо-баннер -->
     <section class="mb-6">
       <div class="glass rounded-3xl p-5 relative overflow-hidden">
@@ -135,7 +135,7 @@
         <button class="bg-[var(--accent)] text-black text-sm font-semibold px-4 py-2 rounded-xl">Подробнее</button>
       </div>
     </section>
- 
+
     <!-- Рестораны -->
     <section class="mb-6">
       <div class="flex items-center justify-between mb-3">
@@ -146,27 +146,27 @@
         <!-- Карточки ресторанов рендерятся через JS из restaurantsData -->
       </div>
     </section>
- 
+
     <!-- Рекомендации -->
     <section class="mb-6">
       <h3 class="font-display text-lg font-bold mb-3">Рекомендации</h3>
       <div id="recommendedRow" class="scroll-row flex gap-3 overflow-x-auto pb-2"></div>
     </section>
- 
+
     <!-- Хит недели -->
     <section class="mb-6">
       <h3 class="font-display text-lg font-bold mb-3">🔥 Хит недели</h3>
       <div id="hitRow" class="scroll-row flex gap-3 overflow-x-auto pb-2"></div>
     </section>
- 
+
     <!-- Новинки -->
     <section class="mb-6">
       <h3 class="font-display text-lg font-bold mb-3">✨ Новинки</h3>
       <div id="newRow" class="scroll-row flex gap-3 overflow-x-auto pb-2"></div>
     </section>
- 
+
   </main>
- 
+
   <!-- ===================== НИЖНЯЯ ПАНЕЛЬ (TAB BAR) ===================== -->
   <nav class="fixed bottom-3 left-3 right-3 z-40 glass-strong rounded-3xl px-4 py-3 flex justify-between items-center">
     <a href="#" class="flex flex-col items-center gap-1 text-[var(--accent)] text-xs">
@@ -182,58 +182,51 @@
       <span class="text-lg">👤</span> Профиль
     </a>
   </nav>
- 
-  <!-- ===================== ШАБЛОН ДАННЫХ И РЕНДЕР ===================== -->
+
+  <!-- ===================== ЗАГРУЗКА ДАННЫХ И РЕНДЕР ===================== -->
   <script>
-    // ПРИМЕЧАНИЕ: эти массивы — временные тестовые данные.
-    // В будущем они будут заменены результатом fetch() из Google Sheets.
- 
-    const restaurantsData = [
-      { id: "rest_1", name: "Чойхона Шарк", rating: 4.8, time: "25-35 мин", isOpen: true, img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80" },
-      { id: "rest_2", name: "Plov Center",  rating: 4.6, time: "30-40 мин", isOpen: true, img: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&q=80" },
-      { id: "rest_3", name: "Isfara Pizza", rating: 4.3, time: "20-30 мин", isOpen: false, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80" },
-    ];
- 
-    const recommendedData = [
-      { id: "item_1", name: "Плов с бараниной", restaurantId: "rest_1", restaurantName: "Чойхона Шарк", price: 35, img: "https://images.unsplash.com/photo-1633964913849-1c4b08c7f8c9?w=400&q=80" },
-      { id: "item_2", name: "Шашлык из говядины", restaurantId: "rest_2", restaurantName: "Plov Center", price: 45, img: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&q=80" },
-    ];
- 
-    const hitData = [
-      { id: "item_3", name: "Лагман", restaurantId: "rest_1", restaurantName: "Чойхона Шарк", price: 30, img: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&q=80" },
-    ];
- 
-    const newData = [
-      { id: "item_4", name: "Пицца Пепперони", restaurantId: "rest_3", restaurantName: "Isfara Pizza", price: 60, img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&q=80" },
-    ];
- 
+    // Ссылка на Apps Script Web App, который отдаёт {restaurants: [...], menu: [...]}
+    const API_URL = "https://script.google.com/macros/s/AKfycbyV52su-PBIS-rVV_-EuMb69RrL4jV0xNUnlejLTSsuZIBpXrQYuuBKKurUYWvnf2tTIg/exec";
+
+    // Картинка-заглушка, если в таблице не указано фото
+    const PLACEHOLDER_IMG = "https://placehold.co/400x300/14141C/9499A8?text=Peshras";
+
+    // Превращает значение из таблицы (TRUE/FALSE/строка/булево) в boolean
+    function toBool(value) {
+      if (typeof value === "boolean") return value;
+      return String(value).trim().toUpperCase() === "TRUE";
+    }
+
     // Рендер карточки ресторана
     function renderRestaurantCard(r) {
+      const isOpen = toBool(r.is_open);
       return `
         <div class="glass rounded-3xl min-w-[200px] overflow-hidden flex-shrink-0">
           <div class="relative h-28">
-            <img src="${r.img}" class="w-full h-full object-cover">
-            <span class="absolute top-2 right-2 text-[11px] font-semibold px-2 py-1 rounded-full glass-strong ${r.isOpen ? 'text-[var(--good)]' : 'text-red-400'}">
-              ${r.isOpen ? '● Открыто' : '● Закрыто'}
+            <img src="${r.logo_url || PLACEHOLDER_IMG}" class="w-full h-full object-cover" loading="lazy">
+            <span class="absolute top-2 right-2 text-[11px] font-semibold px-2 py-1 rounded-full glass-strong ${isOpen ? 'text-[var(--good)]' : 'text-red-400'}">
+              ${isOpen ? '● Открыто' : '● Закрыто'}
             </span>
           </div>
           <div class="p-3">
             <p class="font-semibold text-sm mb-1">${r.name}</p>
-            <p class="text-xs text-[var(--text-muted)]">⭐ ${r.rating} · ${r.time}</p>
+            <p class="text-xs text-[var(--text-muted)]">⭐ ${r.rating || '—'} · ${r.delivery_time || ''}</p>
           </div>
         </div>`;
     }
- 
-    // Рендер карточки блюда
-    function renderItemCard(item) {
+
+    // Рендер карточки блюда. restaurantsById нужен, чтобы подписать название ресторана
+    function renderItemCard(item, restaurantsById) {
+      const restaurant = restaurantsById[item.restaurant_id];
+      const restaurantName = restaurant ? restaurant.name : '';
       return `
         <div class="glass rounded-3xl min-w-[160px] overflow-hidden flex-shrink-0">
           <div class="h-24">
-            <img src="${item.img}" class="w-full h-full object-cover">
+            <img src="${item.photo_url || PLACEHOLDER_IMG}" class="w-full h-full object-cover" loading="lazy">
           </div>
           <div class="p-3">
             <p class="font-semibold text-sm leading-tight mb-1">${item.name}</p>
-            <p class="text-xs text-[var(--text-muted)] mb-2">${item.restaurantName}</p>
+            <p class="text-xs text-[var(--text-muted)] mb-2">${restaurantName}</p>
             <div class="flex items-center justify-between">
               <span class="font-display font-bold text-sm">${item.price} c.</span>
               <button onclick="addToCart(${JSON.stringify(item).replace(/"/g, '&quot;')})"
@@ -242,12 +235,46 @@
           </div>
         </div>`;
     }
- 
-    document.getElementById('restaurantsRow').innerHTML = restaurantsData.map(renderRestaurantCard).join('');
-    document.getElementById('recommendedRow').innerHTML = recommendedData.map(renderItemCard).join('');
-    document.getElementById('hitRow').innerHTML = hitData.map(renderItemCard).join('');
-    document.getElementById('newRow').innerHTML = newData.map(renderItemCard).join('');
- 
+
+    // Загружаем данные из Google Sheets и рендерим главную страницу
+    async function loadData() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        const restaurants = data.restaurants || [];
+        const menu = data.menu || [];
+
+        // Словарь "id ресторана -> объект ресторана" для быстрого поиска названия
+        const restaurantsById = {};
+        restaurants.forEach(r => restaurantsById[r.id] = r);
+
+        // Раскладываем блюда по категориям из колонки category
+        const recommended = menu.filter(m => m.category === 'Рекомендации');
+        const hits        = menu.filter(m => m.category === 'Хит недели');
+        const news        = menu.filter(m => m.category === 'Новинки');
+
+        document.getElementById('restaurantsRow').innerHTML =
+          restaurants.length ? restaurants.map(renderRestaurantCard).join('') : '<p class="text-sm text-[var(--text-muted)]">Рестораны скоро появятся</p>';
+
+        document.getElementById('recommendedRow').innerHTML =
+          recommended.length ? recommended.map(m => renderItemCard(m, restaurantsById)).join('') : '<p class="text-sm text-[var(--text-muted)]">Пока нет рекомендаций</p>';
+
+        document.getElementById('hitRow').innerHTML =
+          hits.length ? hits.map(m => renderItemCard(m, restaurantsById)).join('') : '<p class="text-sm text-[var(--text-muted)]">Пока нет хитов недели</p>';
+
+        document.getElementById('newRow').innerHTML =
+          news.length ? news.map(m => renderItemCard(m, restaurantsById)).join('') : '<p class="text-sm text-[var(--text-muted)]">Пока нет новинок</p>';
+
+      } catch (err) {
+        console.error('Ошибка загрузки данных из Google Sheets:', err);
+        document.getElementById('restaurantsRow').innerHTML =
+          '<p class="text-sm text-red-400">Не удалось загрузить данные. Проверь ссылку API_URL и доступ к таблице.</p>';
+      }
+    }
+
+    loadData();
+
     // Открытие/закрытие бокового меню
     const drawer = document.getElementById('drawer');
     const overlay = document.getElementById('drawerOverlay');
@@ -259,13 +286,13 @@
       drawer.classList.add('-translate-x-full');
       overlay.classList.add('hidden');
     });
- 
+
     // ====== ЗАГЛУШКА для addToCart — полная логика будет в cart.js ======
     function addToCart(item) {
       console.log('Добавление в корзину:', item);
       alert(`"${item.name}" добавлено в корзину (демо)`);
     }
   </script>
- 
+
 </body>
 </html>
