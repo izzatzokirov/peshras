@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Peshras Partner — Кабинет Ресторана</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Иконки Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -15,25 +13,25 @@
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
 
-    <!-- ФОРМА ВХОДА (Отображается, если пользователь не авторизован) -->
+    <!-- ФОРМА ВХОДА -->
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl">
             <div class="text-center space-y-2">
                 <div class="inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20">
                     <i data-lucide="store" class="w-8 h-8"></i>
                 </div>
-                <h1 class="text-2xl font-black text-white">Вход для партнеров</h1>
-                <p class="text-xs text-gray-400">Введите логин и пароль, полученные от администрации Peshras</p>
+                <h1 class="text-2xl font-black text-white">Вход для ресторанов</h1>
+                <p class="text-xs text-gray-400">Введите данные, выданные администрацией Peshras</p>
             </div>
 
             <form id="login-form" class="space-y-4">
                 <div class="space-y-1.5">
-                    <label class="text-xs font-semibold text-gray-300">Email / Логин</label>
-                    <input type="email" id="email" required placeholder="restaurant@peshras.tj" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition">
+                    <label class="text-xs font-semibold text-gray-300">Email ресторана</label>
+                    <input type="email" id="email" required placeholder="restaurant@peshras.tj" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-xs font-semibold text-gray-300">Пароль</label>
-                    <input type="password" id="password" required placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition">
+                    <input type="password" id="password" required placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
                 <div id="login-error" class="text-xs text-red-400 hidden"></div>
                 <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 rounded-xl transition flex items-center justify-center gap-2">
@@ -44,10 +42,9 @@
         </div>
     </div>
 
-    <!-- ОСНОВНОЙ ИНТЕРФЕЙС КАБИНЕТА (Отображается после входа) -->
+    <!-- ОСНОВНОЙ ИНТЕРФЕЙС КАБИНЕТА -->
     <div id="app-screen" class="hidden min-h-screen flex flex-col">
         
-        <!-- Верхняя панель -->
         <header class="bg-gray-900 border-b border-gray-800 px-4 py-3 sticky top-0 z-30">
             <div class="max-w-7xl mx-auto flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -55,10 +52,9 @@
                     <span id="restaurant-name-heading" class="text-xs bg-gray-800 text-gray-300 px-3 py-1 rounded-full font-semibold border border-gray-700">Загрузка...</span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <!-- Кнопка включения звука -->
                     <button id="sound-toggle" onclick="toggleSound()" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
                         <i data-lucide="bell" class="w-4 h-4"></i>
-                        <span id="sound-status-text">Активировать звук</span>
+                        <span id="sound-status-text">Включить звук</span>
                     </button>
                     <button onclick="logout()" class="text-gray-400 hover:text-red-400 p-2 transition">
                         <i data-lucide="log-out" class="w-5 h-5"></i>
@@ -69,7 +65,7 @@
 
         <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 space-y-8">
             
-            <!-- Переключатель вкладок -->
+            <!-- Навигация по вкладкам -->
             <div class="flex border-b border-gray-800 gap-6 text-sm font-bold">
                 <button onclick="switchTab('orders')" id="tab-btn-orders" class="pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2">
                     <i data-lucide="utensils" class="w-4 h-4"></i>
@@ -78,32 +74,73 @@
                 </button>
                 <button onclick="switchTab('menu')" id="tab-btn-menu" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2">
                     <i data-lucide="list-checks" class="w-4 h-4"></i>
-                    <span>Управление меню (Стоп-лист)</span>
+                    <span>Управление меню и товарами</span>
                 </button>
             </div>
 
-            <!-- ВКЛАДКА 1: ВХОДЯЩИЕ ЗАКАЗЫ -->
+            <!-- ВКЛАДКА 1: ЗАКАЗЫ -->
             <section id="tab-orders" class="space-y-4">
                 <div id="orders-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="text-gray-500 text-xs col-span-full py-8 text-center">Загрузка заказов...</div>
                 </div>
             </section>
 
-            <!-- ВКЛАДКА 2: УПРАВЛЕНИЕ МЕНЮ (СТОП-ЛИСТ) -->
-            <section id="tab-menu" class="hidden space-y-4">
-                <div id="menu-management-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="text-gray-500 text-xs col-span-full py-8 text-center">Загрузка блюд...</div>
+            <!-- ВКЛАДКА 2: УПРАВЛЕНИЕ МЕНЮ (ДОБАВЛЕНИЕ БЛЮД) -->
+            <section id="tab-menu" class="hidden space-y-6">
+                
+                <!-- Форма добавления нового блюда рестораном -->
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+                    <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Добавить новое блюдо в меню</span>
+                    </h3>
+                    <form id="add-product-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="text-[11px] text-gray-400 font-semibold">Название блюда</label>
+                            <input type="text" id="prod-name" required placeholder="Например: Шашлык" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 font-semibold">Цена (в сомони)</label>
+                            <input type="number" id="prod-price" required placeholder="35" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 font-semibold">Ссылка на фото (URL)</label>
+                            <input type="url" id="prod-img" required placeholder="https://..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 font-semibold">Категория</label>
+                            <select id="prod-category" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-gray-300">
+                                <option value="hits">🔥 Хит сезона</option>
+                                <option value="new">✨ Новинки</option>
+                                <option value="popular">⭐ Популярное</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2 lg:col-span-4">
+                            <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-5 py-2.5 rounded-xl transition text-xs">
+                                Добавить блюдо в каталог
+                            </button>
+                        </div>
+                    </form>
                 </div>
+
+                <!-- Список блюд ресторана -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-white text-sm">Ваше текущее меню:</h4>
+                    <div id="menu-management-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="text-gray-500 text-xs py-4">Загрузка блюд...</div>
+                    </div>
+                </div>
+
             </section>
 
         </main>
     </div>
 
-    <!-- FIREBASE СКТИПТЫ -->
+    <!-- FIREBASE ЛОГИКА -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyBGUkISLQ1Qm9xfYkVgZhoLeR_P_VTSrhM",
@@ -120,10 +157,8 @@
 
         let soundEnabled = false;
         let audioContext = null;
-        let soundInterval = null;
         let currentRestaurantId = null;
 
-        // Генератор громкого звука для кухни
         function playAlertSound() {
             if (!soundEnabled) return;
             try {
@@ -131,7 +166,7 @@
                 const osc = audioContext.createOscillator();
                 const gain = audioContext.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, audioContext.currentTime); // Тон 880Hz
+                osc.frequency.setValueAtTime(880, audioContext.currentTime);
                 gain.gain.setValueAtTime(0.5, audioContext.currentTime);
                 osc.connect(gain);
                 gain.connect(audioContext.destination);
@@ -142,44 +177,28 @@
 
         window.toggleSound = function() {
             soundEnabled = !soundEnabled;
-            const btnText = document.getElementById('sound-status-text');
-            const btn = document.getElementById('sound-toggle');
-            if (soundEnabled) {
-                btnText.innerText = "Звук включен";
-                btn.className = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5";
-                playAlertSound();
-            } else {
-                btnText.innerText = "Активировать звук";
-                btn.className = "bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5";
-            }
+            document.getElementById('sound-status-text').innerText = soundEnabled ? "Звук включен" : "Включить звук";
+            if (soundEnabled) playAlertSound();
         };
 
-        // Вход в систему
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('login-error');
-            errorDiv.classList.add('hidden');
-
             try {
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (err) {
-                errorDiv.innerText = "Неверный логин или пароль!";
-                errorDiv.classList.remove('hidden');
+                document.getElementById('login-error').innerText = "Неверный логин или пароль!";
+                document.getElementById('login-error').classList.remove('hidden');
             }
         });
 
-        // Отслеживание состояния авторизации
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
-                
-                // Получаем ID ресторана, привязанного к пользователю
-                currentRestaurantId = user.uid; 
-                document.getElementById('restaurant-name-heading').innerText = "Партнер #" + user.uid.substring(0,6);
-
+                currentRestaurantId = user.uid;
+                document.getElementById('restaurant-name-heading').innerText = "Партнер UID: " + user.uid.substring(0,6);
                 listenToOrders();
                 loadRestaurantMenu();
             } else {
@@ -189,17 +208,10 @@
             lucide.createIcons();
         });
 
-        window.logout = function() {
-            signOut(auth);
-        };
+        window.logout = function() { signOut(auth); };
 
-        // Живое слушание заказов из Firebase
         function listenToOrders() {
-            const q = query(
-                collection(db, "orders"),
-                where("restaurant_id", "==", currentRestaurantId)
-            );
-
+            const q = query(collection(db, "orders"), where("restaurant_id", "==", currentRestaurantId));
             onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('orders-list');
                 if (snapshot.empty) {
@@ -207,110 +219,96 @@
                     document.getElementById('active-orders-count').innerText = "0";
                     return;
                 }
-
-                let hasNewOrders = false;
+                let hasNew = false;
                 let activeCount = 0;
                 container.innerHTML = '';
-
                 snapshot.forEach((docSnap) => {
                     const order = docSnap.data();
-                    const orderId = docSnap.id;
-
-                    if (order.status === 'new') {
-                        hasNewOrders = true;
-                        activeCount++;
-                    }
-
-                    const itemsHtml = order.items ? order.items.map(i => `
-                        <div class="flex justify-between text-xs py-1 border-b border-gray-800">
-                            <span>${i.name} x${i.qty}</span>
-                            <span class="font-bold text-yellow-400">${i.price * i.qty} с.</span>
-                        </div>
-                    `).join('') : '';
-
+                    if (order.status === 'new') { hasNew = true; activeCount++; }
                     container.innerHTML += `
-                        <div class="bg-gray-900 border ${order.status === 'new' ? 'border-amber-500 animate-pulse' : 'border-gray-800'} rounded-2xl p-4 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-gray-400">№ ${orderId.substring(0,8)}</span>
-                                <span class="text-xs px-2.5 py-0.5 rounded-full font-bold ${order.status === 'new' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}">
-                                    ${order.status === 'new' ? 'НОВЫЙ' : order.status}
-                                </span>
+                        <div class="bg-gray-900 border ${order.status === 'new' ? 'border-amber-500 animate-pulse' : 'border-gray-800'} rounded-2xl p-4 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-bold text-gray-400">
+                                <span>Заказ #${docSnap.id.substring(0,6)}</span>
+                                <span class="text-amber-400">${order.status}</span>
                             </div>
                             <div class="text-sm font-bold text-white">${order.client_name || 'Клиент'} (${order.client_phone || ''})</div>
-                            <div class="text-xs text-gray-400">📍 ${order.delivery_address || 'Самовывоз'}</div>
-                            
-                            <div class="bg-gray-950 p-3 rounded-xl space-y-1">
-                                ${itemsHtml}
-                                <div class="flex justify-between text-xs font-extrabold text-white pt-2">
-                                    <span>Итого:</span>
-                                    <span class="text-yellow-400">${order.total_price || 0} сомонӣ</span>
-                                </div>
-                            </div>
-
-                            ${order.status === 'new' ? `
-                                <button onclick="updateOrderStatus('${orderId}', 'accepted')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1">
-                                    <i data-lucide="check" class="w-4 h-4"></i> Принять в работу
-                                </button>
-                            ` : ''}
+                            <div class="text-xs text-yellow-400 font-bold">Сумма: ${order.total_price || 0} сомонӣ</div>
+                            ${order.status === 'new' ? `<button onclick="updateOrderStatus('${docSnap.id}', 'accepted')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-2 rounded-xl text-xs mt-2">Принять заказ</button>` : ''}
                         </div>
                     `;
                 });
-
                 document.getElementById('active-orders-count').innerText = activeCount;
-
-                if (hasNewOrders) {
-                    playAlertSound();
-                }
+                if (hasNew) playAlertSound();
                 lucide.createIcons();
             });
         }
 
-        window.updateOrderStatus = async function(orderId, newStatus) {
-            await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+        window.updateOrderStatus = async function(orderId, status) {
+            await updateDoc(doc(db, "orders", orderId), { status: status });
         };
 
-        // Загрузка блюд ресторана для стоп-листа
+        // Добавление блюда рестораном
+        document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('prod-name').value;
+            const price = Number(document.getElementById('prod-price').value);
+            const image_url = document.getElementById('prod-img').value;
+            const category = document.getElementById('prod-category').value;
+
+            try {
+                // Добавляем в общую коллекцию продуктов на главную
+                await addDoc(collection(db, "products"), {
+                    name, price, image_url, category,
+                    restaurant_id: currentRestaurantId,
+                    in_stock: true
+                });
+                document.getElementById('add-product-form').reset();
+                alert("Блюдо успешно добавлено в меню!");
+                loadRestaurantMenu();
+            } catch (err) {
+                console.error(err);
+                alert("Ошибка при добавлении блюда");
+            }
+        });
+
         async function loadRestaurantMenu() {
             const container = document.getElementById('menu-management-list');
-            try {
-                const querySnapshot = await getDocs(collection(db, "restaurants", currentRestaurantId, "products"));
-                if (querySnapshot.empty) {
-                    container.innerHTML = `<div class="text-gray-500 text-xs col-span-full py-8 text-center">В Вашем меню пока нет блюд. Вы можете попросить администратора добавить их.</div>`;
-                    return;
-                }
-                container.innerHTML = '';
-                querySnapshot.forEach((docSnap) => {
-                    const product = docSnap.data();
-                    const prodId = docSnap.id;
-                    const inStock = product.in_stock !== false;
-
-                    container.innerHTML += `
-                        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 flex items-center justify-between">
-                            <div class="space-y-1">
-                                <h4 class="font-bold text-sm text-white">${product.name}</h4>
-                                <div class="text-xs text-yellow-400 font-bold">${product.price} сомонӣ</div>
-                            </div>
-                            <button onclick="toggleStock('${prodId}', ${!inStock})" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${inStock ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
-                                ${inStock ? 'В наличии' : 'В стоп-листе'}
-                            </button>
-                        </div>
-                    `;
-                });
-            } catch (e) {
-                console.error(e);
+            const q = query(collection(db, "products"), where("restaurant_id", "==", currentRestaurantId));
+            const snap = await getDocs(q);
+            if (snap.empty) {
+                container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">У вас пока нет блюд в меню.</div>`;
+                return;
             }
+            container.innerHTML = '';
+            snap.forEach((docSnap) => {
+                const p = docSnap.data();
+                container.innerHTML += `
+                    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="${p.image_url}" class="w-12 h-12 object-cover rounded-xl bg-gray-800">
+                            <div>
+                                <h4 class="font-bold text-sm text-white">${p.name}</h4>
+                                <div class="text-xs text-yellow-400 font-bold">${p.price} сомонӣ</div>
+                            </div>
+                        </div>
+                        <button onclick="toggleStock('${docSnap.id}', ${!p.in_stock})" class="px-3 py-1.5 rounded-xl text-xs font-bold ${p.in_stock !== false ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
+                            ${p.in_stock !== false ? 'В наличии' : 'Стоп-лист'}
+                        </button>
+                    </div>
+                `;
+            });
         }
 
         window.toggleStock = async function(prodId, newStatus) {
-            await updateDoc(doc(db, "restaurants", currentRestaurantId, "products", prodId), { in_stock: newStatus });
+            await updateDoc(doc(db, "products", prodId), { in_stock: newStatus });
             loadRestaurantMenu();
         };
 
-        window.switchTab = function(tabName) {
-            document.getElementById('tab-orders').classList.toggle('hidden', tabName !== 'orders');
-            document.getElementById('tab-menu').classList.toggle('hidden', tabName !== 'menu');
-            document.getElementById('tab-btn-orders').className = tabName === 'orders' ? 'pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2' : 'pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2';
-            document.getElementById('tab-btn-menu').className = tabName === 'menu' ? 'pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2' : 'pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2';
+        window.switchTab = function(tab) {
+            document.getElementById('tab-orders').classList.toggle('hidden', tab !== 'orders');
+            document.getElementById('tab-menu').classList.toggle('hidden', tab !== 'menu');
+            document.getElementById('tab-btn-orders').className = tab === 'orders' ? 'pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2' : 'pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2';
+            document.getElementById('tab-btn-menu').className = tab === 'menu' ? 'pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2' : 'pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2';
         };
 
         lucide.createIcons();
