@@ -51,17 +51,23 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 space-y-8">
-    <div class="flex border-b border-gray-800 gap-6 text-sm font-bold overflow-x-auto pb-2">
-      <button onclick="switchAdminTab('restaurants')" id="atab-restaurants" class="pb-3 border-b-2 border-yellow-400 text-yellow-400 flex items-center gap-2 whitespace-nowrap">
+  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 space-y-6">
+    <div class="flex border-b border-gray-800 gap-4 sm:gap-6 text-sm font-bold overflow-x-auto pb-2 scrollbar-none">
+      <button onclick="switchAdminTab('restaurants')" id="atab-restaurants" class="admin-tab pb-3 border-b-2 border-yellow-400 text-yellow-400 flex items-center gap-2 whitespace-nowrap">
         <i data-lucide="store" class="w-4 h-4"></i><span>Рестораны</span>
       </button>
-      <button onclick="switchAdminTab('all-orders')" id="atab-orders" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
-        <i data-lucide="shopping-bag" class="w-4 h-4"></i><span>Все заказы</span>
+      <button onclick="switchAdminTab('products')" id="atab-products" class="admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
+        <i data-lucide="utensils" class="w-4 h-4"></i><span>Все товары</span>
+      </button>
+      <button onclick="switchAdminTab('all-orders')" id="atab-orders" class="admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
+        <i data-lucide="shopping-bag" class="w-4 h-4"></i><span>Заказы</span>
+      </button>
+      <button onclick="switchAdminTab('analytics')" id="atab-analytics" class="admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>Аналитика</span>
       </button>
     </div>
 
-    <!-- РЕСТОРАНЫ -->
+    <!-- ═══ РЕСТОРАНЫ ═══ -->
     <section id="sec-restaurants" class="space-y-6">
       <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
         <h3 class="font-bold text-white text-base flex items-center gap-2">
@@ -70,7 +76,7 @@
         </h3>
         <form id="add-restaurant-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <label class="text-[11px] text-gray-400 font-semibold">Название ресторана *</label>
+            <label class="text-[11px] text-gray-400 font-semibold">Название *</label>
             <input type="text" id="res-name" required placeholder="Райхон"
               class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
           </div>
@@ -95,24 +101,24 @@
               class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
           </div>
           <div>
-            <label class="text-[11px] text-gray-400 font-semibold">Комиссия (%) — опционально</label>
-            <input type="number" id="res-commission" placeholder="10"
+            <label class="text-[11px] text-gray-400 font-semibold">Комиссия (%) *</label>
+            <input type="number" id="res-commission" required min="0" max="100" value="10"
               class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
           </div>
           <div>
-            <label class="text-[11px] text-gray-400 font-semibold">Email партнёра (для входа) *</label>
+            <label class="text-[11px] text-gray-400 font-semibold">Email партнёра *</label>
             <input type="email" id="res-email" required placeholder="rayhon@peshras.tj"
               class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
           </div>
           <div>
-            <label class="text-[11px] text-gray-400 font-semibold">Пароль партнёра (мин. 6 символов) *</label>
+            <label class="text-[11px] text-gray-400 font-semibold">Пароль партнёра (мин. 6) *</label>
             <input type="password" id="res-password" required minlength="6" placeholder="••••••••"
               class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
           </div>
           <div class="sm:col-span-2 lg:col-span-3 pt-2">
             <button type="submit" id="create-rest-btn"
-              class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-6 py-2.5 rounded-xl transition text-xs flex items-center gap-2">
-              <span>Зарегистрировать ресторан + создать аккаунт</span>
+              class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-6 py-2.5 rounded-xl transition text-xs flex items-center gap-2 disabled:opacity-50">
+              <span>Зарегистрировать + создать аккаунт</span>
               <i data-lucide="check" class="w-4 h-4"></i>
             </button>
             <p id="create-rest-status" class="text-xs mt-2 hidden"></p>
@@ -128,10 +134,78 @@
       </div>
     </section>
 
-    <!-- ЗАКАЗЫ -->
+    <!-- ═══ ВСЕ ТОВАРЫ ═══ -->
+    <section id="sec-products" class="hidden space-y-4">
+      <div class="flex flex-wrap gap-2 items-center">
+        <select id="prod-filter-rest" class="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-300">
+          <option value="">Все рестораны</option>
+        </select>
+        <input id="prod-search" type="text" placeholder="Поиск по названию..."
+          class="flex-1 min-w-[200px] bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs">
+      </div>
+      <div id="admin-products-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div class="text-gray-500 text-xs py-4 col-span-full">Загрузка товаров...</div>
+      </div>
+    </section>
+
+    <!-- ═══ ЗАКАЗЫ ═══ -->
     <section id="sec-orders" class="hidden space-y-4">
-      <div id="admin-orders-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="text-gray-500 text-xs py-4">Загрузка заказов...</div>
+      <div class="flex flex-wrap gap-2">
+        <select id="order-filter-status" class="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-300">
+          <option value="">Все статусы</option>
+          <option value="new">Новые</option>
+          <option value="accepted">Принятые</option>
+          <option value="cooking">Готовятся</option>
+          <option value="delivering">В пути</option>
+          <option value="delivered">Доставленные</option>
+          <option value="cancelled">Отменённые</option>
+        </select>
+        <select id="order-filter-rest" class="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-300">
+          <option value="">Все рестораны</option>
+        </select>
+      </div>
+      <div id="admin-orders-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div class="text-gray-500 text-xs py-4 col-span-full">Загрузка заказов...</div>
+      </div>
+    </section>
+
+    <!-- ═══ АНАЛИТИКА ═══ -->
+    <section id="sec-analytics" class="hidden space-y-4">
+      <div class="flex flex-wrap gap-2">
+        <button data-period="today" class="period-btn bg-yellow-400 text-black font-bold px-4 py-2 rounded-xl text-xs">Сегодня</button>
+        <button data-period="yesterday" class="period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs">Вчера</button>
+        <button data-period="week" class="period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs">7 дней</button>
+        <button data-period="month" class="period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs">30 дней</button>
+        <button data-period="all" class="period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs">Всё время</button>
+        <button id="export-csv-btn" class="ml-auto bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> CSV
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+          <p class="text-[10px] text-gray-500 uppercase">Заказов</p>
+          <p id="stat-orders" class="text-2xl font-black text-white mt-1">—</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+          <p class="text-[10px] text-gray-500 uppercase">Общая сумма</p>
+          <p id="stat-revenue" class="text-2xl font-black text-yellow-400 mt-1">—</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+          <p class="text-[10px] text-gray-500 uppercase">Комиссия сервиса</p>
+          <p id="stat-commission" class="text-2xl font-black text-emerald-400 mt-1">—</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+          <p class="text-[10px] text-gray-500 uppercase">Средний чек</p>
+          <p id="stat-avg" class="text-2xl font-black text-white mt-1">—</p>
+        </div>
+      </div>
+
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <h4 class="font-bold text-white text-sm mb-3">По ресторанам</h4>
+        <div id="analytics-restaurants" class="space-y-2 text-xs">
+          <p class="text-gray-500">Загрузка...</p>
+        </div>
       </div>
     </section>
   </main>
@@ -140,12 +214,11 @@
 <!-- ═══════ FIREBASE ═══════ -->
 <script type="module">
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword }
+  from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
-  createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import {
-  getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, serverTimestamp
+  getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc,
+  updateDoc, serverTimestamp, getDocs
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -157,14 +230,19 @@ const firebaseConfig = {
   appId: "1:790787117044:web:217ef1bea4edbab24873a1"
 };
 
-const app  = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db   = getFirestore(app);
+const db = getFirestore(app);
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' сомонӣ';
+const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' с.';
 
-/* ───────── ВХОД ───────── */
+let allRestaurants = {};
+let allProducts = [];
+let allOrders = [];
+let currentPeriod = 'today';
+
+/* ═══ ВХОД ═══ */
 document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const err = document.getElementById('admin-error');
@@ -173,7 +251,7 @@ document.getElementById('admin-login-form').addEventListener('submit', async (e)
     await signInWithEmailAndPassword(auth,
       document.getElementById('admin-email').value,
       document.getElementById('admin-password').value);
-  } catch (e2) {
+  } catch {
     err.innerText = 'Неверный email или пароль';
     err.classList.remove('hidden');
   }
@@ -183,8 +261,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('admin-app').classList.remove('hidden');
-    loadAdminRestaurants();
-    listenAllOrders();
+    initData();
   } else {
     document.getElementById('auth-screen').classList.remove('hidden');
     document.getElementById('admin-app').classList.add('hidden');
@@ -193,13 +270,13 @@ onAuthStateChanged(auth, (user) => {
 });
 window.adminLogout = () => signOut(auth);
 
-/* ───────── СОЗДАНИЕ РЕСТОРАНА + АККАУНТА ───────── */
+/* ═══ СОЗДАНИЕ РЕСТОРАНА ═══ */
 document.getElementById('add-restaurant-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const btn    = document.getElementById('create-rest-btn');
+  const btn = document.getElementById('create-rest-btn');
   const status = document.getElementById('create-rest-status');
-  const email  = document.getElementById('res-email').value.trim();
-  const pass   = document.getElementById('res-password').value;
+  const email = document.getElementById('res-email').value.trim();
+  const pass = document.getElementById('res-password').value;
 
   btn.disabled = true;
   btn.innerHTML = 'Создаём...';
@@ -207,131 +284,389 @@ document.getElementById('add-restaurant-form').addEventListener('submit', async 
 
   let secondaryApp = null;
   try {
-    /* 1. Создаём Auth-пользователя во ВТОРОМ приложении (не выкидывая админа) */
     secondaryApp = initializeApp(firebaseConfig, 'secondary-' + Date.now());
-    const secondaryAuth = getAuth(secondaryApp);
-    const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+    const sa = getAuth(secondaryApp);
+    const cred = await createUserWithEmailAndPassword(sa, email, pass);
     const uid = cred.user.uid;
 
-    /* 2. Создаём документ restaurants с owner_uid = uid */
     await addDoc(collection(db, 'restaurants'), {
       name: document.getElementById('res-name').value.trim(),
       address: document.getElementById('res-address').value.trim(),
       phone: document.getElementById('res-phone').value.trim(),
       logo_url: document.getElementById('res-logo').value.trim(),
       cuisine: document.getElementById('res-cuisine').value.trim(),
-      commission: document.getElementById('res-commission').value
-                    ? Number(document.getElementById('res-commission').value)
-                    : null,
+      commission: Number(document.getElementById('res-commission').value) || 0,
       owner_uid: uid,
       owner_email: email,
+      is_banned: false,
       created_at: serverTimestamp()
     });
 
-    /* 3. Чистим */
-    await signOut(secondaryAuth);
+    await signOut(sa);
     await deleteApp(secondaryApp);
-
     status.className = 'text-xs mt-2 text-emerald-400';
-    status.innerText = `✅ Ресторан создан. UID владельца: ${uid}`;
+    status.innerText = `✅ Ресторан создан. UID: ${uid}`;
     status.classList.remove('hidden');
     e.target.reset();
+    document.getElementById('res-commission').value = '10';
   } catch (err) {
     console.error(err);
     status.className = 'text-xs mt-2 text-red-400';
-    let msg = 'Ошибка создания.';
-    if (err.code === 'auth/email-already-in-use') msg = 'Этот email уже используется.';
-    else if (err.code === 'auth/weak-password')   msg = 'Пароль слишком слабый (мин. 6 символов).';
-    else if (err.code === 'auth/invalid-email')   msg = 'Неверный email.';
+    let msg = 'Ошибка.';
+    if (err.code === 'auth/email-already-in-use') msg = 'Email уже используется.';
+    else if (err.code === 'auth/weak-password') msg = 'Пароль слабый (мин. 6).';
+    else if (err.code === 'auth/invalid-email') msg = 'Неверный email.';
     status.innerText = '❌ ' + msg;
     status.classList.remove('hidden');
     if (secondaryApp) try { await deleteApp(secondaryApp); } catch {}
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `Зарегистрировать ресторан + создать аккаунт`;
-    lucide.createIcons();
+    btn.innerHTML = 'Зарегистрировать + создать аккаунт';
   }
 });
 
-/* ───────── СПИСОК РЕСТОРАНОВ ───────── */
-function loadAdminRestaurants() {
-  const container = document.getElementById('admin-restaurants-list');
+/* ═══ ЗАГРУЗКА ДАННЫХ ═══ */
+function initData() {
+  // рестораны
   onSnapshot(collection(db, 'restaurants'), snap => {
-    if (snap.empty) {
-      container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Ресторанов пока нет</div>`;
-      return;
-    }
-    container.innerHTML = snap.docs.map(d => {
-      const r = d.data();
-      return `
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-2">
-          <div class="flex items-start gap-3">
-            <div class="w-12 h-12 rounded-xl bg-gray-800 overflow-hidden flex-shrink-0">
-              ${r.logo_url ? `<img src="${esc(r.logo_url)}" class="w-full h-full object-cover" onerror="this.style.display='none'">` : ''}
+    allRestaurants = {};
+    snap.forEach(d => allRestaurants[d.id] = { id: d.id, ...d.data() });
+    renderRestaurants();
+    fillRestFilters();
+    if (allProducts.length) renderProductsList();
+  });
+  // товары
+  onSnapshot(collection(db, 'products'), snap => {
+    allProducts = [];
+    snap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
+    renderProductsList();
+    renderRestaurants(); // обновить счётчик блюд
+  });
+  // заказы
+  onSnapshot(collection(db, 'orders'), snap => {
+    allOrders = [];
+    snap.forEach(d => allOrders.push({ id: d.id, ...d.data() }));
+    renderOrders();
+    renderAnalytics();
+  });
+}
+
+/* ═══ РЕСТОРАНЫ ═══ */
+function renderRestaurants() {
+  const container = document.getElementById('admin-restaurants-list');
+  const list = Object.values(allRestaurants);
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Ресторанов пока нет</div>`; return; }
+  container.innerHTML = list.map(r => {
+    const prodCount = allProducts.filter(p => p.restaurant_id === r.id).length;
+    return `
+      <div class="bg-gray-900 border ${r.is_banned ? 'border-red-500/40' : 'border-gray-800'} rounded-2xl p-4 space-y-2">
+        <div class="flex items-start gap-3">
+          <div class="w-12 h-12 rounded-xl bg-gray-800 overflow-hidden flex-shrink-0">
+            ${r.logo_url ? `<img src="${esc(r.logo_url)}" class="w-full h-full object-cover" onerror="this.style.display='none'">` : ''}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <h4 class="font-extrabold text-white text-sm truncate">${esc(r.name)}</h4>
+              <span class="text-[10px] bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/20">${r.commission}%</span>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-2">
-                <h4 class="font-extrabold text-white text-sm truncate">${esc(r.name)}</h4>
-                <span class="text-xs bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/20 whitespace-nowrap">
-                  ${r.commission ?? '—'}%
-                </span>
-              </div>
-              <p class="text-xs text-gray-400 truncate">📍 ${esc(r.address || '—')}</p>
-              <p class="text-xs text-gray-400 truncate">📞 ${esc(r.phone || '—')}</p>
-            </div>
-            <button onclick="delRestaurant('${d.id}')" class="text-red-400 hover:text-red-300 p-1 flex-shrink-0">
+            <p class="text-xs text-gray-400 truncate">📍 ${esc(r.address || '—')}</p>
+            <p class="text-xs text-gray-400 truncate">📞 ${esc(r.phone || '—')}</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-gray-800">
+          <span class="text-xs text-gray-400">Блюд: <b class="text-emerald-400">${prodCount}</b></span>
+          <div class="flex gap-1">
+            <button onclick="toggleBanRestaurant('${r.id}', ${!r.is_banned})" class="text-[10px] font-bold px-2 py-1 rounded ${r.is_banned ? 'bg-red-500/20 text-red-400' : 'bg-gray-800 text-gray-400'}">
+              ${r.is_banned ? 'Запрещён' : 'Запретить'}
+            </button>
+            <button onclick="delRestaurant('${r.id}')" class="text-red-400 hover:text-red-300 p-1">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
           </div>
-          <div class="text-[10px] text-gray-600 font-mono break-all">owner_uid: ${esc(r.owner_uid || '—')}</div>
-          <div class="text-[10px] text-gray-600 font-mono break-all">restaurants.id: ${d.id}</div>
         </div>
-      `;
-    }).join('');
-    lucide.createIcons();
-  });
+        <div class="text-[9px] text-gray-600 font-mono break-all">id: ${r.id}</div>
+        <div class="text-[9px] text-gray-600 font-mono break-all">uid: ${esc(r.owner_uid || '—')}</div>
+      </div>
+    `;
+  }).join('');
+  lucide.createIcons();
 }
 
-window.delRestaurant = async function (id) {
-  if (!confirm('Удалить ресторан? Блюда и заказы останутся в базе, но перестанут быть привязаны.')) return;
-  try { await deleteDoc(doc(db, 'restaurants', id)); }
-  catch (e) { console.error(e); alert('Ошибка удаления'); }
+window.toggleBanRestaurant = async (id, newBan) => {
+  if (!confirm(newBan ? 'Запретить ресторан? Все его товары скроются с главной.' : 'Разрешить ресторан?')) return;
+  try { await updateDoc(doc(db, 'restaurants', id), { is_banned: newBan }); }
+  catch (e) { console.error(e); alert('Ошибка'); }
 };
 
-/* ───────── ВСЕ ЗАКАЗЫ ───────── */
-function listenAllOrders() {
-  onSnapshot(collection(db, 'orders'), snap => {
-    const container = document.getElementById('admin-orders-list');
-    if (snap.empty) {
-      container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Заказов пока нет</div>`;
-      return;
-    }
-    const orders = [];
-    snap.forEach(d => orders.push({ id: d.id, ...d.data() }));
-    orders.sort((a, b) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
+window.delRestaurant = async (id) => {
+  if (!confirm('Удалить ресторан? Блюда останутся в базе.')) return;
+  try { await deleteDoc(doc(db, 'restaurants', id)); }
+  catch (e) { console.error(e); alert('Ошибка'); }
+};
 
-    container.innerHTML = orders.map(o => `
-      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-2 text-xs">
-        <div class="flex justify-between items-center">
-          <span class="font-mono text-gray-400">#${o.id.substring(0,6)}</span>
-          <span class="text-amber-400 font-bold">${o.status}</span>
-        </div>
-        <p class="text-white font-bold">${esc(o.client_name)} · ${esc(o.client_phone)}</p>
-        <p class="text-gray-400">${esc(o.delivery_address)}</p>
-        <p class="text-gray-500">Ресторан: ${esc(o.restaurant_name || o.restaurant_id || '—')}</p>
-        <p class="text-yellow-400 font-black">${fmt(o.total_price)}</p>
-      </div>
-    `).join('');
+function fillRestFilters() {
+  const ids = Object.keys(allRestaurants);
+  ['prod-filter-rest', 'order-filter-rest'].forEach(id => {
+    const sel = document.getElementById(id);
+    const current = sel.value;
+    sel.innerHTML = `<option value="">Все рестораны</option>` +
+      ids.map(rid => `<option value="${rid}">${esc(allRestaurants[rid].name)}</option>`).join('');
+    sel.value = current;
   });
 }
 
+/* ═══ ТОВАРЫ ═══ */
+function renderProductsList() {
+  const container = document.getElementById('admin-products-list');
+  const restFilter = document.getElementById('prod-filter-rest')?.value || '';
+  const search = (document.getElementById('prod-search')?.value || '').toLowerCase();
+
+  let list = [...allProducts];
+  if (restFilter) list = list.filter(p => p.restaurant_id === restFilter);
+  if (search) list = list.filter(p => (p.name || '').toLowerCase().includes(search));
+
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Товаров нет</div>`; return; }
+
+  container.innerHTML = list.map(p => {
+    const rest = allRestaurants[p.restaurant_id];
+    const isHidden = p.is_hidden === true;
+    return `
+      <div class="bg-gray-900 border ${isHidden ? 'border-red-500/40 opacity-70' : 'border-gray-800'} rounded-2xl p-3 space-y-2">
+        <div class="flex gap-2">
+          <img src="${esc(p.image_url || 'https://via.placeholder.com/80')}" class="w-16 h-16 rounded-xl object-cover bg-gray-800 flex-shrink-0" onerror="this.src='https://via.placeholder.com/80'">
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-xs text-white truncate">${esc(p.name)}</h4>
+            <p class="text-[10px] text-gray-500 truncate">${esc(rest?.name || '—')}</p>
+            <p class="text-yellow-400 font-black text-sm">${p.price} с.</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-1 pt-2 border-t border-gray-800">
+          <button onclick="editProduct('${p.id}')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-white font-bold px-2 py-1 rounded">✏️ Ред.</button>
+          <button onclick="toggleHideProduct('${p.id}', ${!isHidden})" class="text-[10px] ${isHidden ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-400'} font-bold px-2 py-1 rounded">
+            ${isHidden ? '👁 Показать' : '🚫 Скрыть'}
+          </button>
+          <button onclick="delProduct('${p.id}')" class="text-[10px] bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded">🗑 Удалить</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.delProduct = async (id) => {
+  if (!confirm('Удалить товар навсегда?')) return;
+  try { await deleteDoc(doc(db, 'products', id)); }
+  catch (e) { console.error(e); alert('Ошибка'); }
+};
+
+window.toggleHideProduct = async (id, hide) => {
+  try { await updateDoc(doc(db, 'products', id), { is_hidden: hide }); }
+  catch (e) { console.error(e); alert('Ошибка'); }
+};
+
+window.editProduct = async (id) => {
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return;
+  const name = prompt('Название:', p.name || '');
+  if (name === null) return;
+  const price = prompt('Цена (сомонӣ):', p.price || 0);
+  if (price === null) return;
+  const desc = prompt('Описание:', p.description || '');
+  if (desc === null) return;
+  const img = prompt('URL фото:', p.image_url || '');
+  if (img === null) return;
+  try {
+    await updateDoc(doc(db, 'products', id), {
+      name: name.trim(),
+      price: Number(price) || 0,
+      description: desc.trim(),
+      image_url: img.trim()
+    });
+    alert('✅ Сохранено');
+  } catch (e) { console.error(e); alert('Ошибка'); }
+};
+
+document.getElementById('prod-filter-rest').addEventListener('change', renderProductsList);
+document.getElementById('prod-search').addEventListener('input', renderProductsList);
+
+/* ═══ ЗАКАЗЫ ═══ */
+const STATUS_LABEL = {
+  new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится',
+  delivering: '🛵 В пути', delivered: '🏁 Доставлен', cancelled: '❌ Отменён'
+};
+
+function renderOrders() {
+  const container = document.getElementById('admin-orders-list');
+  const statusF = document.getElementById('order-filter-status')?.value || '';
+  const restF = document.getElementById('order-filter-rest')?.value || '';
+
+  let list = [...allOrders];
+  if (statusF) list = list.filter(o => o.status === statusF);
+  if (restF) list = list.filter(o => o.restaurant_id === restF);
+  list.sort((a, b) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
+
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Заказов нет</div>`; return; }
+
+  container.innerHTML = list.map(o => {
+    const rest = allRestaurants[o.restaurant_id];
+    const items = o.items || [];
+    return `
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 space-y-2 text-xs">
+        <div class="flex justify-between items-center">
+          <span class="font-mono text-gray-400">#${o.id.substring(0,6)}</span>
+          <span class="text-amber-400 font-bold">${STATUS_LABEL[o.status] || o.status}</span>
+        </div>
+        <p class="text-white font-bold">${esc(o.client_name)} · ${esc(o.client_phone)}</p>
+        <p class="text-gray-400">📍 ${esc(o.delivery_address)}</p>
+        <p class="text-gray-500">🏪 ${esc(rest?.name || o.restaurant_id || '—')}</p>
+        ${o.comment ? `<p class="text-amber-400 text-[10px]">💬 ${esc(o.comment)}</p>` : ''}
+        <div class="bg-gray-950 rounded-lg p-2 space-y-0.5">
+          ${items.map(it => `<div class="flex justify-between text-[10px]"><span class="text-gray-300">${esc(it.name)}</span><span class="text-white">×${it.qty} — ${fmt(it.price * it.qty)}</span></div>`).join('') || '<span class="text-gray-500">—</span>'}
+        </div>
+        <p class="text-yellow-400 font-black text-sm">${fmt(o.total_price)}</p>
+        <div class="flex gap-1 flex-wrap pt-1">
+          <select onchange="changeOrderStatus('${o.id}', this.value)" class="bg-gray-950 border border-gray-800 rounded px-2 py-1 text-[10px]">
+            ${Object.entries(STATUS_LABEL).map(([k, v]) => `<option value="${k}" ${o.status === k ? 'selected' : ''}>${v}</option>`).join('')}
+          </select>
+          <button onclick="delOrder('${o.id}')" class="bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded text-[10px]">🗑 Удалить</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.changeOrderStatus = async (id, status) => {
+  try { await updateDoc(doc(db, 'orders', id), { status }); }
+  catch (e) { console.error(e); alert('Ошибка'); }
+};
+
+window.delOrder = async (id) => {
+  if (!confirm('Удалить заказ навсегда?')) return;
+  try { await deleteDoc(doc(db, 'orders', id)); }
+  catch (e) { console.error(e); alert('Ошибка'); }
+};
+
+document.getElementById('order-filter-status').addEventListener('change', renderOrders);
+document.getElementById('order-filter-rest').addEventListener('change', renderOrders);
+
+/* ═══ АНАЛИТИКА ═══ */
+function getPeriodRange(period) {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (period === 'today') return start;
+  if (period === 'yesterday') return new Date(start.getTime() - 86400000);
+  if (period === 'week') return new Date(start.getTime() - 6 * 86400000);
+  if (period === 'month') return new Date(start.getTime() - 29 * 86400000);
+  return null;
+}
+
+function renderAnalytics() {
+  const start = getPeriodRange(currentPeriod);
+  let list = [...allOrders];
+  if (start) {
+    list = list.filter(o => {
+      const t = o.created_at?.toMillis?.() || 0;
+      return t >= start.getTime();
+    });
+  }
+  // в аналитику включаем только доставленные + не отменённые
+  const counted = list.filter(o => o.status !== 'cancelled');
+
+  const orders = counted.length;
+  const revenue = counted.reduce((s, o) => s + (o.total_price || 0), 0);
+  const commission = counted.reduce((s, o) => {
+    const r = allRestaurants[o.restaurant_id];
+    const c = r?.commission ?? 0;
+    return s + (o.total_price || 0) * c / 100;
+  }, 0);
+  const avg = orders ? revenue / orders : 0;
+
+  document.getElementById('stat-orders').innerText = orders;
+  document.getElementById('stat-revenue').innerText = fmt(revenue);
+  document.getElementById('stat-commission').innerText = fmt(commission);
+  document.getElementById('stat-avg').innerText = fmt(avg);
+
+  // по ресторанам
+  const byRest = {};
+  counted.forEach(o => {
+    const rid = o.restaurant_id || 'unknown';
+    if (!byRest[rid]) byRest[rid] = { count: 0, sum: 0, commission: 0 };
+    byRest[rid].count++;
+    byRest[rid].sum += o.total_price || 0;
+    const r = allRestaurants[rid];
+    byRest[rid].commission += (o.total_price || 0) * (r?.commission ?? 0) / 100;
+  });
+  const rows = Object.entries(byRest).sort((a, b) => b[1].sum - a[1].sum);
+  const el = document.getElementById('analytics-restaurants');
+  if (!rows.length) { el.innerHTML = `<p class="text-gray-500">Нет данных за период</p>`; return; }
+  el.innerHTML = rows.map(([rid, s]) => {
+    const r = allRestaurants[rid];
+    return `
+      <div class="flex items-center justify-between bg-gray-950 rounded-xl p-2.5 border border-gray-800">
+        <div class="min-w-0">
+          <p class="font-bold text-white truncate">${esc(r?.name || 'Неизвестно')}</p>
+          <p class="text-[10px] text-gray-500">${s.count} заказ${s.count === 1 ? '' : 'ов'} · комиссия ${r?.commission ?? 0}%</p>
+        </div>
+        <div class="text-right">
+          <p class="text-yellow-400 font-black">${fmt(s.sum)}</p>
+          <p class="text-[10px] text-emerald-400">сервис: ${fmt(s.commission)}</p>
+          <p class="text-[10px] text-gray-400">ресторану: ${fmt(s.sum - s.commission)}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+document.querySelectorAll('.period-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentPeriod = btn.dataset.period;
+    document.querySelectorAll('.period-btn').forEach(b => {
+      b.className = 'period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs';
+    });
+    btn.className = 'period-btn bg-yellow-400 text-black font-bold px-4 py-2 rounded-xl text-xs';
+    renderAnalytics();
+  });
+});
+
+/* CSV экспорт */
+document.getElementById('export-csv-btn').addEventListener('click', () => {
+  const start = getPeriodRange(currentPeriod);
+  let list = [...allOrders].filter(o => o.status !== 'cancelled');
+  if (start) list = list.filter(o => (o.created_at?.toMillis?.() || 0) >= start.getTime());
+  const rows = [['ID', 'Дата', 'Ресторан', 'Клиент', 'Телефон', 'Адрес', 'Сумма', 'Статус']];
+  list.forEach(o => {
+    rows.push([
+      o.id,
+      o.created_at?.toDate?.().toLocaleString('ru-RU') || '',
+      allRestaurants[o.restaurant_id]?.name || o.restaurant_id || '',
+      o.client_name || '',
+      o.client_phone || '',
+      o.delivery_address || '',
+      o.total_price || 0,
+      o.status || ''
+    ]);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `peshras-orders-${currentPeriod}-${Date.now()}.csv`;
+  a.click();
+});
+
+/* ═══ ТАБЫ ═══ */
+const TABS = { restaurants: 'atab-restaurants', products: 'atab-products', 'all-orders': 'atab-orders', analytics: 'atab-analytics' };
+const SECS = { restaurants: 'sec-restaurants', products: 'sec-products', 'all-orders': 'sec-orders', analytics: 'sec-analytics' };
+
 window.switchAdminTab = function (tab) {
-  document.getElementById('sec-restaurants').classList.toggle('hidden', tab !== 'restaurants');
-  document.getElementById('sec-orders').classList.toggle('hidden', tab !== 'all-orders');
-  const a = 'pb-3 border-b-2 border-yellow-400 text-yellow-400 flex items-center gap-2 whitespace-nowrap';
-  const i = 'pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap';
-  document.getElementById('atab-restaurants').className = tab === 'restaurants' ? a : i;
-  document.getElementById('atab-orders').className = tab === 'all-orders' ? a : i;
+  Object.values(SECS).forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById(SECS[tab]).classList.remove('hidden');
+  Object.entries(TABS).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    el.className = k === tab
+      ? 'admin-tab pb-3 border-b-2 border-yellow-400 text-yellow-400 flex items-center gap-2 whitespace-nowrap'
+      : 'admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap';
+  });
+  if (tab === 'analytics') renderAnalytics();
 };
 
 lucide.createIcons();
