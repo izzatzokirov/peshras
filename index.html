@@ -1,328 +1,827 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peshras — Доставка еды в Исфаре</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Иконки Lucide -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Peshras — Доставка еды в Исфаре</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  .line-clamp-1 { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+  .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pop     { 0% { transform: scale(1);} 50% { transform: scale(1.08);} 100% { transform: scale(1);} }
+  .anim-slide-up { animation: slideUp .3s ease-out; }
+  .anim-fade     { animation: fadeIn .2s ease-out; }
+  .anim-pop      { animation: pop .2s ease-out; }
+  .cat-active    { background: #10b981 !important; color: #000 !important; box-shadow: 0 8px 24px rgba(16,185,129,.35); }
+</style>
 </head>
-<body class="bg-gray-950 text-gray-100 pb-24 min-h-screen">
+<body class="bg-gray-950 text-gray-100 min-h-screen" style="padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px))">
 
-    <!-- ВЕРХНЯЯ ШАПКА (HEADER) -->
-    <header class="bg-gray-900 border-b border-gray-800 px-4 py-3 sticky top-0 z-30 shadow-lg">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="text-xl font-black text-emerald-400 tracking-wider">PESHRAS <span class="text-yellow-400 text-xs px-2 py-0.5 bg-yellow-400/10 rounded-full border border-yellow-400/20">EATS</span></span>
-            </div>
-            <div class="flex items-center gap-2 text-xs text-gray-400 bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-800">
-                <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
-                <span>Исфара</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
-    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
-
-        <!-- Баннер -->
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-800 rounded-3xl p-6 sm:p-8 text-white space-y-2 relative overflow-hidden shadow-2xl">
-            <span class="bg-black/30 backdrop-blur text-emerald-200 text-xs font-bold px-3 py-1 rounded-full border border-white/10 inline-block">Быстрая доставка</span>
-            <h1 class="text-2xl sm:text-4xl font-extrabold">Любимая еда из ресторанов Исфары</h1>
-            <p class="text-emerald-100 text-xs sm:text-sm">Заказывайте плов, шашлыки, фастфуд и напитки прямо к двери!</p>
-        </div>
-
-        <!-- КАТЕГОРИИ МЕНЮ -->
-        <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-none text-xs font-bold">
-            <button onclick="filterCategory('all')" class="cat-btn bg-emerald-500 text-black px-4 py-2.5 rounded-xl whitespace-nowrap transition shadow-lg shadow-emerald-500/20">Все блюда</button>
-            <button onclick="filterCategory('hits')" class="cat-btn bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 px-4 py-2.5 rounded-xl whitespace-nowrap transition">🔥 Хит сезона</button>
-            <button onclick="filterCategory('popular')" class="cat-btn bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 px-4 py-2.5 rounded-xl whitespace-nowrap transition">⭐ Популярное</button>
-            <button onclick="filterCategory('new')" class="cat-btn bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 px-4 py-2.5 rounded-xl whitespace-nowrap transition">✨ Новинки</button>
-        </div>
-
-        <!-- КАТАЛОГ ТОВАРОВ -->
-        <section class="space-y-4">
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                <i data-lucide="utensils" class="w-5 h-5 text-emerald-400"></i>
-                <span>Меню ресторанов</span>
-            </h2>
-            <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                <div class="col-span-full py-12 text-center text-gray-500 text-xs">Загрузка вкусных блюд...</div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- ПЛАВАЮЩАЯ КНОПКА КОРЗИНЫ ВНИЗУ ЭКРАНА -->
-    <div id="cart-floating-bar" class="fixed bottom-4 left-4 right-4 max-w-md mx-auto hidden z-40">
-        <button onclick="openCartModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 px-5 rounded-2xl shadow-2xl flex items-center justify-between transition transform active:scale-95">
-            <div class="flex items-center gap-2">
-                <span id="cart-count-badge" class="bg-black text-emerald-400 text-xs px-2 py-0.5 rounded-full font-black">0</span>
-                <span>Корзина</span>
-            </div>
-            <span id="cart-total-badge" class="text-sm">0 сомонӣ</span>
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header class="bg-gray-900/95 backdrop-blur border-b border-gray-800 sticky top-0 z-30 shadow-lg">
+  <div class="max-w-7xl mx-auto px-4 py-3">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <img src="https://i.ibb.co/FbhxLR8c/1786542023977.png" alt="Peshras" class="h-9 w-9 rounded-xl object-cover bg-gray-800" onerror="this.style.display='none'">
+        <span class="text-lg font-black tracking-wider">
+          <span class="text-emerald-400">PESHRAS</span>
+          <span class="text-yellow-400 text-[10px] px-1.5 py-0.5 bg-yellow-400/10 rounded-full border border-yellow-400/20 align-middle ml-1">EATS</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="search-toggle" class="w-9 h-9 rounded-xl bg-gray-950 border border-gray-800 flex items-center justify-center text-gray-400 hover:text-emerald-400 transition" aria-label="Поиск">
+          <i data-lucide="search" class="w-4 h-4"></i>
         </button>
-    </div>
-
-    <!-- МОДАЛЬНОЕ ОКНО КОРЗИНЫ И ОФОРМЛЕНИЯ ЗАКАЗА -->
-    <div id="cart-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-6 space-y-6 max-h-[90vh] overflow-y-auto">
-            
-            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
-                <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
-                    <i data-lucide="shopping-bag" class="w-5 h-5 text-emerald-400"></i>
-                    <span>Ваш заказ</span>
-                </h3>
-                <button onclick="closeCartModal()" class="text-gray-400 hover:text-white p-1">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-
-            <!-- Список товаров в корзине -->
-            <div id="cart-items-container" class="space-y-3">
-                <div class="text-gray-500 text-xs text-center py-4">Корзина пуста</div>
-            </div>
-
-            <!-- Форма данных клиента -->
-            <form id="checkout-form" class="space-y-4 pt-4 border-t border-gray-800">
-                <div class="space-y-1">
-                    <label class="text-[11px] text-gray-400 font-semibold">Ваше имя</label>
-                    <input type="text" id="client-name" required placeholder="Например: Изат" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[11px] text-gray-400 font-semibold">Номер телефона</label>
-                    <input type="tel" id="client-phone" required placeholder="+992 92 XXX XX XX" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[11px] text-gray-400 font-semibold">Адрес доставки в Исфаре</label>
-                    <input type="text" id="client-address" required placeholder="Улица, дом, ориентир" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-                </div>
-
-                <div class="pt-2 flex justify-between items-center font-black text-sm text-white">
-                    <span>Итого к оплате:</span>
-                    <span id="cart-modal-total" class="text-yellow-400 text-base">0 сомонӣ</span>
-                </div>
-
-                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 rounded-xl transition flex items-center justify-center gap-2 text-xs shadow-lg shadow-emerald-500/20">
-                    <span>Подтвердить и отправить заказ</span>
-                    <i data-lucide="send" class="w-4 h-4"></i>
-                </button>
-            </form>
-
+        <div class="flex items-center gap-1.5 text-xs text-gray-400 bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-800">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Исфара</span>
         </div>
+      </div>
+    </div>
+    <!-- Поиск (скрыт) -->
+    <div id="search-wrap" class="hidden pt-3 anim-fade">
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+        <input id="search-input" type="text" placeholder="Поиск блюд или ресторанов..."
+          class="w-full bg-gray-950 border border-gray-800 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+
+  <!-- Баннер -->
+  <div class="bg-gradient-to-r from-emerald-600 to-teal-800 rounded-3xl p-6 sm:p-8 text-white space-y-2 relative overflow-hidden shadow-2xl">
+    <div class="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+    <span class="bg-black/30 backdrop-blur text-emerald-200 text-xs font-bold px-3 py-1 rounded-full border border-white/10 inline-block relative">Быстрая доставка · 30–40 мин</span>
+    <h1 class="text-2xl sm:text-4xl font-extrabold relative">Любимая еда из ресторанов Исфары</h1>
+    <p class="text-emerald-100 text-xs sm:text-sm relative">Плов, шашлыки, фастфуд и напитки — прямо к двери!</p>
+  </div>
+
+  <!-- Поиск результатов (заголовок-переключатель) -->
+  <div id="menu-context" class="hidden items-center justify-between bg-gray-900 border border-gray-800 rounded-2xl px-4 py-3">
+    <div class="flex items-center gap-2">
+      <i data-lucide="utensils" class="w-4 h-4 text-emerald-400"></i>
+      <span id="menu-context-title" class="text-sm font-bold text-white">Меню</span>
+    </div>
+    <button id="menu-context-reset" class="text-xs text-emerald-400 font-bold flex items-center gap-1 hover:text-emerald-300">
+      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Все рестораны
+    </button>
+  </div>
+
+  <!-- Категории -->
+  <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-none text-xs font-bold" id="categories">
+    <button data-cat="all"     class="cat-btn cat-active bg-emerald-500 text-black px-4 py-2.5 rounded-xl whitespace-nowrap transition">Все блюда</button>
+    <button data-cat="hits"    class="cat-btn bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 px-4 py-2.5 rounded-xl whitespace-nowrap transition">🔥 Хит сезона</button>
+    <button data-cat="popular" class="cat-btn bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 px-4 py-2.5 rounded-xl whitespace-nowrap transition">⭐ Популярное</button>
+    <button data-cat="new"     class="cat-btn bg-gray-900 border border-gray-800 text-gray-300 hover:border-emerald-500 px-4 py-2.5 rounded-xl whitespace-nowrap transition">✨ Новинки</button>
+  </div>
+
+  <!-- СЕКЦИЯ РЕСТОРАНЫ -->
+  <section id="restaurants-section" class="space-y-4">
+    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+      <i data-lucide="store" class="w-5 h-5 text-emerald-400"></i>
+      <span>Рестораны Исфары</span>
+    </h2>
+    <div id="restaurants-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="col-span-full py-8 text-center text-gray-500 text-xs">Загрузка ресторанов...</div>
+    </div>
+  </section>
+
+  <!-- СЕКЦИЯ МЕНЮ -->
+  <section id="menu-section" class="space-y-4">
+    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+      <i data-lucide="utensils" class="w-5 h-5 text-emerald-400"></i>
+      <span>Меню</span>
+    </h2>
+    <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="col-span-full py-12 text-center text-gray-500 text-xs">Загрузка вкусных блюд...</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════ FAB КОРЗИНА ═══════════════ -->
+<div id="cart-floating-bar" class="fixed left-4 right-4 max-w-md mx-auto hidden z-40"
+     style="bottom: calc(88px + env(safe-area-inset-bottom, 0px));">
+  <button onclick="openCartModal()"
+    class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 px-5 rounded-2xl shadow-2xl shadow-emerald-500/30 flex items-center justify-between transition transform active:scale-95">
+    <div class="flex items-center gap-2">
+      <span id="cart-count-badge" class="bg-black text-emerald-400 text-xs px-2 py-0.5 rounded-full font-black anim-pop">0</span>
+      <span>Корзина</span>
+    </div>
+    <span id="cart-total-badge" class="text-sm">0 сомонӣ</span>
+  </button>
+</div>
+
+<!-- ═══════════════ МОДАЛКА КОРЗИНЫ (2 шага) ═══════════════ -->
+<div id="cart-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-6 space-y-5 max-h-[92vh] overflow-y-auto anim-slide-up">
+
+    <!-- Шаг 1: товары -->
+    <div id="cart-step-items" class="space-y-5">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+        <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-emerald-400"></i>
+          <span>Ваша корзина</span>
+        </h3>
+        <button onclick="closeCartModal()" class="text-gray-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div id="cart-items-container" class="space-y-3">
+        <div class="text-gray-500 text-xs text-center py-4">Корзина пуста</div>
+      </div>
+
+      <div class="pt-2 flex justify-between items-center font-black text-sm text-white border-t border-gray-800">
+        <span>Итого:</span>
+        <span id="cart-modal-total" class="text-yellow-400 text-lg">0 сомонӣ</span>
+      </div>
+
+      <div class="space-y-2">
+        <button id="go-checkout-btn"
+          class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span>Оформить заказ</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+        <button id="clear-cart-btn"
+          class="w-full bg-transparent border border-gray-800 hover:border-red-500/50 hover:text-red-400 text-gray-400 font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Очистить корзину</span>
+        </button>
+      </div>
     </div>
 
-    <!-- FIREBASE И ЛОГИКА КОРЗИНЫ -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- Шаг 2: форма -->
+    <div id="cart-step-form" class="hidden space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+        <button id="back-to-items" class="text-gray-400 hover:text-white flex items-center gap-1 text-xs font-bold">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
+        </button>
+        <h3 class="font-extrabold text-base text-white">Данные для доставки</h3>
+        <div class="w-8"></div>
+      </div>
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyBGUkISLQ1Qm9xfYkVgZhoLeR_P_VTSrhM",
-          authDomain: "peshras-delivery.firebaseapp.com",
-          projectId: "peshras-delivery",
-          storageBucket: "peshras-delivery.firebasestorage.app",
-          messagingSenderId: "790787117044",
-          appId: "1:790787117044:web:217ef1bea4edbab24873a1"
-        };
+      <form id="checkout-form" class="space-y-4">
+        <div class="space-y-1">
+          <label class="text-[11px] text-gray-400 font-semibold">Ваше имя</label>
+          <input type="text" id="client-name" required placeholder="Например: Изат"
+            class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div class="space-y-1">
+          <label class="text-[11px] text-gray-400 font-semibold">Номер телефона</label>
+          <input type="tel" id="client-phone" required placeholder="+992 92 XXX XX XX"
+            class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div class="space-y-1">
+          <label class="text-[11px] text-gray-400 font-semibold">Адрес доставки в Исфаре</label>
+          <input type="text" id="client-address" required placeholder="Улица, дом, ориентир"
+            class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
+        <div class="space-y-1">
+          <label class="text-[11px] text-gray-400 font-semibold">Комментарий (опционально)</label>
+          <input type="text" id="client-comment" placeholder="Домофон, подъезд, пожелания"
+            class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+        </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        <div class="pt-2 flex justify-between items-center font-black text-sm text-white border-t border-gray-800">
+          <span>Итого к оплате:</span>
+          <span id="cart-modal-total-2" class="text-yellow-400 text-lg">0 сомонӣ</span>
+        </div>
 
-        let allProducts = [];
-        let cart = {}; // { prodId: { product, qty } }
+        <button type="submit" id="submit-order-btn"
+          class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/20 disabled:opacity-50">
+          <span>Подтвердить заказ</span>
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
+    </div>
 
-        // Загрузка блюд из базы Firestore
-        async function loadProducts() {
-            const grid = document.getElementById('products-grid');
-            try {
-                const snap = await getDocs(collection(db, "products"));
-                if (snap.empty) {
-                    grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-500 text-xs">Пока нет доступных блюд. Рестораны скоро добавят меню!</div>`;
-                    return;
-                }
-                allProducts = [];
-                snap.forEach(docSnap => {
-                    allProducts.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                renderProducts(allProducts);
-            } catch (err) {
-                console.error(err);
-                grid.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 text-xs">Ошибка загрузки блюд</div>`;
-            }
+  </div>
+</div>
+
+<!-- ═══════════════ МОДАЛКА ПРОФИЛЯ ═══════════════ -->
+<div id="profile-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 max-h-[92vh] overflow-y-auto anim-slide-up">
+    <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+      <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+        <i data-lucide="user" class="w-5 h-5 text-emerald-400"></i>
+        <span>Профиль</span>
+      </h3>
+      <button onclick="closeProfile()" class="text-gray-400 hover:text-white p-1">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 gap-2">
+      <button data-panel="about" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="info" class="w-4 h-4"></i></div>
+          <div><p class="text-sm font-bold text-white">О нас</p><p class="text-[10px] text-gray-500">Кто мы и чем занимаемся</p></div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i>
+      </button>
+
+      <button data-panel="terms" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-yellow-400/10 text-yellow-400 flex items-center justify-center"><i data-lucide="file-text" class="w-4 h-4"></i></div>
+          <div><p class="text-sm font-bold text-white">Условия доставки и оплаты</p><p class="text-[10px] text-gray-500">Время, стоимость, способы оплаты</p></div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i>
+      </button>
+
+      <button data-panel="partner" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="store" class="w-4 h-4"></i></div>
+          <div><p class="text-sm font-bold text-white">Стать партнёром</p><p class="text-[10px] text-gray-500">Подключите свой ресторан</p></div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i>
+      </button>
+
+      <button data-panel="history" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="history" class="w-4 h-4"></i></div>
+          <div><p class="text-sm font-bold text-white">История заказов</p><p class="text-[10px] text-gray-500">По номеру телефона</p></div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i>
+      </button>
+    </div>
+
+    <!-- Панель деталей -->
+    <div id="profile-panel" class="hidden bg-gray-950 border border-gray-800 rounded-2xl p-4 text-xs text-gray-300 leading-relaxed space-y-2">
+      <div class="flex items-center justify-between mb-2">
+        <h4 id="profile-panel-title" class="font-bold text-white text-sm"></h4>
+        <button id="profile-panel-close" class="text-gray-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div id="profile-panel-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ТОСТ ═══════════════ -->
+<div id="toast" class="fixed left-1/2 -translate-x-1/2 z-[9999] hidden bg-emerald-500 text-black font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm"
+     style="bottom: calc(160px + env(safe-area-inset-bottom, 0px));"></div>
+
+<!-- ═══════════════ НИЖНЕЕ МЕНЮ ═══════════════ -->
+<nav class="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur border-t border-gray-800 z-40 safe-bottom">
+  <div class="max-w-7xl mx-auto grid grid-cols-4">
+    <button data-nav="home" class="nav-btn flex flex-col items-center gap-1 py-3 text-emerald-400 transition">
+      <i data-lucide="home" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold">Главная</span>
+    </button>
+    <button data-nav="restaurants" class="nav-btn flex flex-col items-center gap-1 py-3 text-gray-500 hover:text-emerald-400 transition">
+      <i data-lucide="store" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold">Рестораны</span>
+    </button>
+    <button data-nav="cart" class="nav-btn relative flex flex-col items-center gap-1 py-3 text-gray-500 hover:text-emerald-400 transition">
+      <span class="relative">
+        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+        <span id="nav-cart-badge" class="hidden absolute -top-1.5 -right-2 bg-emerald-500 text-black text-[9px] font-black rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">0</span>
+      </span>
+      <span class="text-[10px] font-bold">Корзина</span>
+    </button>
+    <button data-nav="profile" class="nav-btn flex flex-col items-center gap-1 py-3 text-gray-500 hover:text-emerald-400 transition">
+      <i data-lucide="user" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold">Профиль</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════ FIREBASE + ЛОГИКА ═══════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, serverTimestamp,
+  onSnapshot, query, where, getDocs, orderBy, limit
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBGUkISLQ1Qm9xfYkVgZhoLeR_P_VTSrhM",
+  authDomain: "peshras-delivery.firebaseapp.com",
+  projectId: "peshras-delivery",
+  storageBucket: "peshras-delivery.firebasestorage.app",
+  messagingSenderId: "790787117044",
+  appId: "1:790787117044:web:217ef1bea4edbab24873a1"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+/* ───────── Состояние ───────── */
+let allProducts   = [];
+let allRestaurants= [];
+let cart          = {};              // { prodId: { product, qty } }
+let activeCategory= 'all';
+let activeRestaurantId = null;
+let searchQuery   = '';
+
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' сомонӣ';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ───────── ТОСТ ───────── */
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `fixed left-1/2 -translate-x-1/2 z-[9999] font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm anim-fade ${
+    type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-black'
+  }`;
+  t.style.bottom = 'calc(160px + env(safe-area-inset-bottom, 0px))';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 2800);
+}
+
+/* ───────── ЗАГРУЗКА РЕСТОРАНОВ (realtime) ───────── */
+function loadRestaurants() {
+  const list = document.getElementById('restaurants-list');
+  onSnapshot(collection(db, 'restaurants'), snap => {
+    allRestaurants = [];
+    snap.forEach(d => allRestaurants.push({ id: d.id, ...d.data() }));
+
+    if (!allRestaurants.length) {
+      list.innerHTML = `<div class="col-span-full py-8 text-center text-gray-500 text-xs">Пока нет ресторанов — скоро появятся!</div>`;
+      return;
+    }
+    renderRestaurants();
+  }, err => {
+    console.error(err);
+    list.innerHTML = `<div class="col-span-full py-8 text-center text-red-400 text-xs">Ошибка загрузки ресторанов</div>`;
+  });
+}
+
+function renderRestaurants() {
+  const list = document.getElementById('restaurants-list');
+  const filtered = allRestaurants.filter(r => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (r.name || '').toLowerCase().includes(q) || (r.address || '').toLowerCase().includes(q);
+  });
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="col-span-full py-8 text-center text-gray-500 text-xs">Ничего не найдено</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(r => `
+    <div onclick="openRestaurant('${r.id}')" class="group bg-gray-900 border border-gray-800 hover:border-emerald-500 rounded-2xl p-3 flex items-center gap-3 cursor-pointer transition">
+      <div class="w-14 h-14 rounded-xl bg-gray-800 overflow-hidden flex-shrink-0">
+        ${r.logo_url || r.image_url || r.logo
+          ? `<img src="${esc(r.logo_url || r.image_url || r.logo)}" class="w-full h-full object-cover" onerror="this.style.display='none'">`
+          : `<div class="w-full h-full flex items-center justify-center text-gray-600"><i data-lucide="store" class="w-6 h-6"></i></div>`}
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="font-bold text-sm text-white truncate">${esc(r.name || 'Ресторан')}</h3>
+        <p class="text-[11px] text-gray-500 truncate flex items-center gap-1 mt-0.5">
+          <i data-lucide="map-pin" class="w-3 h-3"></i>${esc(r.address || 'Исфара')}
+        </p>
+        ${r.cuisine ? `<p class="text-[10px] text-emerald-400 mt-1">${esc(r.cuisine)}</p>` : ''}
+      </div>
+      <i data-lucide="chevron-right" class="w-4 h-4 text-gray-600 group-hover:text-emerald-400 transition"></i>
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+/* ───────── ЗАГРУЗКА ТОВАРОВ (realtime) ───────── */
+function loadProducts() {
+  const grid = document.getElementById('products-grid');
+  const q = query(collection(db, 'products'));
+  onSnapshot(q, snap => {
+    allProducts = [];
+    snap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
+    renderProducts();
+  }, err => {
+    console.error(err);
+    grid.innerHTML = `<div class="col-span-full py-12 text-center text-red-400 text-xs">Ошибка загрузки блюд</div>`;
+  });
+}
+
+function renderProducts() {
+  const grid = document.getElementById('products-grid');
+  let list = [...allProducts];
+
+  // фильтр по ресторану
+  if (activeRestaurantId) list = list.filter(p => p.restaurant_id === activeRestaurantId || p.restaurantId === activeRestaurantId);
+
+  // фильтр по категории
+  if (activeCategory === 'hits')    list = list.filter(p => p.category === 'hits'    || p.is_hit === true);
+  if (activeCategory === 'popular') list = list.filter(p => p.category === 'popular' || p.is_popular === true);
+  if (activeCategory === 'new')     list = list.filter(p => p.category === 'new'     || p.is_new === true);
+
+  // поиск
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(p => (p.name || '').toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q));
+  }
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-500 text-xs">Блюд по фильтру нет</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const inStock = p.in_stock !== false && p.stop !== true && p.available !== false;
+    return `
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-gray-700 transition group">
+        <div>
+          <div class="aspect-square bg-gray-800 overflow-hidden">
+            <img src="${esc(p.image_url || p.image || 'https://via.placeholder.com/300')}"
+                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                 loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
+          </div>
+          <div class="p-3 space-y-1">
+            <h3 class="font-bold text-xs sm:text-sm text-white line-clamp-1">${esc(p.name || 'Блюдо')}</h3>
+            <p class="text-[10px] text-gray-400 line-clamp-2">${esc(p.description || 'Вкуснейшее блюдо')}</p>
+          </div>
+        </div>
+        <div class="p-3 pt-0 flex items-center justify-between">
+          <span class="font-black text-xs sm:text-sm text-yellow-400">${p.price || 0} с.</span>
+          ${inStock ? `
+            <button onclick="addToCart('${p.id}')"
+              class="bg-emerald-500 hover:bg-emerald-400 text-black p-2 rounded-xl transition font-extrabold flex items-center justify-center active:scale-90">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          ` : `
+            <span class="text-[10px] text-red-400 bg-red-500/10 px-2 py-1 rounded">Стоп-лист</span>
+          `}
+        </div>
+      </div>
+    `;
+  }).join('');
+  lucide.createIcons();
+}
+
+/* ───────── КАТЕГОРИИ ───────── */
+document.getElementById('categories').addEventListener('click', e => {
+  const btn = e.target.closest('.cat-btn');
+  if (!btn) return;
+  $$('.cat-btn').forEach(b => {
+    b.classList.remove('cat-active');
+    b.classList.add('bg-gray-900', 'border', 'border-gray-800', 'text-gray-300');
+  });
+  btn.classList.add('cat-active');
+  btn.classList.remove('bg-gray-900', 'border', 'border-gray-800', 'text-gray-300');
+  activeCategory = btn.dataset.cat;
+  renderProducts();
+});
+
+/* ───────── ОТКРЫТИЕ РЕСТОРАНА ───────── */
+window.openRestaurant = function(id) {
+  activeRestaurantId = id;
+  const r = allRestaurants.find(x => x.id === id);
+  const ctx = document.getElementById('menu-context');
+  document.getElementById('menu-context-title').textContent = `Меню: ${r?.name || 'ресторан'}`;
+  ctx.classList.remove('hidden');
+  ctx.classList.add('flex');
+  renderProducts();
+  document.getElementById('menu-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+document.getElementById('menu-context-reset').addEventListener('click', () => {
+  activeRestaurantId = null;
+  document.getElementById('menu-context').classList.add('hidden');
+  document.getElementById('menu-context').classList.remove('flex');
+  renderProducts();
+});
+
+/* ───────── ПОИСК ───────── */
+const searchToggle = document.getElementById('search-toggle');
+const searchWrap   = document.getElementById('search-wrap');
+const searchInput  = document.getElementById('search-input');
+searchToggle.addEventListener('click', () => {
+  searchWrap.classList.toggle('hidden');
+  if (!searchWrap.classList.contains('hidden')) searchInput.focus();
+});
+searchInput.addEventListener('input', e => {
+  searchQuery = e.target.value.trim();
+  renderProducts();
+  renderRestaurants();
+});
+
+/* ───────── КОРЗИНА ───────── */
+window.addToCart = function(prodId) {
+  const product = allProducts.find(p => p.id === prodId);
+  if (!product) return;
+  if (cart[prodId]) cart[prodId].qty++;
+  else cart[prodId] = { product, qty: 1 };
+  updateCartUI();
+  const badge = document.getElementById('cart-count-badge');
+  badge.classList.remove('anim-pop'); void badge.offsetWidth; badge.classList.add('anim-pop');
+};
+
+window.changeQty = function(prodId, delta) {
+  if (!cart[prodId]) return;
+  cart[prodId].qty += delta;
+  if (cart[prodId].qty <= 0) delete cart[prodId];
+  updateCartUI();
+  renderCartItems();
+};
+
+function calcTotals() {
+  let count = 0, sum = 0;
+  Object.values(cart).forEach(it => { count += it.qty; sum += it.product.price * it.qty; });
+  return { count, sum };
+}
+
+function updateCartUI() {
+  const { count, sum } = calcTotals();
+  const bar = document.getElementById('cart-floating-bar');
+  const navBadge = document.getElementById('nav-cart-badge');
+
+  if (count > 0) {
+    bar.classList.remove('hidden');
+    document.getElementById('cart-count-badge').innerText = count;
+    document.getElementById('cart-total-badge').innerText = fmt(sum);
+    navBadge.classList.remove('hidden');
+    navBadge.innerText = count;
+  } else {
+    bar.classList.add('hidden');
+    navBadge.classList.add('hidden');
+  }
+  document.getElementById('cart-modal-total').innerText = fmt(sum);
+  document.getElementById('cart-modal-total-2').innerText = fmt(sum);
+  const btn = document.getElementById('go-checkout-btn');
+  if (btn) btn.disabled = count === 0;
+}
+
+function renderCartItems() {
+  const container = document.getElementById('cart-items-container');
+  const items = Object.entries(cart);
+  if (items.length === 0) {
+    container.innerHTML = `<div class="text-gray-500 text-xs text-center py-4">Корзина пуста</div>`;
+    return;
+  }
+  container.innerHTML = items.map(([id, item]) => `
+    <div class="flex items-center justify-between bg-gray-950 p-3 rounded-xl border border-gray-800">
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <div class="w-12 h-12 rounded-lg bg-gray-800 overflow-hidden flex-shrink-0">
+          ${item.product.image_url
+            ? `<img src="${esc(item.product.image_url)}" class="w-full h-full object-cover">`
+            : `<div class="w-full h-full flex items-center justify-center text-gray-600"><i data-lucide="image" class="w-4 h-4"></i></div>`}
+        </div>
+        <div class="space-y-0.5 min-w-0">
+          <h4 class="font-bold text-xs text-white truncate">${esc(item.product.name)}</h4>
+          <div class="text-[11px] text-yellow-400 font-bold">${fmt(item.product.price * item.qty)}</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 bg-gray-900 border border-gray-800 rounded-lg p-1">
+        <button onclick="changeQty('${id}', -1)" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white font-bold rounded">−</button>
+        <span class="text-xs font-bold text-white px-1 min-w-[18px] text-center">${item.qty}</span>
+        <button onclick="changeQty('${id}', 1)" class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-white font-bold rounded">+</button>
+      </div>
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+window.openCartModal = function() {
+  renderCartItems();
+  updateCartUI();
+  document.getElementById('cart-step-items').classList.remove('hidden');
+  document.getElementById('cart-step-form').classList.add('hidden');
+  document.getElementById('cart-modal').classList.remove('hidden');
+  document.getElementById('cart-modal').classList.add('flex');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeCartModal = function() {
+  document.getElementById('cart-modal').classList.add('hidden');
+  document.getElementById('cart-modal').classList.remove('flex');
+  document.body.style.overflow = '';
+};
+
+document.getElementById('go-checkout-btn').addEventListener('click', () => {
+  if (!Object.keys(cart).length) return showToast('Корзина пуста', 'error');
+  document.getElementById('cart-step-items').classList.add('hidden');
+  document.getElementById('cart-step-form').classList.remove('hidden');
+});
+document.getElementById('back-to-items').addEventListener('click', () => {
+  document.getElementById('cart-step-form').classList.add('hidden');
+  document.getElementById('cart-step-items').classList.remove('hidden');
+});
+document.getElementById('clear-cart-btn').addEventListener('click', () => {
+  if (!Object.keys(cart).length) return;
+  if (!confirm('Очистить корзину?')) return;
+  cart = {};
+  updateCartUI();
+  renderCartItems();
+  showToast('Корзина очищена');
+});
+
+/* Клик по фону закрывает модалку */
+document.getElementById('cart-modal').addEventListener('click', e => {
+  if (e.target.id === 'cart-modal') closeCartModal();
+});
+
+/* ───────── ОТПРАВКА ЗАКАЗА ───────── */
+document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('submit-order-btn');
+  const itemsArray = Object.values(cart).map(i => ({
+    id: i.product.id,
+    name: i.product.name,
+    price: i.product.price,
+    qty: i.qty
+  }));
+  if (!itemsArray.length) return;
+
+  const restaurantId = Object.values(cart)[0].product.restaurant_id || 'unknown';
+  const totalPrice = itemsArray.reduce((s, i) => s + i.price * i.qty, 0);
+
+  const orderData = {
+    client_name: document.getElementById('client-name').value.trim(),
+    client_phone: document.getElementById('client-phone').value.trim(),
+    delivery_address: document.getElementById('client-address').value.trim(),
+    comment: document.getElementById('client-comment').value.trim(),
+    items: itemsArray,
+    total_price: totalPrice,
+    restaurant_id: restaurantId,
+    status: 'new',
+    city: 'Исфара',
+    created_at: serverTimestamp()
+  };
+
+  btn.disabled = true;
+  const oldHTML = btn.innerHTML;
+  btn.innerHTML = `<span>Отправляем...</span>`;
+
+  try {
+    await addDoc(collection(db, 'orders'), orderData);
+    cart = {};
+    updateCartUI();
+    closeCartModal();
+    document.getElementById('checkout-form').reset();
+    showToast('🎉 Заказ отправлен! Ресторан уже готовит.');
+  } catch (err) {
+    console.error(err);
+    showToast('Ошибка отправки. Попробуйте ещё раз.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = oldHTML;
+    lucide.createIcons();
+  }
+});
+
+/* ───────── НИЖНЕЕ МЕНЮ ───────── */
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.nav;
+    document.querySelectorAll('.nav-btn').forEach(b => {
+      b.classList.remove('text-emerald-400');
+      b.classList.add('text-gray-500');
+    });
+    btn.classList.remove('text-gray-500');
+    btn.classList.add('text-emerald-400');
+
+    if (target === 'home')          window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (target === 'restaurants')   document.getElementById('restaurants-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (target === 'cart')          openCartModal();
+    if (target === 'profile')       openProfile();
+  });
+});
+
+/* ───────── ПРОФИЛЬ ───────── */
+window.openProfile = function() {
+  document.getElementById('profile-modal').classList.remove('hidden');
+  document.getElementById('profile-modal').classList.add('flex');
+  document.getElementById('profile-panel').classList.add('hidden');
+  document.body.style.overflow = 'hidden';
+};
+window.closeProfile = function() {
+  document.getElementById('profile-modal').classList.add('hidden');
+  document.getElementById('profile-modal').classList.remove('flex');
+  document.body.style.overflow = '';
+};
+document.getElementById('profile-modal').addEventListener('click', e => {
+  if (e.target.id === 'profile-modal') closeProfile();
+});
+
+/* Контент панелей профиля */
+const PANELS = {
+  about: {
+    title: 'О нас',
+    html: `
+      <p><b class="text-emerald-400">Peshras</b> — сервис доставки еды в городе Исфара. Мы объединяем лучшие рестораны, кафе и точки фастфуда города на одной платформе.</p>
+      <p>Наша миссия — сделать вкусную еду доступной каждому жителю Исфары за 30–40 минут. Мы работаем с местными заведениями, поддерживаем их и создаём удобный сервис для вас.</p>
+      <p class="text-gray-500">Связаться: <span class="text-emerald-400">@peshras_support</span></p>
+    `
+  },
+  terms: {
+    title: 'Условия доставки и оплаты',
+    html: `
+      <p class="text-white font-semibold mb-1">🕐 Время работы</p>
+      <p>Ежедневно с 09:00 до 23:00.</p>
+      <p class="text-white font-semibold mt-3 mb-1">🚴 Доставка</p>
+      <p>Среднее время — 30–40 минут. Стоимость — <b class="text-yellow-400">10 сомонӣ</b>. Бесплатно при заказе от <b class="text-yellow-400">100 сомонӣ</b>.</p>
+      <p class="text-white font-semibold mt-3 mb-1">💰 Оплата</p>
+      <p>Наличными курьеру · Перевод на <b>Корварок / Алиф Мобайл / DC</b> по номеру курьера.</p>
+      <p class="text-white font-semibold mt-3 mb-1">📦 Минимальный заказ</p>
+      <p>30 сомонӣ.</p>
+      <p class="text-white font-semibold mt-3 mb-1">❌ Отмена</p>
+      <p>Заказ можно отменить до момента, пока ресторан не начал готовить (обычно 2–3 минуты).</p>
+    `
+  },
+  partner: {
+    title: 'Стать партнёром',
+    html: `
+      <p>У вас есть ресторан, кафе или точка фастфуда в Исфаре? Подключитесь к Peshras и получайте новых клиентов каждый день.</p>
+      <p class="text-white font-semibold mt-3 mb-1">Что вы получаете:</p>
+      <ul class="list-disc list-inside space-y-1 text-gray-400">
+        <li>Готовую онлайн-витрину</li>
+        <li>Кабинет партнёра для управления меню и стоп-листом</li>
+        <li>Живое табло заказов</li>
+        <li>Прозрачную комиссию</li>
+      </ul>
+      <p class="mt-3">Свяжитесь с нами: <span class="text-emerald-400">@peshras_partner</span></p>
+      <a href="admin.html" class="inline-block mt-3 bg-emerald-500 text-black font-bold px-4 py-2 rounded-xl text-xs">Открыть кабинет партнёра</a>
+    `
+  },
+  history: {
+    title: 'История заказов',
+    html: `
+      <p>Введите номер телефона, указанный при заказе, чтобы найти свои заказы.</p>
+      <div class="flex gap-2 mt-3">
+        <input id="history-phone" type="tel" placeholder="+992 92 XXX XX XX"
+          class="flex-1 bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+        <button id="history-search-btn" class="bg-emerald-500 text-black font-bold px-4 py-2 rounded-xl text-xs">Найти</button>
+      </div>
+      <div id="history-result" class="mt-3 space-y-2"></div>
+    `
+  }
+};
+
+document.querySelectorAll('.profile-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.panel;
+    const p = PANELS[key];
+    if (!p) return;
+    const panel = document.getElementById('profile-panel');
+    document.getElementById('profile-panel-title').textContent = p.title;
+    document.getElementById('profile-panel-body').innerHTML = p.html;
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    if (key === 'history') {
+      document.getElementById('history-search-btn').addEventListener('click', async () => {
+        const phone = document.getElementById('history-phone').value.trim();
+        const out = document.getElementById('history-result');
+        if (!phone) return;
+        out.innerHTML = `<p class="text-gray-500">Ищем...</p>`;
+        try {
+          const q = query(
+            collection(db, 'orders'),
+            where('client_phone', '==', phone),
+            orderBy('created_at', 'desc'),
+            limit(20)
+          );
+          const snap = await getDocs(q);
+          if (snap.empty) {
+            out.innerHTML = `<p class="text-gray-500">Заказов с этим номером не найдено.</p>`;
+            return;
+          }
+          out.innerHTML = snap.docs.map(d => {
+            const o = d.data();
+            const date = o.created_at?.toDate?.().toLocaleString('ru-RU') || '—';
+            const statusMap = { new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится', delivered: '🏁 Доставлен', cancelled: '❌ Отменён' };
+            return `
+              <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 space-y-1">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-xs text-white">${fmt(o.total_price)}</span>
+                  <span class="text-[10px] text-emerald-400">${statusMap[o.status] || o.status}</span>
+                </div>
+                <p class="text-[10px] text-gray-500">${date}</p>
+                <p class="text-[11px] text-gray-400">${(o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ')}</p>
+              </div>
+            `;
+          }).join('');
+        } catch (err) {
+          console.error(err);
+          out.innerHTML = `<p class="text-red-400">Ошибка поиска. Возможно, нужен индекс в Firestore.</p>`;
         }
+      });
+    }
+  });
+});
+document.getElementById('profile-panel-close').addEventListener('click', () => {
+  document.getElementById('profile-panel').classList.add('hidden');
+});
 
-        function renderProducts(products) {
-            const grid = document.getElementById('products-grid');
-            grid.innerHTML = '';
-
-            products.forEach(p => {
-                const inStock = p.in_stock !== false;
-                grid.innerHTML += `
-                    <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-gray-700 transition">
-                        <div>
-                            <img src="${p.image_url || 'https://via.placeholder.com/300'}" class="w-full h-32 sm:h-40 object-cover bg-gray-800">
-                            <div class="p-3 space-y-1">
-                                <h3 class="font-bold text-xs sm:text-sm text-white line-clamp-1">${p.name}</h3>
-                                <p class="text-[10px] text-gray-400 line-clamp-2">${p.description || 'Вкуснейшее блюдо'}</p>
-                            </div>
-                        </div>
-                        <div class="p-3 pt-0 flex items-center justify-between">
-                            <span class="font-black text-xs sm:text-sm text-yellow-400">${p.price} с.</span>
-                            ${inStock ? `
-                                <button onclick="addToCart('${p.id}')" class="bg-emerald-500 hover:bg-emerald-400 text-black p-2 rounded-xl transition font-extrabold flex items-center justify-center">
-                                    <i data-lucide="plus" class="w-4 h-4"></i>
-                                </button>
-                            ` : `
-                                <span class="text-[10px] text-red-400 bg-red-500/10 px-2 py-1 rounded">Стоп-лист</span>
-                            `}
-                        </div>
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        }
-
-        // Фильтрация по категориям
-        window.filterCategory = function(cat) {
-            if (cat === 'all') {
-                renderProducts(allProducts);
-            } else {
-                renderProducts(allProducts.filter(p => p.category === cat));
-            }
-        };
-
-        // Логика корзины
-        window.addToCart = function(prodId) {
-            const product = allProducts.find(p => p.id === prodId);
-            if (!product) return;
-
-            if (cart[prodId]) {
-                cart[prodId].qty++;
-            } else {
-                cart[prodId] = { product, qty: 1 };
-            }
-            updateCartUI();
-        };
-
-        window.changeQty = function(prodId, delta) {
-            if (!cart[prodId]) return;
-            cart[prodId].qty += delta;
-            if (cart[prodId].qty <= 0) {
-                delete cart[prodId];
-            }
-            updateCartUI();
-            renderCartItems();
-        };
-
-        function updateCartUI() {
-            let totalCount = 0;
-            let totalPrice = 0;
-
-            Object.values(cart).forEach(item => {
-                totalCount += item.qty;
-                totalPrice += item.product.price * item.qty;
-            });
-
-            const bar = document.getElementById('cart-floating-bar');
-            if (totalCount > 0) {
-                bar.classList.remove('hidden');
-                document.getElementById('cart-count-badge').innerText = totalCount;
-                document.getElementById('cart-total-badge').innerText = totalPrice + ' сомонӣ';
-            } else {
-                bar.classList.add('hidden');
-            }
-            document.getElementById('cart-modal-total').innerText = totalPrice + ' сомонӣ';
-        }
-
-        function renderCartItems() {
-            const container = document.getElementById('cart-items-container');
-            const items = Object.entries(cart);
-
-            if (items.length === 0) {
-                container.innerHTML = `<div class="text-gray-500 text-xs text-center py-4">Корзина пуста</div>`;
-                closeCartModal();
-                return;
-            }
-
-            container.innerHTML = '';
-            items.forEach(([id, item]) => {
-                container.innerHTML += `
-                    <div class="flex items-center justify-between bg-gray-950 p-3 rounded-xl border border-gray-800">
-                        <div class="space-y-0.5">
-                            <h4 class="font-bold text-xs text-white">${item.product.name}</h4>
-                            <div class="text-[11px] text-yellow-400 font-bold">${item.product.price * item.qty} сомонӣ</div>
-                        </div>
-                        <div class="flex items-center gap-2 bg-gray-900 border border-gray-800 rounded-lg p-1">
-                            <button onclick="changeQty('${id}', -1)" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white font-bold">-</button>
-                            <span class="text-xs font-bold text-white px-1">${item.qty}</span>
-                            <button onclick="changeQty('${id}', 1)" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white font-bold">+</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        window.openCartModal = function() {
-            renderCartItems();
-            document.getElementById('cart-modal').classList.remove('hidden');
-        };
-
-        window.closeCartModal = function() {
-            document.getElementById('cart-modal').classList.add('hidden');
-        };
-
-        // Отправка заказа в Firestore
-        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const itemsArray = Object.values(cart).map(i => ({
-                id: i.product.id,
-                name: i.product.name,
-                price: i.product.price,
-                qty: i.qty
-            }));
-
-            if (itemsArray.length === 0) return;
-
-            // Определяем ID ресторана (берем из первого товара)
-            const restaurantId = Object.values(cart)[0].product.restaurant_id || 'unknown';
-
-            let totalPrice = 0;
-            itemsArray.forEach(i => totalPrice += i.price * i.qty);
-
-            const orderData = {
-                client_name: document.getElementById('client-name').value,
-                client_phone: document.getElementById('client-phone').value,
-                delivery_address: document.getElementById('client-address').value,
-                items: itemsArray,
-                total_price: totalPrice,
-                restaurant_id: restaurantId,
-                status: 'new',
-                created_at: serverTimestamp()
-            };
-
-            try {
-                await addDoc(collection(db, "orders"), orderData);
-                alert("🎉 Ваш заказ успешно отправлен! Ресторан уже начал его готовить.");
-                cart = {};
-                updateCartUI();
-                closeCartModal();
-                document.getElementById('checkout-form').reset();
-            } catch (err) {
-                console.error(err);
-                alert("Ошибка при отправке заказа. Попробуйте еще раз.");
-            }
-        });
-
-        loadProducts();
-        lucide.createIcons();
-    </script>
+/* ───────── СТАРТ ───────── */
+loadRestaurants();
+loadProducts();
+updateCartUI();
+lucide.createIcons();
+</script>
 </body>
 </html>
