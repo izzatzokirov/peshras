@@ -2,26 +2,33 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peshras Partner — Кабинет Ресторана</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Peshras Partner</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
   body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-  @keyframes pulse-border { 0%,100% { border-color: #f59e0b; } 50% { border-color: #fbbf24; box-shadow: 0 0 20px rgba(245,158,11,.3); } }
-  .order-new { animation: pulse-border 1.5s infinite; }
-  @keyframes slideIn { from { opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
-  .anim-in { animation: slideIn .3s ease-out; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  @keyframes pulse-border { 0%, 100% { border-color: #f59e0b; box-shadow: 0 0 0 0 rgba(245,158,11,.4); } 50% { border-color: #fbbf24; box-shadow: 0 0 24px 2px rgba(245,158,11,.35); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+  .anim-in { animation: slideIn .35s ease-out; }
+  .anim-pop { animation: pop .3s ease-out; }
+  .anim-shake { animation: shake .35s ease-out; }
+  .order-new { animation: pulse-border 1.8s infinite; }
+  .btn-active { transform: scale(.96); }
 </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
 
-<!-- ═══════ ЭКРАН ВХОДА ═══════ -->
+<!-- ═══════ ВХОД ═══════ -->
 <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
-  <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl">
+  <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl anim-in">
     <div class="text-center space-y-2">
-      <div class="inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20">
+      <div class="inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20 anim-pop">
         <i data-lucide="store" class="w-8 h-8"></i>
       </div>
       <h1 class="text-2xl font-black text-white">Вход для ресторанов</h1>
@@ -29,18 +36,18 @@
     </div>
     <form id="login-form" class="space-y-4">
       <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-gray-300">Email ресторана</label>
+        <label class="text-xs font-semibold text-gray-300">Email</label>
         <input type="email" id="email" required placeholder="restaurant@peshras.tj"
-          class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+          class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition">
       </div>
       <div class="space-y-1.5">
         <label class="text-xs font-semibold text-gray-300">Пароль</label>
         <input type="password" id="password" required placeholder="••••••••"
-          class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+          class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition">
       </div>
-      <div id="login-error" class="text-xs text-red-400 hidden"></div>
-      <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 rounded-xl transition flex items-center justify-center gap-2">
-        <span>Войти в кабинет</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
+      <div id="login-error" class="text-xs text-red-400 hidden anim-shake"></div>
+      <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 rounded-xl transition flex items-center justify-center gap-2 active:scale-95">
+        <span>Войти</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
       </button>
     </form>
   </div>
@@ -49,117 +56,210 @@
 <!-- ═══════ КАБИНЕТ ═══════ -->
 <div id="app-screen" class="hidden min-h-screen flex flex-col">
 
-  <header class="bg-gray-900 border-b border-gray-800 px-4 py-3 sticky top-0 z-30">
+  <header class="bg-gray-900/95 backdrop-blur border-b border-gray-800 px-4 py-3 sticky top-0 z-30">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
       <div class="flex items-center gap-3 min-w-0">
         <span class="text-lg font-black text-emerald-400 whitespace-nowrap">PESHRAS <span class="text-yellow-400 text-xs">PARTNER</span></span>
         <span id="restaurant-name-heading" class="hidden sm:inline text-xs bg-gray-800 text-gray-300 px-3 py-1 rounded-full font-semibold border border-gray-700 truncate">Загрузка...</span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="sound-toggle" onclick="toggleSound()" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
+        <!-- Смена -->
+        <button id="shift-toggle" onclick="toggleShift()" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition active:scale-95">
+          <i data-lucide="clock" class="w-4 h-4"></i>
+          <span id="shift-status-text">Смена</span>
+        </button>
+        <button id="sound-toggle" onclick="toggleSound()" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition active:scale-95">
           <i data-lucide="bell" class="w-4 h-4"></i>
-          <span id="sound-status-text" class="hidden sm:inline">Включить звук</span>
+          <span id="sound-status-text" class="hidden sm:inline">Звук</span>
         </button>
         <button onclick="logout()" class="text-gray-400 hover:text-red-400 p-2 transition">
           <i data-lucide="log-out" class="w-5 h-5"></i>
         </button>
       </div>
     </div>
+    <!-- Смена на мобильных -->
+    <div class="sm:hidden mt-2 flex justify-between items-center">
+      <button id="shift-toggle-mobile" onclick="toggleShift()" class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition">
+        <i data-lucide="clock" class="w-4 h-4"></i>
+        <span id="shift-status-text-mobile">Смена</span>
+      </button>
+    </div>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 space-y-6">
 
     <!-- Табы -->
-    <div class="flex border-b border-gray-800 gap-6 text-sm font-bold overflow-x-auto">
-      <button onclick="switchTab('orders')" id="tab-btn-orders" class="pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 whitespace-nowrap">
+    <div class="flex border-b border-gray-800 gap-4 sm:gap-6 text-sm font-bold overflow-x-auto scrollbar-none">
+      <button onclick="switchTab('orders')" id="tab-btn-orders" class="tab pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 whitespace-nowrap">
         <i data-lucide="utensils" class="w-4 h-4"></i>
         <span>Заказы</span>
         <span id="active-orders-count" class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full">0</span>
       </button>
-      <button onclick="switchTab('menu')" id="tab-btn-menu" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
-        <i data-lucide="list-checks" class="w-4 h-4"></i>
-        <span>Меню</span>
+      <button onclick="switchTab('menu')" id="tab-btn-menu" class="tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
+        <i data-lucide="list-checks" class="w-4 h-4"></i><span>Меню</span>
+      </button>
+      <button onclick="switchTab('stats')" id="tab-btn-stats" class="tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>Статистика</span>
+      </button>
+      <button onclick="switchTab('profile')" id="tab-btn-profile" class="tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
+        <i data-lucide="settings" class="w-4 h-4"></i><span>Профиль</span>
       </button>
     </div>
 
-    <!-- ЗАКАЗЫ -->
+    <!-- ═══ ЗАКАЗЫ ═══ -->
     <section id="tab-orders" class="space-y-4">
+      <div class="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+        <button onclick="setOrderFilter('active')" data-filter="active" class="order-filter-btn bg-emerald-500 text-black font-bold px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Активные</button>
+        <button onclick="setOrderFilter('new')" data-filter="new" class="order-filter-btn bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Новые</button>
+        <button onclick="setOrderFilter('delivering')" data-filter="delivering" class="order-filter-btn bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">В пути</button>
+        <button onclick="setOrderFilter('all')" data-filter="all" class="order-filter-btn bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Все</button>
+      </div>
       <div id="orders-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="text-gray-500 text-xs col-span-full py-8 text-center">Загрузка заказов...</div>
       </div>
     </section>
 
-    <!-- МЕНЮ -->
+    <!-- ═══ МЕНЮ ═══ -->
     <section id="tab-menu" class="hidden space-y-6">
-
-      <!-- Форма добавления блюда -->
-      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4 anim-in">
         <h3 class="font-bold text-white text-sm flex items-center gap-2">
           <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i>
           <span>Добавить новое блюдо</span>
         </h3>
         <form id="add-product-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div class="sm:col-span-2">
-            <label class="text-[11px] text-gray-400 font-semibold">Название блюда *</label>
-            <input type="text" id="prod-name" required placeholder="Например: Плов по-исфарински"
-              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
-          </div>
-          <div>
-            <label class="text-[11px] text-gray-400 font-semibold">Цена (сомонӣ) *</label>
-            <input type="number" id="prod-price" min="1" step="0.01" required placeholder="35"
-              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
-          </div>
-          <div class="sm:col-span-2 lg:col-span-2">
-            <label class="text-[11px] text-gray-400 font-semibold">Ссылка на фото (URL) *</label>
-            <input type="url" id="prod-img" required placeholder="https://..."
-              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
-          </div>
-          <div>
-            <label class="text-[11px] text-gray-400 font-semibold">Категория блюда *</label>
-            <select id="prod-category" required
-              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-gray-300">
-              <option value="plov">🍚 Плов</option>
-              <option value="shashlik">🍢 Шашлык</option>
-              <option value="pizza">🍕 Пицца</option>
-              <option value="burger">🍔 Бургеры</option>
-              <option value="fastfood">🌭 Фастфуд</option>
-              <option value="soup">🍲 Супы</option>
-              <option value="salad">🥗 Салаты</option>
-              <option value="bakery">🥐 Выпечка</option>
-              <option value="dessert">🍰 Десерты</option>
-              <option value="drinks">🥤 Напитки</option>
-              <option value="other">🍽 Другое</option>
-            </select>
+          <div class="sm:col-span-2"><label class="text-[11px] text-gray-400 font-semibold">Название *</label>
+            <input type="text" id="prod-name" required placeholder="Плов по-исфарински" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 transition"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Цена (сомонӣ) *</label>
+            <input type="number" id="prod-price" min="1" step="0.01" required placeholder="35" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 transition"></div>
+          <div class="sm:col-span-2"><label class="text-[11px] text-gray-400 font-semibold">Ссылка на фото *</label>
+            <input type="url" id="prod-img" required placeholder="https://..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 transition"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Категория *</label>
+            <select id="prod-category" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-gray-300">
+              <option value="plov">🍚 Плов</option><option value="shashlik">🍢 Шашлык</option><option value="pizza">🍕 Пицца</option><option value="burger">🍔 Бургеры</option><option value="fastfood">🌭 Фастфуд</option><option value="soup">🍲 Супы</option><option value="salad">🥗 Салаты</option><option value="bakery">🥐 Выпечка</option><option value="dessert">🍰 Десерты</option><option value="drinks">🥤 Напитки</option><option value="other">🍽 Другое</option>
+            </select></div>
+          <div class="sm:col-span-2 lg:col-span-3"><label class="text-[11px] text-gray-400 font-semibold">Описание</label>
+            <textarea id="prod-desc" rows="2" placeholder="Состав, вес, порции" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 resize-none transition"></textarea></div>
+          <div class="sm:col-span-2 lg:col-span-3">
+            <label class="flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer"><input type="checkbox" id="prod-instock" checked class="w-4 h-4 accent-emerald-500"><span>В наличии сейчас</span></label>
           </div>
           <div class="sm:col-span-2 lg:col-span-3">
-            <label class="text-[11px] text-gray-400 font-semibold">Описание (состав, вес, порции)</label>
-            <textarea id="prod-desc" rows="2" placeholder="Например: Рис, мясо, морковь. Порция 400 г."
-              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 resize-none"></textarea>
-          </div>
-          <div class="sm:col-span-2 lg:col-span-3">
-            <label class="flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer">
-              <input type="checkbox" id="prod-instock" checked class="w-4 h-4 accent-emerald-500">
-              <span>В наличии сейчас (снимите галочку, если блюдо готовится под заказ)</span>
-            </label>
-          </div>
-          <div class="sm:col-span-2 lg:col-span-3">
-            <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-5 py-2.5 rounded-xl transition text-xs">
-              Добавить в меню
-            </button>
+            <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-5 py-2.5 rounded-xl transition text-xs active:scale-95">Добавить в меню</button>
           </div>
         </form>
       </div>
 
-      <!-- Список блюд -->
       <div class="space-y-3">
         <h4 class="font-bold text-white text-sm">Ваше меню:</h4>
         <div id="menu-management-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div class="text-gray-500 text-xs py-4 col-span-full">Загрузка...</div>
         </div>
       </div>
-
     </section>
+
+    <!-- ═══ СТАТИСТИКА ═══ -->
+    <section id="tab-stats" class="hidden space-y-4">
+      <div class="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+        <button data-stat-period="today" class="stat-period-btn bg-emerald-500 text-black font-bold px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Сегодня</button>
+        <button data-stat-period="week" class="stat-period-btn bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">7 дней</button>
+        <button data-stat-period="month" class="stat-period-btn bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">30 дней</button>
+        <button data-stat-period="all" class="stat-period-btn bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">Всё</button>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 anim-in">
+          <p class="text-[10px] text-gray-500 uppercase">Заказов</p>
+          <p id="st-orders" class="text-2xl font-black text-white mt-1">0</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 anim-in">
+          <p class="text-[10px] text-gray-500 uppercase">Выручка</p>
+          <p id="st-revenue" class="text-xl font-black text-yellow-400 mt-1">0 с.</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 anim-in">
+          <p class="text-[10px] text-gray-500 uppercase">Комиссия</p>
+          <p id="st-commission" class="text-xl font-black text-red-400 mt-1">0 с.</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 anim-in">
+          <p class="text-[10px] text-gray-500 uppercase">Вам к выплате</p>
+          <p id="st-payout" class="text-xl font-black text-emerald-400 mt-1">0 с.</p>
+        </div>
+      </div>
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <h4 class="font-bold text-white text-sm mb-3">Топ блюд</h4>
+        <div id="st-top-items" class="space-y-2 text-xs"><p class="text-gray-500">Нет данных</p></div>
+      </div>
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <h4 class="font-bold text-white text-sm mb-3">Выручка по дням</h4>
+        <div id="st-chart" class="flex items-end justify-between gap-2 h-32"></div>
+      </div>
+    </section>
+
+    <!-- ═══ ПРОФИЛЬ ═══ -->
+    <section id="tab-profile" class="hidden space-y-4">
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+        <div class="flex items-center gap-4">
+          <div id="profile-logo" class="w-16 h-16 rounded-2xl bg-gray-800 overflow-hidden flex items-center justify-center text-gray-600">
+            <i data-lucide="store" class="w-8 h-8"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 id="profile-name" class="text-lg font-black text-white truncate">Загрузка...</h3>
+            <p id="profile-address" class="text-xs text-gray-400 truncate">—</p>
+            <p id="profile-cuisine" class="text-[11px] text-emerald-400"></p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-xs pt-3 border-t border-gray-800">
+          <div><p class="text-gray-500 text-[10px]">Комиссия</p><p id="profile-commission" class="font-bold text-white">—</p></div>
+          <div><p class="text-gray-500 text-[10px]">Статус</p><p id="profile-status" class="font-bold">—</p></div>
+        </div>
+      </div>
+
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-3">
+        <h4 class="font-bold text-white text-sm flex items-center gap-2"><i data-lucide="edit" class="w-4 h-4 text-emerald-400"></i> Редактировать (что можно)</h4>
+        <form id="profile-form" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div><label class="text-[11px] text-gray-400">Логотип (URL)</label>
+              <input type="url" id="pf-logo" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400">Телефон</label>
+              <input type="text" id="pf-phone" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400">Кухня / тип</label>
+              <input type="text" id="pf-cuisine" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400">Часы работы</label>
+              <input type="text" id="pf-hours" placeholder="10:00 – 22:00" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+          </div>
+          <p class="text-[10px] text-gray-500">Название, адрес и комиссию меняет только администратор.</p>
+          <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-5 py-2.5 rounded-xl text-xs active:scale-95 transition">Сохранить</button>
+        </form>
+      </div>
+    </section>
+
   </main>
+</div>
+
+<!-- ═══════ МОДАЛКА РЕДАКТИРОВАНИЯ БЛЮДА ═══════ -->
+<div id="edit-prod-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 max-w-md w-full space-y-3 max-h-[92vh] overflow-y-auto anim-in">
+    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+      <h3 class="font-extrabold text-white text-sm">Редактировать блюдо</h3>
+      <button onclick="closeEditProd()" class="text-gray-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <form id="edit-prod-form" class="space-y-3">
+      <input type="hidden" id="ep-id">
+      <div><label class="text-[11px] text-gray-400">Название</label><input type="text" id="ep-name" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div class="grid grid-cols-2 gap-2">
+        <div><label class="text-[11px] text-gray-400">Цена</label><input type="number" id="ep-price" min="0" step="0.01" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+        <div><label class="text-[11px] text-gray-400">Категория</label>
+          <select id="ep-category" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs">
+            <option value="plov">🍚 Плов</option><option value="shashlik">🍢 Шашлык</option><option value="pizza">🍕 Пицца</option><option value="burger">🍔 Бургеры</option><option value="fastfood">🌭 Фастфуд</option><option value="soup">🍲 Супы</option><option value="salad">🥗 Салаты</option><option value="bakery">🥐 Выпечка</option><option value="dessert">🍰 Десерты</option><option value="drinks">🥤 Напитки</option><option value="other">🍽 Другое</option>
+          </select>
+        </div>
+      </div>
+      <div><label class="text-[11px] text-gray-400">Фото (URL)</label><input type="url" id="ep-img" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div><label class="text-[11px] text-gray-400">Описание</label><textarea id="ep-desc" rows="2" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs resize-none"></textarea></div>
+      <label class="flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer"><input type="checkbox" id="ep-instock" class="w-4 h-4 accent-emerald-500"> В наличии</label>
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeEditProd()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2.5 rounded-xl text-xs">Отмена</button>
+        <button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-2.5 rounded-xl text-xs">Сохранить</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- ═══════ FIREBASE ═══════ -->
@@ -169,7 +269,7 @@ import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
   getFirestore, collection, query, where, onSnapshot, doc, updateDoc,
-  addDoc, getDocs, orderBy, serverTimestamp
+  addDoc, getDocs, serverTimestamp, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -180,21 +280,27 @@ const firebaseConfig = {
   messagingSenderId: "790787117044",
   appId: "1:790787117044:web:217ef1bea4edbab24873a1"
 };
-const app  = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db   = getFirestore(app);
+const db = getFirestore(app);
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' с.';
 
 let soundEnabled = false;
 let audioContext = null;
-let currentRestaurantId = null;   // ← restaurants.id (НЕ Auth UID)
-let currentRestaurant   = null;
-let unsubscribeOrders   = null;
-let seenOrderIds        = new Set();
+let currentRestaurantId = null;
+let currentRestaurant = null;
+let unsubscribeOrders = null;
+let seenOrderIds = new Set();
+let allOrders = [];
+let allProducts = [];
+let orderFilter = 'active';
+let statsPeriod = 'today';
 
-const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' сомонӣ';
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-/* ───────── ЗВУК + ВИБРАЦИЯ ───────── */
+/* ═══ ЗВУК ═══ */
 function playAlertSound() {
   if (!soundEnabled) return;
   try {
@@ -213,151 +319,161 @@ function playAlertSound() {
   } catch (e) { console.error(e); }
   if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 }
-window.toggleSound = function () {
+window.toggleSound = () => {
   soundEnabled = !soundEnabled;
-  document.getElementById('sound-status-text').innerText = soundEnabled ? "Звук вкл." : "Включить звук";
+  $$('#sound-status-text').forEach(el => el.innerText = soundEnabled ? 'Звук вкл.' : 'Звук');
   if (soundEnabled) playAlertSound();
 };
 
-/* ───────── ВХОД ───────── */
-document.getElementById('login-form').addEventListener('submit', async (e) => {
+/* ═══ ВХОД ═══ */
+$('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const err = document.getElementById('login-error');
+  const err = $('#login-error');
   err.classList.add('hidden');
   try {
-    await signInWithEmailAndPassword(auth,
-      document.getElementById('email').value,
-      document.getElementById('password').value);
-  } catch (e2) {
+    await signInWithEmailAndPassword(auth, $('#email').value, $('#password').value);
+  } catch {
     err.innerText = 'Неверный логин или пароль';
     err.classList.remove('hidden');
+    err.classList.remove('anim-shake'); void err.offsetWidth; err.classList.add('anim-shake');
   }
 });
 window.logout = () => signOut(auth);
 
-/* ───────── СТАРТ ПОСЛЕ ЛОГИНА ───────── */
+/* ═══ СТАРТ ═══ */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    document.getElementById('auth-screen').classList.remove('hidden');
-    document.getElementById('app-screen').classList.add('hidden');
+    $('#auth-screen').classList.remove('hidden');
+    $('#app-screen').classList.add('hidden');
     if (unsubscribeOrders) unsubscribeOrders();
     return;
   }
-  document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('app-screen').classList.remove('hidden');
+  $('#auth-screen').classList.add('hidden');
+  $('#app-screen').classList.remove('hidden');
 
-  // Находим ресторан по owner_uid
   const snap = await getDocs(query(collection(db, 'restaurants'), where('owner_uid', '==', user.uid)));
   if (snap.empty) {
-    document.getElementById('restaurant-name-heading').innerText = '⚠️ Ресторан не привязан';
-    document.getElementById('orders-list').innerHTML =
-      `<div class="col-span-full text-center text-red-400 text-xs py-8">Ваш аккаунт не привязан ни к одному ресторану.<br>Обратитесь к администратору Peshras.</div>`;
+    $('#restaurant-name-heading').innerText = '⚠️ Не привязан';
+    $('#orders-list').innerHTML = `<div class="col-span-full text-center text-red-400 text-xs py-8">Аккаунт не привязан к ресторану. Обратитесь к админу.</div>`;
     return;
   }
-  const docSnap = snap.docs[0];
-  currentRestaurantId = docSnap.id;
-  currentRestaurant = { id: docSnap.id, ...docSnap.data() };
-  document.getElementById('restaurant-name-heading').innerText = currentRestaurant.name || 'Ресторан';
+  const d = snap.docs[0];
+  currentRestaurantId = d.id;
+  currentRestaurant = { id: d.id, ...d.data() };
 
+  $('#restaurant-name-heading').innerText = currentRestaurant.name || 'Ресторан';
+  document.title = currentRestaurant.name + ' — Peshras Partner';
+  renderShiftUI();
   listenToOrders();
   loadRestaurantMenu();
+  fillProfile();
   lucide.createIcons();
 });
 
-/* ───────── ЗАКАЗЫ ───────── */
-const STATUS_LABEL = {
-  new: '🆕 Новый',
-  accepted: '✅ Принят',
-  cooking: '🍳 Готовится',
-  delivering: '🛵 В пути',
-  delivered: '🏁 Доставлен',
-  cancelled: '❌ Отменён'
+/* ═══ СМЕНА ═══ */
+function renderShiftUI() {
+  const isOpen = currentRestaurant?.shift_open !== false;
+  const btns = [$('#shift-toggle'), $('#shift-toggle-mobile')].filter(Boolean);
+  btns.forEach(btn => {
+    if (isOpen) {
+      btn.className = btn.id === 'shift-toggle-mobile'
+        ? 'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-black'
+        : 'hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 text-black';
+    } else {
+      btn.className = btn.id === 'shift-toggle-mobile'
+        ? 'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-red-500 text-white anim-pulse'
+        : 'hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500 text-white';
+    }
+  });
+  $$('#shift-status-text, #shift-status-text-mobile').forEach(el =>
+    el.innerText = isOpen ? '🟢 Смена открыта' : '🔴 Смена закрыта');
+}
+
+window.toggleShift = async () => {
+  if (!currentRestaurant) return;
+  const isOpen = currentRestaurant.shift_open !== false;
+  const newState = !isOpen;
+  if (!confirm(newState ? 'Открыть смену? Заказы будут приниматься.' : 'Закрыть смену? Заказы НЕ будут приниматься, клиенты не смогут заказать.')) return;
+  try {
+    await updateDoc(doc(db, 'restaurants', currentRestaurantId), {
+      shift_open: newState,
+      shift_changed_at: serverTimestamp()
+    });
+    currentRestaurant.shift_open = newState;
+    renderShiftUI();
+  } catch (e) { console.error(e); alert('Ошибка'); }
 };
-const STATUS_COLOR = {
-  new: 'text-amber-400',
-  accepted: 'text-emerald-400',
-  cooking: 'text-blue-400',
-  delivering: 'text-purple-400',
-  delivered: 'text-gray-400',
-  cancelled: 'text-red-400'
-};
+
+/* ═══ ЗАКАЗЫ ═══ */
+const STATUS_LABEL = { new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится', delivering: '🛵 В пути', delivered: '🏁 Доставлен', cancelled: '❌ Отменён' };
+const STATUS_COLOR = { new: 'text-amber-400', accepted: 'text-emerald-400', cooking: 'text-blue-400', delivering: 'text-purple-400', delivered: 'text-gray-400', cancelled: 'text-red-400' };
 
 function listenToOrders() {
   if (unsubscribeOrders) unsubscribeOrders();
   const q = query(collection(db, 'orders'), where('restaurant_id', '==', currentRestaurantId));
-  unsubscribeOrders = onSnapshot(q, (snapshot) => {
-    const container = document.getElementById('orders-list');
-    if (snapshot.empty) {
-      container.innerHTML = `<div class="text-gray-500 text-xs col-span-full py-8 text-center">Входящих заказов пока нет</div>`;
-      document.getElementById('active-orders-count').innerText = '0';
-      return;
-    }
-    // сортировка: новые сверху
-    const orders = [];
-    snapshot.forEach(d => orders.push({ id: d.id, ...d.data() }));
-    orders.sort((a, b) => {
-      const ta = a.created_at?.toMillis?.() || 0;
-      const tb = b.created_at?.toMillis?.() || 0;
-      return tb - ta;
-    });
+  unsubscribeOrders = onSnapshot(q, (snap) => {
+    allOrders = [];
+    snap.forEach(d => allOrders.push({ id: d.id, ...d.data() }));
+    allOrders.sort((a, b) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
 
-    let activeCount = 0;
-    let hasNew = false;
-    orders.forEach(o => {
+    let activeCount = 0, hasNew = false, newOnes = 0;
+    allOrders.forEach(o => {
       if (['new', 'accepted', 'cooking', 'delivering'].includes(o.status)) activeCount++;
-      if (o.status === 'new' && !seenOrderIds.has(o.id)) hasNew = true;
+      if (o.status === 'new') { newOnes++; if (!seenOrderIds.has(o.id)) hasNew = true; }
       seenOrderIds.add(o.id);
     });
+    $('#active-orders-count').innerText = activeCount;
+    document.title = (newOnes > 0 ? `(${newOnes}) ` : '') + (currentRestaurant?.name || '') + ' — Peshras Partner';
 
-    container.innerHTML = orders.map(o => renderOrderCard(o)).join('');
-    document.getElementById('active-orders-count').innerText = activeCount;
+    renderOrders();
     if (hasNew) playAlertSound();
     lucide.createIcons();
   });
 }
 
+function renderOrders() {
+  const container = $('#orders-list');
+  let list = [...allOrders];
+  if (orderFilter === 'active') list = list.filter(o => ['new', 'accepted', 'cooking', 'delivering'].includes(o.status));
+  else if (orderFilter === 'new') list = list.filter(o => o.status === 'new');
+  else if (orderFilter === 'delivering') list = list.filter(o => o.status === 'delivering');
+
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs col-span-full py-8 text-center">Заказов нет</div>`; return; }
+  container.innerHTML = list.map(o => renderOrderCard(o)).join('');
+}
+
 function renderOrderCard(o) {
   const items = o.items || [];
-  const itemsHTML = items.map(it => `
-    <div class="flex justify-between text-xs">
-      <span class="text-gray-300">${esc(it.name)}</span>
-      <span class="text-white font-bold">×${it.qty} — ${fmt(it.price * it.qty)}</span>
-    </div>
-  `).join('');
+  const itemsHTML = items.map(it => `<div class="flex justify-between text-xs"><span class="text-gray-300">${esc(it.name)}</span><span class="text-white font-bold">×${it.qty} — ${fmt(it.price * it.qty)}</span></div>`).join('');
+  const createdAt = o.created_at?.toDate?.();
+  const minutesAgo = createdAt ? Math.floor((Date.now() - createdAt.getTime()) / 60000) : null;
+  const timeAgo = minutesAgo === null ? '' : minutesAgo < 1 ? 'только что' : minutesAgo < 60 ? `${minutesAgo} мин назад` : `${Math.floor(minutesAgo/60)} ч назад`;
 
   const statusBtns = [];
   if (o.status === 'new') {
-    statusBtns.push(`<button onclick="updateStatus('${o.id}','accepted',this)" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-2 rounded-xl text-xs">Принять</button>`);
+    statusBtns.push(`<button onclick="updateStatus('${o.id}','accepted',this)" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-2 rounded-xl text-xs active:scale-95 transition">Принять</button>`);
     statusBtns.push(`<button onclick="updateStatus('${o.id}','cancelled',this)" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-3 py-2 rounded-xl text-xs">Отклонить</button>`);
   } else if (o.status === 'accepted') {
-    statusBtns.push(`<button onclick="updateStatus('${o.id}','cooking',this)" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-extrabold py-2 rounded-xl text-xs">Начать готовить</button>`);
+    statusBtns.push(`<button onclick="updateStatus('${o.id}','cooking',this)" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-extrabold py-2 rounded-xl text-xs active:scale-95 transition">Начать готовить</button>`);
   } else if (o.status === 'cooking') {
-    statusBtns.push(`<button onclick="updateStatus('${o.id}','delivering',this)" class="flex-1 bg-purple-500 hover:bg-purple-400 text-white font-extrabold py-2 rounded-xl text-xs">Передать курьеру</button>`);
+    statusBtns.push(`<button onclick="updateStatus('${o.id}','delivering',this)" class="flex-1 bg-purple-500 hover:bg-purple-400 text-white font-extrabold py-2 rounded-xl text-xs active:scale-95 transition">Передать курьеру</button>`);
   } else if (o.status === 'delivering') {
-    statusBtns.push(`<button onclick="updateStatus('${o.id}','delivered',this)" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-extrabold py-2 rounded-xl text-xs">Завершить</button>`);
+    statusBtns.push(`<div class="flex-1 text-center bg-purple-500/10 text-purple-400 border border-purple-500/30 font-bold py-2 rounded-xl text-xs">🛵 Ожидает доставки</div>`);
   }
 
   return `
     <div class="bg-gray-900 border ${o.status === 'new' ? 'border-amber-500 order-new' : 'border-gray-800'} rounded-2xl p-4 space-y-3 anim-in">
       <div class="flex justify-between items-center text-xs">
-        <span class="font-mono text-gray-400">#${o.id.substring(0, 6)}</span>
+        <span class="font-mono text-gray-400 font-bold">#${o.order_number || o.id.substring(0, 6)}</span>
         <span class="font-bold ${STATUS_COLOR[o.status] || 'text-gray-400'}">${STATUS_LABEL[o.status] || o.status}</span>
       </div>
+      ${timeAgo ? `<p class="text-[10px] text-gray-500">⏱ ${timeAgo}</p>` : ''}
 
       <div class="space-y-1 text-xs">
         <div class="text-white font-bold text-sm">${esc(o.client_name || 'Клиент')}</div>
-        <div class="text-gray-400 flex items-center gap-1">
-          <i data-lucide="phone" class="w-3 h-3"></i>
-          <a href="tel:${esc(o.client_phone)}" class="hover:text-emerald-400">${esc(o.client_phone || '—')}</a>
-        </div>
-        <div class="text-gray-400 flex items-start gap-1">
-          <i data-lucide="map-pin" class="w-3 h-3 mt-0.5 flex-shrink-0"></i>
-          <span>${esc(o.delivery_address || '—')}</span>
-        </div>
-        ${o.comment ? `<div class="text-amber-400 bg-amber-500/10 rounded-lg p-2 flex items-start gap-1 mt-1">
-          <i data-lucide="message-square" class="w-3 h-3 mt-0.5 flex-shrink-0"></i>
-          <span>${esc(o.comment)}</span>
-        </div>` : ''}
+        <div class="text-gray-400 flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3"></i><a href="tel:${esc(o.client_phone)}" class="hover:text-emerald-400">${esc(o.client_phone || '—')}</a></div>
+        <div class="text-gray-400 flex items-start gap-1"><i data-lucide="map-pin" class="w-3 h-3 mt-0.5 flex-shrink-0"></i><span>${esc(o.delivery_address || '—')}</span></div>
+        ${o.comment ? `<div class="text-amber-400 bg-amber-500/10 rounded-lg p-2 flex items-start gap-1 mt-1"><i data-lucide="message-square" class="w-3 h-3 mt-0.5 flex-shrink-0"></i><span>${esc(o.comment)}</span></div>` : ''}
       </div>
 
       <div class="bg-gray-950 rounded-xl p-3 space-y-1.5 border border-gray-800">
@@ -370,97 +486,14 @@ function renderOrderCard(o) {
       </div>
 
       ${statusBtns.length ? `<div class="flex gap-2 pt-1">${statusBtns.join('')}</div>` : ''}
-    </div>
-  `;
+    </div>`;
 }
 
-window.updateStatus = async function (orderId, status, btn) {
+window.updateStatus = async (orderId, status, btn) => {
   if (btn) btn.disabled = true;
   try {
     await updateDoc(doc(db, 'orders', orderId), { status });
-  } catch (e) {
-    console.error(e);
-    alert('Ошибка обновления статуса');
-    if (btn) btn.disabled = false;
-  }
-};
-
-/* ───────── МЕНЮ ───────── */
-document.getElementById('add-product-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = e.target.querySelector('button[type=submit]');
-  btn.disabled = true;
-  const oldText = btn.textContent;
-  btn.textContent = 'Добавляем...';
-  try {
-    await addDoc(collection(db, 'products'), {
-      name: document.getElementById('prod-name').value.trim(),
-      price: Number(document.getElementById('prod-price').value),
-      image_url: document.getElementById('prod-img').value.trim(),
-      description: document.getElementById('prod-desc').value.trim(),
-      category: document.getElementById('prod-category').value,
-      restaurant_id: currentRestaurantId,
-      in_stock: document.getElementById('prod-instock').checked,
-      is_hit: false,
-      is_popular: false,
-      is_new: false,
-      created_at: serverTimestamp()
-    });
-    e.target.reset();
-    document.getElementById('prod-instock').checked = true;
-    await loadRestaurantMenu();
-    showToast('✅ Блюдо добавлено в меню');
-  } catch (err) {
-    console.error(err);
-    alert('Ошибка добавления блюда');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = oldText;
-  }
-});
-
-async function loadRestaurantMenu() {
-  const container = document.getElementById('menu-management-list');
-  const snap = await getDocs(query(collection(db, 'products'), where('restaurant_id', '==', currentRestaurantId)));
-  if (snap.empty) {
-    container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">У вас пока нет блюд.</div>`;
-    return;
-  }
-  const CAT_LABEL = {
-    plov:'🍚 Плов', shashlik:'🍢 Шашлык', pizza:'🍕 Пицца', burger:'🍔 Бургеры',
-    fastfood:'🌭 Фастфуд', soup:'🍲 Супы', salad:'🥗 Салаты', bakery:'🥐 Выпечка',
-    dessert:'🍰 Десерты', drinks:'🥤 Напитки', other:'🍽 Другое'
-  };
-  container.innerHTML = '';
-  snap.forEach(docSnap => {
-    const p = docSnap.data();
-    const inStock = p.in_stock !== false;
-    container.innerHTML += `
-      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 flex items-center justify-between gap-2">
-        <div class="flex items-center gap-3 min-w-0 flex-1">
-          <img src="${esc(p.image_url)}" class="w-14 h-14 object-cover rounded-xl bg-gray-800 flex-shrink-0" onerror="this.style.opacity='.3'">
-          <div class="min-w-0">
-            <h4 class="font-bold text-sm text-white truncate">${esc(p.name)}</h4>
-            <div class="text-xs text-yellow-400 font-bold">${p.price} сомонӣ</div>
-            <div class="text-[10px] text-gray-500">${CAT_LABEL[p.category] || p.category || '—'}</div>
-          </div>
-        </div>
-        <button onclick="toggleStock('${docSnap.id}', ${!inStock}, this)"
-          class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${inStock ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
-          ${inStock ? 'В наличии' : 'Стоп-лист'}
-        </button>
-      </div>
-    `;
-  });
-  lucide.createIcons();
-}
-
-window.toggleStock = async function (prodId, newStatus, btn) {
-  if (!confirm(newStatus ? 'Вернуть блюдо в наличие?' : 'Поставить блюдо в стоп-лист?')) return;
-  if (btn) btn.disabled = true;
-  try {
-    await updateDoc(doc(db, 'products', prodId), { in_stock: newStatus });
-    await loadRestaurantMenu();
+    showToast(STATUS_LABEL[status] + ' — #' + (allOrders.find(o => o.id === orderId)?.order_number || orderId.substring(0, 6)));
   } catch (e) {
     console.error(e);
     alert('Ошибка');
@@ -468,19 +501,258 @@ window.toggleStock = async function (prodId, newStatus, btn) {
   }
 };
 
-/* ───────── ТАБЫ ───────── */
-window.switchTab = function (tab) {
-  document.getElementById('tab-orders').classList.toggle('hidden', tab !== 'orders');
-  document.getElementById('tab-menu').classList.toggle('hidden', tab !== 'menu');
-  const activeCls = 'pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 whitespace-nowrap';
-  const inactiveCls = 'pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap';
-  document.getElementById('tab-btn-orders').className = tab === 'orders' ? activeCls : inactiveCls;
-  document.getElementById('tab-btn-menu').className   = tab === 'menu'   ? activeCls : inactiveCls;
+window.setOrderFilter = (f) => {
+  orderFilter = f;
+  $$('.order-filter-btn').forEach(b => {
+    b.className = b.dataset.filter === f
+      ? 'order-filter-btn bg-emerald-500 text-black font-bold px-3 py-1.5 rounded-lg text-xs whitespace-nowrap'
+      : 'order-filter-btn bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap';
+  });
+  renderOrders();
 };
 
-/* ───────── ТОСТ ───────── */
+/* ═══ МЕНЮ ═══ */
+$('#add-product-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = 'Добавляем...';
+  try {
+    await addDoc(collection(db, 'products'), {
+      name: $('#prod-name').value.trim(),
+      price: Number($('#prod-price').value),
+      image_url: $('#prod-img').value.trim(),
+      description: $('#prod-desc').value.trim(),
+      category: $('#prod-category').value,
+      restaurant_id: currentRestaurantId,
+      in_stock: $('#prod-instock').checked,
+      is_hit: false, is_popular: false, is_new: false,
+      created_at: serverTimestamp()
+    });
+    e.target.reset();
+    $('#prod-instock').checked = true;
+    await loadRestaurantMenu();
+    showToast('✅ Блюдо добавлено');
+  } catch (err) { console.error(err); alert('Ошибка'); }
+  finally { btn.disabled = false; btn.textContent = old; }
+});
+
+async function loadRestaurantMenu() {
+  const container = $('#menu-management-list');
+  const snap = await getDocs(query(collection(db, 'products'), where('restaurant_id', '==', currentRestaurantId)));
+  allProducts = [];
+  snap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
+
+  if (!allProducts.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Пока нет блюд.</div>`; return; }
+
+  const CAT = { plov:'🍚 Плов', shashlik:'🍢 Шашлык', pizza:'🍕 Пицца', burger:'🍔 Бургеры', fastfood:'🌭 Фастфуд', soup:'🍲 Супы', salad:'🥗 Салаты', bakery:'🥐 Выпечка', dessert:'🍰 Десерты', drinks:'🥤 Напитки', other:'🍽 Другое' };
+  container.innerHTML = allProducts.map(p => {
+    const inStock = p.in_stock !== false;
+    return `
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 flex items-center justify-between gap-2 anim-in">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <img src="${esc(p.image_url)}" class="w-14 h-14 object-cover rounded-xl bg-gray-800 flex-shrink-0" onerror="this.style.opacity='.3'">
+          <div class="min-w-0">
+            <h4 class="font-bold text-sm text-white truncate">${esc(p.name)}</h4>
+            <div class="text-xs text-yellow-400 font-bold">${p.price} с.</div>
+            <div class="text-[10px] text-gray-500">${CAT[p.category] || '—'}</div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-1">
+          <button onclick="toggleStock('${p.id}', ${!inStock}, this)" class="px-2 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap ${inStock ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">${inStock ? 'В наличии' : 'Стоп'}</button>
+          <button onclick="openEditProd('${p.id}')" class="px-2 py-1.5 rounded-lg text-[10px] bg-gray-800 text-white font-bold">✏️</button>
+          <button onclick="delProd('${p.id}')" class="px-2 py-1.5 rounded-lg text-[10px] bg-red-500/20 text-red-400 font-bold">🗑</button>
+        </div>
+      </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+window.toggleStock = async (id, s, btn) => {
+  if (!confirm(s ? 'Вернуть в наличие?' : 'В стоп-лист?')) return;
+  btn.disabled = true;
+  try { await updateDoc(doc(db, 'products', id), { in_stock: s }); await loadRestaurantMenu(); }
+  catch (e) { alert('Ошибка'); btn.disabled = false; }
+};
+
+window.delProd = async (id) => {
+  if (!confirm('Удалить блюдо навсегда?')) return;
+  try { await deleteDoc(doc(db, 'products', id)); await loadRestaurantMenu(); }
+  catch (e) { alert('Ошибка'); }
+};
+
+window.openEditProd = (id) => {
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return;
+  $('#ep-id').value = id;
+  $('#ep-name').value = p.name || '';
+  $('#ep-price').value = p.price || 0;
+  $('#ep-category').value = p.category || 'other';
+  $('#ep-img').value = p.image_url || '';
+  $('#ep-desc').value = p.description || '';
+  $('#ep-instock').checked = p.in_stock !== false;
+  $('#edit-prod-modal').classList.remove('hidden');
+  $('#edit-prod-modal').classList.add('flex');
+};
+window.closeEditProd = () => {
+  $('#edit-prod-modal').classList.add('hidden');
+  $('#edit-prod-modal').classList.remove('flex');
+};
+$('#edit-prod-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = $('#ep-id').value;
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true;
+  try {
+    await updateDoc(doc(db, 'products', id), {
+      name: $('#ep-name').value.trim(),
+      price: Number($('#ep-price').value) || 0,
+      category: $('#ep-category').value,
+      image_url: $('#ep-img').value.trim(),
+      description: $('#ep-desc').value.trim(),
+      in_stock: $('#ep-instock').checked
+    });
+    closeEditProd();
+    await loadRestaurantMenu();
+    showToast('✅ Сохранено');
+  } catch (e) { alert('Ошибка'); }
+  finally { btn.disabled = false; }
+});
+
+/* ═══ СТАТИСТИКА ═══ */
+function getPeriodStart(period) {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (period === 'today') return start;
+  if (period === 'week') return new Date(start.getTime() - 6 * 86400000);
+  if (period === 'month') return new Date(start.getTime() - 29 * 86400000);
+  return null;
+}
+
+function renderStats() {
+  const start = getPeriodStart(statsPeriod);
+  let list = allOrders.filter(o => o.status !== 'cancelled');
+  if (start) list = list.filter(o => (o.created_at?.toMillis?.() || 0) >= start.getTime());
+  const revenue = list.reduce((s, o) => s + (o.total_price || 0), 0);
+  const commissionPercent = currentRestaurant?.commission || 0;
+  const commission = revenue * commissionPercent / 100;
+
+  $('#st-orders').innerText = list.length;
+  $('#st-revenue').innerText = fmt(revenue);
+  $('#st-commission').innerText = fmt(commission);
+  $('#st-payout').innerText = fmt(revenue - commission);
+
+  // Топ блюд
+  const items = {};
+  list.forEach(o => (o.items || []).forEach(it => {
+    if (!items[it.name]) items[it.name] = { qty: 0, sum: 0 };
+    items[it.name].qty += it.qty;
+    items[it.name].sum += it.price * it.qty;
+  }));
+  const top = Object.entries(items).sort((a, b) => b[1].qty - a[1].qty).slice(0, 5);
+  const topEl = $('#st-top-items');
+  topEl.innerHTML = top.length ? top.map(([name, s], i) => `
+    <div class="flex items-center justify-between bg-gray-950 rounded-lg p-2.5 border border-gray-800">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-black">${i + 1}</span>
+        <span class="text-gray-200 truncate">${esc(name)}</span>
+      </div>
+      <div class="text-right"><p class="text-white font-bold">×${s.qty}</p><p class="text-[10px] text-yellow-400">${fmt(s.sum)}</p></div>
+    </div>
+  `).join('') : '<p class="text-gray-500 text-xs">Нет данных</p>';
+
+  // График 7 дней
+  const days = [];
+  const todayStart = getPeriodStart('today');
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(todayStart.getTime() - i * 86400000);
+    const dayEnd = d.getTime() + 86400000;
+    const sum = allOrders.filter(o => {
+      const t = o.created_at?.toMillis?.() || 0;
+      return t >= d.getTime() && t < dayEnd && o.status !== 'cancelled';
+    }).reduce((s, o) => s + (o.total_price || 0), 0);
+    days.push({ label: d.toLocaleDateString('ru-RU', { weekday: 'short' }), sum });
+  }
+  const maxSum = Math.max(...days.map(d => d.sum), 1);
+  $('#st-chart').innerHTML = days.map(d => `
+    <div class="flex flex-col items-center gap-1 flex-1">
+      <div class="w-full flex items-end justify-center h-24">
+        <div class="w-full max-w-[36px] bg-emerald-500 rounded-t-lg transition-all duration-500" style="height: ${Math.max(4, (d.sum / maxSum) * 100)}%"></div>
+      </div>
+      <span class="text-[9px] text-gray-500">${d.label}</span>
+    </div>
+  `).join('');
+}
+
+$$('.stat-period-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    statsPeriod = btn.dataset.statPeriod;
+    $$('.stat-period-btn').forEach(b => { b.className = 'stat-period-btn bg-gray-900 border border-gray-800 text-gray-300 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap'; });
+    btn.className = 'stat-period-btn bg-emerald-500 text-black font-bold px-3 py-1.5 rounded-lg text-xs whitespace-nowrap';
+    renderStats();
+  });
+});
+
+/* ═══ ПРОФИЛЬ ═══ */
+function fillProfile() {
+  if (!currentRestaurant) return;
+  $('#profile-logo').innerHTML = currentRestaurant.logo_url
+    ? `<img src="${esc(currentRestaurant.logo_url)}" class="w-full h-full object-cover">`
+    : '<i data-lucide="store" class="w-8 h-8"></i>';
+  $('#profile-name').innerText = currentRestaurant.name || 'Ресторан';
+  $('#profile-address').innerText = currentRestaurant.address || '—';
+  $('#profile-cuisine').innerText = currentRestaurant.cuisine || '';
+  $('#profile-commission').innerText = (currentRestaurant.commission ?? 0) + '%';
+  const isOpen = currentRestaurant.shift_open !== false;
+  $('#profile-status').innerHTML = isOpen ? '<span class="text-emerald-400">🟢 Открыт</span>' : '<span class="text-red-400">🔴 Закрыт</span>';
+  $('#pf-logo').value = currentRestaurant.logo_url || '';
+  $('#pf-phone').value = currentRestaurant.phone || '';
+  $('#pf-cuisine').value = currentRestaurant.cuisine || '';
+  $('#pf-hours').value = currentRestaurant.hours || '';
+  lucide.createIcons();
+}
+
+$('#profile-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    await updateDoc(doc(db, 'restaurants', currentRestaurantId), {
+      logo_url: $('#pf-logo').value.trim(),
+      phone: $('#pf-phone').value.trim(),
+      cuisine: $('#pf-cuisine').value.trim(),
+      hours: $('#pf-hours').value.trim()
+    });
+    Object.assign(currentRestaurant, {
+      logo_url: $('#pf-logo').value.trim(),
+      phone: $('#pf-phone').value.trim(),
+      cuisine: $('#pf-cuisine').value.trim(),
+      hours: $('#pf-hours').value.trim()
+    });
+    fillProfile();
+    showToast('✅ Сохранено');
+  } catch (e) { alert('Ошибка'); }
+});
+
+/* ═══ ТАБЫ ═══ */
+const TABS = { orders: 'tab-btn-orders', menu: 'tab-btn-menu', stats: 'tab-btn-stats', profile: 'tab-btn-profile' };
+const SECS = { orders: 'tab-orders', menu: 'tab-menu', stats: 'tab-stats', profile: 'tab-profile' };
+
+window.switchTab = (tab) => {
+  Object.values(SECS).forEach(id => $('#' + id).classList.add('hidden'));
+  $('#' + SECS[tab]).classList.remove('hidden');
+  Object.entries(TABS).forEach(([k, id]) => {
+    $('#' + id).className = k === tab
+      ? 'tab pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 whitespace-nowrap'
+      : 'tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap';
+  });
+  if (tab === 'stats') renderStats();
+  if (tab === 'profile') fillProfile();
+  lucide.createIcons();
+};
+
+/* ═══ ТОСТ ═══ */
 function showToast(msg) {
-  let t = document.getElementById('toast');
+  let t = $('#toast');
   if (!t) {
     t = document.createElement('div');
     t.id = 'toast';
