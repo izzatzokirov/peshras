@@ -3,77 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peshras Admin</title>
+<title>Peshras Partner — Кабинет Ресторана</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+  @keyframes pulse-border { 0%,100% { border-color: #f59e0b; } 50% { border-color: #fbbf24; box-shadow: 0 0 20px rgba(245,158,11,.3); } }
+  .order-new { animation: pulse-border 1.5s infinite; }
+  @keyframes slideIn { from { opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+  .anim-in { animation: slideIn .3s ease-out; }
 </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
 
-<header class="bg-gray-900 border-b border-gray-800 px-4 py-3 sticky top-0 z-30">
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <span class="text-lg font-black text-emerald-400">PESHRAS <span class="text-red-400 text-xs">ADMIN</span></span>
-    <button onclick="logout()" class="text-gray-400 hover:text-red-400 p-2"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+<!-- ═══════ ЭКРАН ВХОДА ═══════ -->
+<div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl">
+    <div class="text-center space-y-2">
+      <div class="inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20">
+        <i data-lucide="store" class="w-8 h-8"></i>
+      </div>
+      <h1 class="text-2xl font-black text-white">Вход для ресторанов</h1>
+      <p class="text-xs text-gray-400">Данные выдаёт администрация Peshras</p>
+    </div>
+    <form id="login-form" class="space-y-4">
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-gray-300">Email ресторана</label>
+        <input type="email" id="email" required placeholder="restaurant@peshras.tj"
+          class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+      </div>
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-gray-300">Пароль</label>
+        <input type="password" id="password" required placeholder="••••••••"
+          class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+      </div>
+      <div id="login-error" class="text-xs text-red-400 hidden"></div>
+      <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 rounded-xl transition flex items-center justify-center gap-2">
+        <span>Войти в кабинет</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+    </form>
   </div>
-</header>
+</div>
 
-<main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+<!-- ═══════ КАБИНЕТ ═══════ -->
+<div id="app-screen" class="hidden min-h-screen flex flex-col">
 
-  <div class="flex border-b border-gray-800 gap-6 text-sm font-bold">
-    <button onclick="switchTab('restaurants')" id="tb-r" class="pb-3 border-b-2 border-emerald-500 text-emerald-400">Рестораны</button>
-    <button onclick="switchTab('orders')" id="tb-o" class="pb-3 border-b-2 border-transparent text-gray-400">Все заказы</button>
-  </div>
+  <header class="bg-gray-900 border-b border-gray-800 px-4 py-3 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="text-lg font-black text-emerald-400 whitespace-nowrap">PESHRAS <span class="text-yellow-400 text-xs">PARTNER</span></span>
+        <span id="restaurant-name-heading" class="hidden sm:inline text-xs bg-gray-800 text-gray-300 px-3 py-1 rounded-full font-semibold border border-gray-700 truncate">Загрузка...</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="sound-toggle" onclick="toggleSound()" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span id="sound-status-text" class="hidden sm:inline">Включить звук</span>
+        </button>
+        <button onclick="logout()" class="text-gray-400 hover:text-red-400 p-2 transition">
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </header>
 
-  <!-- РЕСТОРАНЫ -->
-  <section id="tab-restaurants" class="space-y-6">
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
-      <h3 class="font-bold text-white text-sm flex items-center gap-2">
-        <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i> Регистрация нового ресторана
-      </h3>
-      <form id="add-rest-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div><label class="text-[11px] text-gray-400">Название *</label>
-          <input required id="r-name" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
-        <div><label class="text-[11px] text-gray-400">Адрес *</label>
-          <input required id="r-address" placeholder="ул. Ленина 15" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
-        <div><label class="text-[11px] text-gray-400">Логотип (URL)</label>
-          <input id="r-logo" placeholder="https://..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
-        <div><label class="text-[11px] text-gray-400">Кухня</label>
-          <input id="r-cuisine" placeholder="Национальная" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
-        <div><label class="text-[11px] text-gray-400">Телефон</label>
-          <input id="r-phone" placeholder="+992..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
-        <div><label class="text-[11px] text-gray-400">Комиссия (%) — опционально</label>
-          <input id="r-commission" type="number" placeholder="10" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
-        <div class="sm:col-span-2"><label class="text-[11px] text-gray-400">UID владельца (из Firebase Auth) *</label>
-          <input required id="r-uid" placeholder="Создайте пользователя в Firebase Console → Authentication → Add user → скопируйте UID"
-            class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
-        <div class="sm:col-span-2">
-          <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-5 py-2.5 rounded-xl text-xs">Создать ресторан</button>
+  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 space-y-6">
+
+    <!-- Табы -->
+    <div class="flex border-b border-gray-800 gap-6 text-sm font-bold overflow-x-auto">
+      <button onclick="switchTab('orders')" id="tab-btn-orders" class="pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 whitespace-nowrap">
+        <i data-lucide="utensils" class="w-4 h-4"></i>
+        <span>Заказы</span>
+        <span id="active-orders-count" class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full">0</span>
+      </button>
+      <button onclick="switchTab('menu')" id="tab-btn-menu" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap">
+        <i data-lucide="list-checks" class="w-4 h-4"></i>
+        <span>Меню</span>
+      </button>
+    </div>
+
+    <!-- ЗАКАЗЫ -->
+    <section id="tab-orders" class="space-y-4">
+      <div id="orders-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="text-gray-500 text-xs col-span-full py-8 text-center">Загрузка заказов...</div>
+      </div>
+    </section>
+
+    <!-- МЕНЮ -->
+    <section id="tab-menu" class="hidden space-y-6">
+
+      <!-- Форма добавления блюда -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+        <h3 class="font-bold text-white text-sm flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i>
+          <span>Добавить новое блюдо</span>
+        </h3>
+        <form id="add-product-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="sm:col-span-2">
+            <label class="text-[11px] text-gray-400 font-semibold">Название блюда *</label>
+            <input type="text" id="prod-name" required placeholder="Например: Плов по-исфарински"
+              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="text-[11px] text-gray-400 font-semibold">Цена (сомонӣ) *</label>
+            <input type="number" id="prod-price" min="1" step="0.01" required placeholder="35"
+              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+          </div>
+          <div class="sm:col-span-2 lg:col-span-2">
+            <label class="text-[11px] text-gray-400 font-semibold">Ссылка на фото (URL) *</label>
+            <input type="url" id="prod-img" required placeholder="https://..."
+              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="text-[11px] text-gray-400 font-semibold">Категория блюда *</label>
+            <select id="prod-category" required
+              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-gray-300">
+              <option value="plov">🍚 Плов</option>
+              <option value="shashlik">🍢 Шашлык</option>
+              <option value="pizza">🍕 Пицца</option>
+              <option value="burger">🍔 Бургеры</option>
+              <option value="fastfood">🌭 Фастфуд</option>
+              <option value="soup">🍲 Супы</option>
+              <option value="salad">🥗 Салаты</option>
+              <option value="bakery">🥐 Выпечка</option>
+              <option value="dessert">🍰 Десерты</option>
+              <option value="drinks">🥤 Напитки</option>
+              <option value="other">🍽 Другое</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2 lg:col-span-3">
+            <label class="text-[11px] text-gray-400 font-semibold">Описание (состав, вес, порции)</label>
+            <textarea id="prod-desc" rows="2" placeholder="Например: Рис, мясо, морковь. Порция 400 г."
+              class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+          </div>
+          <div class="sm:col-span-2 lg:col-span-3">
+            <label class="flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer">
+              <input type="checkbox" id="prod-instock" checked class="w-4 h-4 accent-emerald-500">
+              <span>В наличии сейчас (снимите галочку, если блюдо готовится под заказ)</span>
+            </label>
+          </div>
+          <div class="sm:col-span-2 lg:col-span-3">
+            <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-5 py-2.5 rounded-xl transition text-xs">
+              Добавить в меню
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Список блюд -->
+      <div class="space-y-3">
+        <h4 class="font-bold text-white text-sm">Ваше меню:</h4>
+        <div id="menu-management-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="text-gray-500 text-xs py-4 col-span-full">Загрузка...</div>
         </div>
-      </form>
-    </div>
+      </div>
 
-    <div>
-      <h4 class="font-bold text-white text-sm mb-3">Все рестораны:</h4>
-      <div id="restaurants-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-    </div>
-  </section>
+    </section>
+  </main>
+</div>
 
-  <!-- ЗАКАЗЫ -->
-  <section id="tab-orders" class="hidden">
-    <div id="all-orders" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-  </section>
-
-</main>
-
+<!-- ═══════ FIREBASE ═══════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut }
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, doc, deleteDoc }
-  from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import {
+  getFirestore, collection, query, where, onSnapshot, doc, updateDoc,
+  addDoc, getDocs, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBGUkISLQ1Qm9xfYkVgZhoLeR_P_VTSrhM",
@@ -83,100 +180,318 @@ const firebaseConfig = {
   messagingSenderId: "790787117044",
   appId: "1:790787117044:web:217ef1bea4edbab24873a1"
 };
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db   = getFirestore(app);
 
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let soundEnabled = false;
+let audioContext = null;
+let currentRestaurantId = null;   // ← restaurants.id (НЕ Auth UID)
+let currentRestaurant   = null;
+let unsubscribeOrders   = null;
+let seenOrderIds        = new Set();
+
 const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' сомонӣ';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-// Простейшая авторизация админа через тот же Firebase Auth
-onAuthStateChanged(auth, user => {
-  if (!user) {
-    const email = prompt('Email администратора:');
-    const pass = prompt('Пароль:');
-    if (email && pass) signInWithEmailAndPassword(auth, email, pass).catch(() => alert('Ошибка входа'));
-  } else {
-    loadRestaurants();
-    loadAllOrders();
+/* ───────── ЗВУК + ВИБРАЦИЯ ───────── */
+function playAlertSound() {
+  if (!soundEnabled) return;
+  try {
+    if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioContext.currentTime;
+    [880, 1320].forEach((freq, i) => {
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + i * 0.15);
+      gain.gain.setValueAtTime(0.4, now + i * 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.4);
+      osc.connect(gain); gain.connect(audioContext.destination);
+      osc.start(now + i * 0.15); osc.stop(now + i * 0.15 + 0.45);
+    });
+  } catch (e) { console.error(e); }
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+}
+window.toggleSound = function () {
+  soundEnabled = !soundEnabled;
+  document.getElementById('sound-status-text').innerText = soundEnabled ? "Звук вкл." : "Включить звук";
+  if (soundEnabled) playAlertSound();
+};
+
+/* ───────── ВХОД ───────── */
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = document.getElementById('login-error');
+  err.classList.add('hidden');
+  try {
+    await signInWithEmailAndPassword(auth,
+      document.getElementById('email').value,
+      document.getElementById('password').value);
+  } catch (e2) {
+    err.innerText = 'Неверный логин или пароль';
+    err.classList.remove('hidden');
   }
 });
 window.logout = () => signOut(auth);
 
-/* Регистрация ресторана */
-document.getElementById('add-rest-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  try {
-    await addDoc(collection(db, 'restaurants'), {
-      name: document.getElementById('r-name').value.trim(),
-      address: document.getElementById('r-address').value.trim(),
-      logo_url: document.getElementById('r-logo').value.trim(),
-      cuisine: document.getElementById('r-cuisine').value.trim(),
-      phone: document.getElementById('r-phone').value.trim(),
-      commission: document.getElementById('r-commission').value ? Number(document.getElementById('r-commission').value) : null,
-      owner_uid: document.getElementById('r-uid').value.trim(),
-      created_at: serverTimestamp()
-    });
-    e.target.reset();
-    alert('✅ Ресторан создан');
-  } catch (err) { console.error(err); alert('Ошибка'); }
+/* ───────── СТАРТ ПОСЛЕ ЛОГИНА ───────── */
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    document.getElementById('auth-screen').classList.remove('hidden');
+    document.getElementById('app-screen').classList.add('hidden');
+    if (unsubscribeOrders) unsubscribeOrders();
+    return;
+  }
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.remove('hidden');
+
+  // Находим ресторан по owner_uid
+  const snap = await getDocs(query(collection(db, 'restaurants'), where('owner_uid', '==', user.uid)));
+  if (snap.empty) {
+    document.getElementById('restaurant-name-heading').innerText = '⚠️ Ресторан не привязан';
+    document.getElementById('orders-list').innerHTML =
+      `<div class="col-span-full text-center text-red-400 text-xs py-8">Ваш аккаунт не привязан ни к одному ресторану.<br>Обратитесь к администратору Peshras.</div>`;
+    return;
+  }
+  const docSnap = snap.docs[0];
+  currentRestaurantId = docSnap.id;
+  currentRestaurant = { id: docSnap.id, ...docSnap.data() };
+  document.getElementById('restaurant-name-heading').innerText = currentRestaurant.name || 'Ресторан';
+
+  listenToOrders();
+  loadRestaurantMenu();
+  lucide.createIcons();
 });
 
-function loadRestaurants() {
-  onSnapshot(collection(db, 'restaurants'), snap => {
-    const list = document.getElementById('restaurants-list');
-    if (snap.empty) { list.innerHTML = `<p class="text-gray-500 text-xs">Пока нет ресторанов</p>`; return; }
-    list.innerHTML = snap.docs.map(d => {
-      const r = d.data();
-      return `
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 flex items-center gap-3">
-          <div class="w-12 h-12 rounded-xl bg-gray-800 overflow-hidden flex-shrink-0">
-            ${r.logo_url ? `<img src="${esc(r.logo_url)}" class="w-full h-full object-cover">` : ''}
-          </div>
-          <div class="min-w-0 flex-1">
-            <p class="font-bold text-sm text-white truncate">${esc(r.name)}</p>
-            <p class="text-[10px] text-gray-500 truncate">${esc(r.address || '')}</p>
-            <p class="text-[10px] text-gray-600 truncate">UID: ${esc(r.owner_uid || '—')}</p>
-          </div>
-          <button onclick="delRest('${d.id}')" class="text-red-400 hover:text-red-300 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-        </div>
-      `;
-    }).join('');
+/* ───────── ЗАКАЗЫ ───────── */
+const STATUS_LABEL = {
+  new: '🆕 Новый',
+  accepted: '✅ Принят',
+  cooking: '🍳 Готовится',
+  delivering: '🛵 В пути',
+  delivered: '🏁 Доставлен',
+  cancelled: '❌ Отменён'
+};
+const STATUS_COLOR = {
+  new: 'text-amber-400',
+  accepted: 'text-emerald-400',
+  cooking: 'text-blue-400',
+  delivering: 'text-purple-400',
+  delivered: 'text-gray-400',
+  cancelled: 'text-red-400'
+};
+
+function listenToOrders() {
+  if (unsubscribeOrders) unsubscribeOrders();
+  const q = query(collection(db, 'orders'), where('restaurant_id', '==', currentRestaurantId));
+  unsubscribeOrders = onSnapshot(q, (snapshot) => {
+    const container = document.getElementById('orders-list');
+    if (snapshot.empty) {
+      container.innerHTML = `<div class="text-gray-500 text-xs col-span-full py-8 text-center">Входящих заказов пока нет</div>`;
+      document.getElementById('active-orders-count').innerText = '0';
+      return;
+    }
+    // сортировка: новые сверху
+    const orders = [];
+    snapshot.forEach(d => orders.push({ id: d.id, ...d.data() }));
+    orders.sort((a, b) => {
+      const ta = a.created_at?.toMillis?.() || 0;
+      const tb = b.created_at?.toMillis?.() || 0;
+      return tb - ta;
+    });
+
+    let activeCount = 0;
+    let hasNew = false;
+    orders.forEach(o => {
+      if (['new', 'accepted', 'cooking', 'delivering'].includes(o.status)) activeCount++;
+      if (o.status === 'new' && !seenOrderIds.has(o.id)) hasNew = true;
+      seenOrderIds.add(o.id);
+    });
+
+    container.innerHTML = orders.map(o => renderOrderCard(o)).join('');
+    document.getElementById('active-orders-count').innerText = activeCount;
+    if (hasNew) playAlertSound();
     lucide.createIcons();
   });
 }
-window.delRest = async function (id) {
-  if (!confirm('Удалить ресторан?')) return;
-  await deleteDoc(doc(db, 'restaurants', id));
-};
 
-function loadAllOrders() {
-  onSnapshot(collection(db, 'orders'), snap => {
-    const list = document.getElementById('all-orders');
-    const arr = [];
-    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-    arr.sort((a, b) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
-    if (!arr.length) { list.innerHTML = `<p class="text-gray-500 text-xs">Пока нет заказов</p>`; return; }
-    list.innerHTML = arr.map(o => `
-      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 space-y-1 text-xs">
-        <div class="flex justify-between"><span class="text-gray-400 font-mono">#${o.id.substring(0,6)}</span>
-          <span class="text-emerald-400 font-bold">${o.status}</span></div>
-        <p class="text-white font-bold">${esc(o.client_name)} · ${esc(o.client_phone)}</p>
-        <p class="text-gray-400">${esc(o.delivery_address)}</p>
-        <p class="text-yellow-400 font-black">${fmt(o.total_price)}</p>
+function renderOrderCard(o) {
+  const items = o.items || [];
+  const itemsHTML = items.map(it => `
+    <div class="flex justify-between text-xs">
+      <span class="text-gray-300">${esc(it.name)}</span>
+      <span class="text-white font-bold">×${it.qty} — ${fmt(it.price * it.qty)}</span>
+    </div>
+  `).join('');
+
+  const statusBtns = [];
+  if (o.status === 'new') {
+    statusBtns.push(`<button onclick="updateStatus('${o.id}','accepted',this)" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-2 rounded-xl text-xs">Принять</button>`);
+    statusBtns.push(`<button onclick="updateStatus('${o.id}','cancelled',this)" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-3 py-2 rounded-xl text-xs">Отклонить</button>`);
+  } else if (o.status === 'accepted') {
+    statusBtns.push(`<button onclick="updateStatus('${o.id}','cooking',this)" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-extrabold py-2 rounded-xl text-xs">Начать готовить</button>`);
+  } else if (o.status === 'cooking') {
+    statusBtns.push(`<button onclick="updateStatus('${o.id}','delivering',this)" class="flex-1 bg-purple-500 hover:bg-purple-400 text-white font-extrabold py-2 rounded-xl text-xs">Передать курьеру</button>`);
+  } else if (o.status === 'delivering') {
+    statusBtns.push(`<button onclick="updateStatus('${o.id}','delivered',this)" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-extrabold py-2 rounded-xl text-xs">Завершить</button>`);
+  }
+
+  return `
+    <div class="bg-gray-900 border ${o.status === 'new' ? 'border-amber-500 order-new' : 'border-gray-800'} rounded-2xl p-4 space-y-3 anim-in">
+      <div class="flex justify-between items-center text-xs">
+        <span class="font-mono text-gray-400">#${o.id.substring(0, 6)}</span>
+        <span class="font-bold ${STATUS_COLOR[o.status] || 'text-gray-400'}">${STATUS_LABEL[o.status] || o.status}</span>
       </div>
-    `).join('');
-  });
+
+      <div class="space-y-1 text-xs">
+        <div class="text-white font-bold text-sm">${esc(o.client_name || 'Клиент')}</div>
+        <div class="text-gray-400 flex items-center gap-1">
+          <i data-lucide="phone" class="w-3 h-3"></i>
+          <a href="tel:${esc(o.client_phone)}" class="hover:text-emerald-400">${esc(o.client_phone || '—')}</a>
+        </div>
+        <div class="text-gray-400 flex items-start gap-1">
+          <i data-lucide="map-pin" class="w-3 h-3 mt-0.5 flex-shrink-0"></i>
+          <span>${esc(o.delivery_address || '—')}</span>
+        </div>
+        ${o.comment ? `<div class="text-amber-400 bg-amber-500/10 rounded-lg p-2 flex items-start gap-1 mt-1">
+          <i data-lucide="message-square" class="w-3 h-3 mt-0.5 flex-shrink-0"></i>
+          <span>${esc(o.comment)}</span>
+        </div>` : ''}
+      </div>
+
+      <div class="bg-gray-950 rounded-xl p-3 space-y-1.5 border border-gray-800">
+        ${itemsHTML || '<p class="text-gray-500 text-xs">Нет позиций</p>'}
+      </div>
+
+      <div class="flex justify-between items-center pt-1">
+        <span class="text-xs text-gray-400">Итого:</span>
+        <span class="text-yellow-400 font-black text-base">${fmt(o.total_price)}</span>
+      </div>
+
+      ${statusBtns.length ? `<div class="flex gap-2 pt-1">${statusBtns.join('')}</div>` : ''}
+    </div>
+  `;
 }
 
-window.switchTab = (t) => {
-  document.getElementById('tab-restaurants').classList.toggle('hidden', t !== 'restaurants');
-  document.getElementById('tab-orders').classList.toggle('hidden', t !== 'orders');
-  const a = 'pb-3 border-b-2 border-emerald-500 text-emerald-400';
-  const i = 'pb-3 border-b-2 border-transparent text-gray-400';
-  document.getElementById('tb-r').className = t === 'restaurants' ? a : i;
-  document.getElementById('tb-o').className = t === 'orders' ? a : i;
+window.updateStatus = async function (orderId, status, btn) {
+  if (btn) btn.disabled = true;
+  try {
+    await updateDoc(doc(db, 'orders', orderId), { status });
+  } catch (e) {
+    console.error(e);
+    alert('Ошибка обновления статуса');
+    if (btn) btn.disabled = false;
+  }
 };
+
+/* ───────── МЕНЮ ───────── */
+document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true;
+  const oldText = btn.textContent;
+  btn.textContent = 'Добавляем...';
+  try {
+    await addDoc(collection(db, 'products'), {
+      name: document.getElementById('prod-name').value.trim(),
+      price: Number(document.getElementById('prod-price').value),
+      image_url: document.getElementById('prod-img').value.trim(),
+      description: document.getElementById('prod-desc').value.trim(),
+      category: document.getElementById('prod-category').value,
+      restaurant_id: currentRestaurantId,
+      in_stock: document.getElementById('prod-instock').checked,
+      is_hit: false,
+      is_popular: false,
+      is_new: false,
+      created_at: serverTimestamp()
+    });
+    e.target.reset();
+    document.getElementById('prod-instock').checked = true;
+    await loadRestaurantMenu();
+    showToast('✅ Блюдо добавлено в меню');
+  } catch (err) {
+    console.error(err);
+    alert('Ошибка добавления блюда');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = oldText;
+  }
+});
+
+async function loadRestaurantMenu() {
+  const container = document.getElementById('menu-management-list');
+  const snap = await getDocs(query(collection(db, 'products'), where('restaurant_id', '==', currentRestaurantId)));
+  if (snap.empty) {
+    container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">У вас пока нет блюд.</div>`;
+    return;
+  }
+  const CAT_LABEL = {
+    plov:'🍚 Плов', shashlik:'🍢 Шашлык', pizza:'🍕 Пицца', burger:'🍔 Бургеры',
+    fastfood:'🌭 Фастфуд', soup:'🍲 Супы', salad:'🥗 Салаты', bakery:'🥐 Выпечка',
+    dessert:'🍰 Десерты', drinks:'🥤 Напитки', other:'🍽 Другое'
+  };
+  container.innerHTML = '';
+  snap.forEach(docSnap => {
+    const p = docSnap.data();
+    const inStock = p.in_stock !== false;
+    container.innerHTML += `
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <img src="${esc(p.image_url)}" class="w-14 h-14 object-cover rounded-xl bg-gray-800 flex-shrink-0" onerror="this.style.opacity='.3'">
+          <div class="min-w-0">
+            <h4 class="font-bold text-sm text-white truncate">${esc(p.name)}</h4>
+            <div class="text-xs text-yellow-400 font-bold">${p.price} сомонӣ</div>
+            <div class="text-[10px] text-gray-500">${CAT_LABEL[p.category] || p.category || '—'}</div>
+          </div>
+        </div>
+        <button onclick="toggleStock('${docSnap.id}', ${!inStock}, this)"
+          class="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${inStock ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
+          ${inStock ? 'В наличии' : 'Стоп-лист'}
+        </button>
+      </div>
+    `;
+  });
+  lucide.createIcons();
+}
+
+window.toggleStock = async function (prodId, newStatus, btn) {
+  if (!confirm(newStatus ? 'Вернуть блюдо в наличие?' : 'Поставить блюдо в стоп-лист?')) return;
+  if (btn) btn.disabled = true;
+  try {
+    await updateDoc(doc(db, 'products', prodId), { in_stock: newStatus });
+    await loadRestaurantMenu();
+  } catch (e) {
+    console.error(e);
+    alert('Ошибка');
+    if (btn) btn.disabled = false;
+  }
+};
+
+/* ───────── ТАБЫ ───────── */
+window.switchTab = function (tab) {
+  document.getElementById('tab-orders').classList.toggle('hidden', tab !== 'orders');
+  document.getElementById('tab-menu').classList.toggle('hidden', tab !== 'menu');
+  const activeCls = 'pb-3 border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 whitespace-nowrap';
+  const inactiveCls = 'pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap';
+  document.getElementById('tab-btn-orders').className = tab === 'orders' ? activeCls : inactiveCls;
+  document.getElementById('tab-btn-menu').className   = tab === 'menu'   ? activeCls : inactiveCls;
+};
+
+/* ───────── ТОСТ ───────── */
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.className = 'fixed left-1/2 -translate-x-1/2 bottom-8 z-[9999] bg-emerald-500 text-black font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.style.display = 'none', 2500);
+}
 
 lucide.createIcons();
 </script>
