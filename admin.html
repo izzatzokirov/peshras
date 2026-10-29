@@ -3,83 +3,286 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peshras Admin</title>
+<title>Peshras Admin — Панель Управления</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  .chart-bar { transition: height .3s ease; }
 </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
 
-<div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
-  <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 max-w-md w-full space-y-4">
-    <h1 class="text-2xl font-black text-yellow-400">PESHRAS ADMIN</h1>
-    <form id="login-form">
-      <input type="email" id="email" required placeholder="Email" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 mb-2 text-sm">
-      <input type="password" id="password" required placeholder="Пароль" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 mb-2 text-sm">
-      <button type="submit" class="w-full bg-yellow-400 text-black font-bold py-3 rounded-xl">Войти</button>
+<!-- ВХОД -->
+<div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl">
+    <div class="text-center space-y-2">
+      <div class="inline-flex p-3 rounded-2xl bg-yellow-400/10 text-yellow-400 mb-2 border border-yellow-400/20">
+        <i data-lucide="shield-check" class="w-8 h-8"></i>
+      </div>
+      <h1 class="text-2xl font-black text-white">Вход Администратора</h1>
+      <p class="text-xs text-gray-400">Панель главного управления Peshras</p>
+    </div>
+    <form id="admin-login-form" class="space-y-4">
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-gray-300">Email Админа</label>
+        <input type="email" id="admin-email" required placeholder="admin@peshras.tj" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400">
+      </div>
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-gray-300">Пароль</label>
+        <input type="password" id="admin-password" required placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400">
+      </div>
+      <div id="admin-error" class="text-xs text-red-400 hidden"></div>
+      <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-extrabold py-3.5 rounded-xl transition flex items-center justify-center gap-2">
+        <span>Войти</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
     </form>
   </div>
 </div>
 
-<div id="app-screen" class="hidden min-h-screen flex flex-col">
-  <header class="bg-gray-900 border-b border-gray-800 p-3 flex justify-between">
-    <span class="font-black text-emerald-400">ADMIN</span>
-    <button onclick="logout()">Выйти</button>
+<!-- АДМИНКА -->
+<div id="admin-app" class="hidden min-h-screen flex flex-col">
+  <header class="bg-gray-900 border-b border-gray-800 px-4 py-3 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <span class="text-lg font-black text-emerald-400">PESHRAS <span class="text-yellow-400 text-xs px-2 py-0.5 bg-yellow-400/10 rounded border border-yellow-400/20">SUPER ADMIN</span></span>
+      <button onclick="adminLogout()" class="text-gray-400 hover:text-red-400 p-2"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+    </div>
+    <div id="new-orders-banner" class="hidden max-w-7xl mx-auto mt-2 bg-amber-500/10 border border-amber-500/40 rounded-xl px-4 py-2 flex items-center justify-between anim-in">
+      <div class="flex items-center gap-2 text-xs font-bold text-amber-400"><i data-lucide="bell" class="w-4 h-4 animate-pulse"></i><span id="new-orders-text">Новых заказов: 0</span></div>
+      <button onclick="switchAdminTab('all-orders');document.getElementById('order-filter-status').value='new';renderOrders();" class="text-[10px] bg-amber-500 text-black font-bold px-3 py-1 rounded-lg">Показать</button>
+    </div>
   </header>
-  <main class="max-w-7xl mx-auto p-4 w-full space-y-4">
-    <div class="flex gap-4 border-b border-gray-800 pb-2 text-sm font-bold overflow-x-auto">
-      <button onclick="switchTab('dash')" id="tb-dash" class="text-yellow-400">Дашборд</button>
-      <button onclick="switchTab('rest')" id="tb-rest" class="text-gray-400">Рестораны</button>
-      <button onclick="switchTab('prod')" id="tb-prod" class="text-gray-400">Товары</button>
-      <button onclick="switchTab('ord')" id="tb-ord" class="text-gray-400">Заказы</button>
-      <button onclick="switchTab('set')" id="tb-set" class="text-gray-400">Настройки</button>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 space-y-6">
+    <div class="flex border-b border-gray-800 gap-4 sm:gap-6 text-sm font-bold overflow-x-auto pb-2 scrollbar-none">
+      <button onclick="switchAdminTab('dashboard')" id="atab-dashboard" class="admin-tab pb-3 border-b-2 border-yellow-400 text-yellow-400 flex items-center gap-2 whitespace-nowrap"><i data-lucide="home" class="w-4 h-4"></i><span>Главная</span></button>
+      <button onclick="switchAdminTab('restaurants')" id="atab-restaurants" class="admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap"><i data-lucide="store" class="w-4 h-4"></i><span>Рестораны</span></button>
+      <button onclick="switchAdminTab('products')" id="atab-products" class="admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap"><i data-lucide="utensils" class="w-4 h-4"></i><span>Товары</span></button>
+      <button onclick="switchAdminTab('all-orders')" id="atab-orders" class="admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap"><i data-lucide="shopping-bag" class="w-4 h-4"></i><span>Заказы</span></button>
+      <button onclick="switchAdminTab('analytics')" id="atab-analytics" class="admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap"><i data-lucide="bar-chart-3" class="w-4 h-4"></i><span>Аналитика</span></button>
+      <button onclick="switchAdminTab('settings')" id="atab-settings" class="admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap"><i data-lucide="settings" class="w-4 h-4"></i><span>Настройки</span></button>
     </div>
 
-    <section id="sec-dash" class="space-y-4">
+    <!-- DASHBOARD -->
+    <section id="sec-dashboard" class="space-y-4">
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl"><p class="text-[10px] text-gray-500">Заказов сегодня</p><p id="d-ord" class="text-2xl font-black text-white">0</p></div>
-        <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl"><p class="text-[10px] text-gray-500">Выручка</p><p id="d-rev" class="text-2xl font-black text-yellow-400">0 с.</p></div>
-        <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl"><p class="text-[10px] text-gray-500">Комиссия</p><p id="d-comm" class="text-2xl font-black text-emerald-400">0 с.</p></div>
+        <div class="bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/30 rounded-2xl p-4">
+          <p class="text-[10px] text-amber-400 uppercase font-bold">Новых заказов</p>
+          <p id="dash-new" class="text-3xl font-black text-amber-400 mt-1">0</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+          <p class="text-[10px] text-gray-500 uppercase font-bold">Сегодня заказов</p>
+          <p id="dash-orders" class="text-3xl font-black text-white mt-1">0</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+          <p class="text-[10px] text-gray-500 uppercase font-bold">Выручка сегодня</p>
+          <p id="dash-revenue" class="text-2xl font-black text-yellow-400 mt-1">0 с.</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+          <p class="text-[10px] text-gray-500 uppercase font-bold">Комиссия сегодня</p>
+          <p id="dash-commission" class="text-2xl font-black text-emerald-400 mt-1">0 с.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><p class="text-[10px] text-gray-500 uppercase">Ресторанов</p><p id="dash-rest" class="text-2xl font-black text-white mt-1">0</p></div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><p class="text-[10px] text-gray-500 uppercase">Товаров</p><p id="dash-products" class="text-2xl font-black text-white mt-1">0</p></div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><p class="text-[10px] text-gray-500 uppercase">В стоп-листе</p><p id="dash-stopped" class="text-2xl font-black text-red-400 mt-1">0</p></div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><p class="text-[10px] text-gray-500 uppercase">Скрытых</p><p id="dash-hidden" class="text-2xl font-black text-gray-400 mt-1">0</p></div>
+      </div>
+
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <h4 class="font-bold text-white text-sm mb-3">Выручка за 7 дней</h4>
+        <div id="chart-7days" class="flex items-end justify-between gap-2 h-32"></div>
+      </div>
+
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4">
+        <h4 class="font-bold text-white text-sm mb-3 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> Требуют внимания</h4>
+        <div id="audit-list" class="space-y-2 text-xs"></div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <button onclick="downloadBackup()" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-xl p-4 text-left flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="download" class="w-5 h-5"></i></div><div><p class="text-xs font-bold text-white">Резервная копия</p><p class="text-[10px] text-gray-500">JSON со всей базой</p></div></button>
+        <button onclick="switchAdminTab('all-orders')" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-xl p-4 text-left flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center"><i data-lucide="shopping-bag" class="w-5 h-5"></i></div><div><p class="text-xs font-bold text-white">Все заказы</p><p class="text-[10px] text-gray-500">Фильтр, статус, удалить</p></div></button>
+        <button onclick="switchAdminTab('products')" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-xl p-4 text-left flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-yellow-400/10 text-yellow-400 flex items-center justify-center"><i data-lucide="utensils" class="w-5 h-5"></i></div><div><p class="text-xs font-bold text-white">Товары</p><p class="text-[10px] text-gray-500">Все блюда</p></div></button>
+        <button onclick="switchAdminTab('settings')" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-xl p-4 text-left flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center"><i data-lucide="settings" class="w-5 h-5"></i></div><div><p class="text-xs font-bold text-white">Настройки</p><p class="text-[10px] text-gray-500">Тексты, доставка</p></div></button>
       </div>
     </section>
 
-    <section id="sec-rest" class="hidden space-y-4">
-      <form id="add-rest-form" class="bg-gray-900 border border-gray-800 p-4 rounded-xl grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <input type="text" id="r-name" required placeholder="Название" class="bg-gray-950 p-2 rounded border border-gray-800 text-xs">
-        <input type="text" id="r-addr" required placeholder="Адрес" class="bg-gray-950 p-2 rounded border border-gray-800 text-xs">
-        <input type="number" id="r-comm" required value="10" placeholder="Комиссия %" class="bg-gray-950 p-2 rounded border border-gray-800 text-xs">
-        <input type="email" id="r-email" required placeholder="Email" class="bg-gray-950 p-2 rounded border border-gray-800 text-xs">
-        <input type="password" id="r-pass" required placeholder="Пароль" class="bg-gray-950 p-2 rounded border border-gray-800 text-xs">
-        <button type="submit" class="bg-emerald-500 text-black font-bold rounded text-xs">Добавить</button>
+    <!-- РЕСТОРАНЫ -->
+    <section id="sec-restaurants" class="hidden space-y-6">
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+        <h3 class="font-bold text-white text-base flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i><span>Добавить новый ресторан</span></h3>
+        <form id="add-restaurant-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div><label class="text-[11px] text-gray-400 font-semibold">Название *</label><input type="text" id="res-name" required placeholder="Райхон" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Адрес *</label><input type="text" id="res-address" required placeholder="ул. И. Сомони 12" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Телефон</label><input type="text" id="res-phone" placeholder="+992921234567" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Логотип (URL)</label><input type="url" id="res-logo" placeholder="https://..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Кухня / тип</label><input type="text" id="res-cuisine" placeholder="Национальная" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Комиссия (%) *</label><input type="number" id="res-commission" required min="0" max="100" value="10" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Email партнёра *</label><input type="email" id="res-email" required placeholder="rayhon@peshras.tj" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">Пароль партнёра (мин. 6) *</label><input type="password" id="res-password" required minlength="6" placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
+          <div class="sm:col-span-2 lg:col-span-3 pt-2">
+            <button type="submit" id="create-rest-btn" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-6 py-2.5 rounded-xl transition text-xs flex items-center gap-2 disabled:opacity-50"><span>Зарегистрировать + создать аккаунт</span><i data-lucide="check" class="w-4 h-4"></i></button>
+            <p id="create-rest-status" class="text-xs mt-2 hidden"></p>
+          </div>
+        </form>
+      </div>
+      <div class="space-y-3">
+        <h4 class="font-bold text-white text-sm">Подключенные заведения:</h4>
+        <div id="admin-restaurants-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="text-gray-500 text-xs py-4">Загрузка...</div></div>
+      </div>
+    </section>
+
+    <!-- ТОВАРЫ -->
+    <section id="sec-products" class="hidden space-y-4">
+      <div class="flex flex-wrap gap-2 items-center">
+        <select id="prod-filter-rest" class="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-300"><option value="">Все рестораны</option></select>
+        <select id="prod-filter-status" class="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-300"><option value="">Все статусы</option><option value="in_stock">В наличии</option><option value="stopped">Стоп-лист</option><option value="hidden">Скрытые</option><option value="hit">🔥 Хиты</option><option value="popular">⭐ Популярные</option><option value="new">✨ Новинки</option></select>
+        <select id="prod-sort" class="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-300"><option value="new">Сначала новые</option><option value="price-asc">Цена ↑</option><option value="price-desc">Цена ↓</option><option value="name">По названию</option></select>
+        <input id="prod-search" type="text" placeholder="Поиск..." class="flex-1 min-w-[160px] bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs">
+      </div>
+      <div id="bulk-bar" class="hidden bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center justify-between gap-2 flex-wrap">
+        <span class="text-xs text-emerald-400 font-bold">Выбрано: <span id="bulk-count">0</span></span>
+        <div class="flex gap-1 flex-wrap">
+          <button onclick="bulkAction('hide')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-white font-bold px-2 py-1 rounded">🚫 Скрыть</button>
+          <button onclick="bulkAction('show')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-white font-bold px-2 py-1 rounded">👁 Показать</button>
+          <button onclick="bulkAction('stop')" class="text-[10px] bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded">⏸ Стоп</button>
+          <button onclick="bulkAction('delete')" class="text-[10px] bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded">🗑 Удалить</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-gray-400">
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="select-all-prods" class="w-4 h-4 accent-emerald-500"> Выбрать все</label>
+      </div>
+      <div id="admin-products-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"><div class="text-gray-500 text-xs py-4 col-span-full">Загрузка...</div></div>
+    </section>
+
+    <!-- ЗАКАЗЫ -->
+    <section id="sec-orders" class="hidden space-y-4">
+      <div class="flex flex-wrap gap-2">
+        <select id="order-filter-status" class="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-300"><option value="">Все статусы</option><option value="new">Новые</option><option value="accepted">Принятые</option><option value="cooking">Готовятся</option><option value="delivering">В пути</option><option value="delivered">Доставленные</option><option value="cancelled">Отменённые</option></select>
+        <select id="order-filter-rest" class="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-gray-300"><option value="">Все рестораны</option></select>
+        <button onclick="exportOrdersCSV()" class="ml-auto bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5"></i> CSV</button>
+      </div>
+      <div id="admin-orders-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"><div class="text-gray-500 text-xs py-4 col-span-full">Загрузка заказов...</div></div>
+    </section>
+
+    <!-- АНАЛИТИКА -->
+    <section id="sec-analytics" class="hidden space-y-4">
+      <div class="flex flex-wrap gap-2">
+        <button data-period="today" class="period-btn bg-yellow-400 text-black font-bold px-4 py-2 rounded-xl text-xs">Сегодня</button>
+        <button data-period="yesterday" class="period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs">Вчера</button>
+        <button data-period="week" class="period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs">7 дней</button>
+        <button data-period="month" class="period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs">30 дней</button>
+        <button data-period="all" class="period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs">Всё время</button>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><p class="text-[10px] text-gray-500 uppercase">Заказов</p><p id="stat-orders" class="text-2xl font-black text-white mt-1">—</p></div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><p class="text-[10px] text-gray-500 uppercase">Общая сумма</p><p id="stat-revenue" class="text-2xl font-black text-yellow-400 mt-1">—</p></div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><p class="text-[10px] text-gray-500 uppercase">Комиссия</p><p id="stat-commission" class="text-2xl font-black text-emerald-400 mt-1">—</p></div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><p class="text-[10px] text-gray-500 uppercase">Средний чек</p><p id="stat-avg" class="text-2xl font-black text-white mt-1">—</p></div>
+      </div>
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4"><h4 class="font-bold text-white text-sm mb-3">По ресторанам</h4><div id="analytics-restaurants" class="space-y-2 text-xs"><p class="text-gray-500">Загрузка...</p></div></div>
+    </section>
+
+    <!-- НАСТРОЙКИ -->
+    <section id="sec-settings" class="hidden space-y-4">
+      <form id="settings-form" class="space-y-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+          <h3 class="font-bold text-white text-sm flex items-center gap-2"><i data-lucide="truck" class="w-4 h-4 text-emerald-400"></i> Доставка и оплата</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div><label class="text-[11px] text-gray-400 font-semibold">Стоимость доставки (с.)</label><input type="number" id="set-delivery" min="0" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400 font-semibold">Бесплатно от (с.)</label><input type="number" id="set-free-from" min="0" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400 font-semibold">Минимальный заказ (с.)</label><input type="number" id="set-min-order" min="0" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div><label class="text-[11px] text-gray-400 font-semibold">Часы работы</label><input type="text" id="set-hours" placeholder="09:00 – 23:00" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400 font-semibold">Способы оплаты</label><input type="text" id="set-payments" placeholder="Наличные, Корварок, Алиф Мобайл" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+          </div>
+          <label class="flex items-center gap-2 text-xs text-amber-400 font-bold cursor-pointer"><input type="checkbox" id="set-maintenance" class="w-4 h-4 accent-amber-500"><span>🔧 Режим техработ</span></label>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+          <h3 class="font-bold text-white text-sm flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-emerald-400"></i> Контакты</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div><label class="text-[11px] text-gray-400 font-semibold">Телефон поддержки</label><input type="text" id="set-phone" placeholder="+992..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400 font-semibold">Telegram</label><input type="text" id="set-telegram" placeholder="@peshras_support" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400 font-semibold">WhatsApp</label><input type="text" id="set-whatsapp" placeholder="+992..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+            <div><label class="text-[11px] text-gray-400 font-semibold">Email</label><input type="email" id="set-email" placeholder="support@peshras.tj" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+          </div>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+          <h3 class="font-bold text-white text-sm flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i> Тексты для клиентов</h3>
+          <div><label class="text-[11px] text-gray-400 font-semibold">«О нас»</label><textarea id="set-about" rows="4" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs resize-none"></textarea></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">«Условия доставки и оплаты»</label><textarea id="set-terms" rows="6" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs resize-none"></textarea></div>
+          <div><label class="text-[11px] text-gray-400 font-semibold">«Стать партнёром»</label><textarea id="set-partner" rows="4" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs resize-none"></textarea></div>
+        </div>
+        <button type="submit" id="save-settings-btn" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-6 py-3 rounded-xl text-sm">💾 Сохранить настройки</button>
+        <span id="settings-status" class="text-xs ml-2 hidden"></span>
       </form>
-      <div id="admin-rest-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-    </section>
-
-    <section id="sec-prod" class="hidden space-y-4">
-      <div id="admin-prod-list" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
-    </section>
-
-    <section id="sec-ord" class="hidden space-y-4">
-      <div id="admin-ord-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-    </section>
-
-    <section id="sec-set" class="hidden space-y-4">
-      <form id="settings-form" class="bg-gray-900 border border-gray-800 p-4 rounded-xl space-y-3">
-        <input type="number" id="s-deliv" placeholder="Доставка" class="bg-gray-950 p-2 rounded w-full text-xs">
-        <input type="number" id="s-min" placeholder="Мин. заказ" class="bg-gray-950 p-2 rounded w-full text-xs">
-        <textarea id="s-about" placeholder="О нас" class="bg-gray-950 p-2 rounded w-full text-xs"></textarea>
-        <button type="submit" class="bg-emerald-500 text-black px-4 py-2 rounded font-bold">Сохранить</button>
-      </form>
+      <div class="bg-gray-900 border border-red-500/30 rounded-2xl p-5 space-y-3">
+        <h3 class="font-bold text-white text-sm flex items-center gap-2"><i data-lucide="ban" class="w-4 h-4 text-red-400"></i> Чёрный список телефонов</h3>
+        <p class="text-[11px] text-gray-400">Клиенты с этими номерами не смогут оформить заказ.</p>
+        <div class="flex gap-2">
+          <input type="tel" id="block-phone" placeholder="+992..." class="flex-1 bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs">
+          <button onclick="addBlockedPhone()" class="bg-red-500 hover:bg-red-400 text-white font-bold px-4 py-2 rounded-xl text-xs">Заблокировать</button>
+        </div>
+        <div id="blocked-list" class="space-y-1"></div>
+      </div>
     </section>
   </main>
 </div>
 
+<!-- МОДАЛКА РЕДАКТИРОВАНИЯ РЕСТОРАНА -->
+<div id="edit-rest-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 max-w-md w-full space-y-4 max-h-[92vh] overflow-y-auto">
+    <div class="flex items-center justify-between border-b border-gray-800 pb-3"><h3 class="font-extrabold text-white text-base flex items-center gap-2"><i data-lucide="edit-3" class="w-4 h-4 text-emerald-400"></i><span>Редактировать ресторан</span></h3><button onclick="closeEditRest()" class="text-gray-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+    <form id="edit-rest-form" class="space-y-3">
+      <input type="hidden" id="er-id">
+      <div><label class="text-[11px] text-gray-400 font-semibold">Название</label><input type="text" id="er-name" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div><label class="text-[11px] text-gray-400 font-semibold">Адрес</label><input type="text" id="er-address" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div><label class="text-[11px] text-gray-400 font-semibold">Телефон</label><input type="text" id="er-phone" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div><label class="text-[11px] text-gray-400 font-semibold">Логотип (URL)</label><input type="url" id="er-logo" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div><label class="text-[11px] text-gray-400 font-semibold">Кухня / тип</label><input type="text" id="er-cuisine" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div><label class="text-[11px] text-gray-400 font-semibold">Комиссия (%) *</label><input type="number" id="er-commission" min="0" max="100" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div class="bg-gray-950 border border-gray-800 rounded-xl p-3 text-[10px] text-gray-500 space-y-1">
+        <p>Email владельца: <span id="er-email" class="text-gray-300 font-mono"></span></p>
+        <p>UID: <span id="er-uid" class="text-gray-300 font-mono"></span></p>
+      </div>
+      <div class="flex gap-2 pt-2"><button type="button" onclick="closeEditRest()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2.5 rounded-xl text-xs">Отмена</button><button type="submit" id="save-rest-btn" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-2.5 rounded-xl text-xs">Сохранить</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- МОДАЛКА РЕДАКТИРОВАНИЯ ТОВАРА -->
+<div id="edit-prod-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 max-w-md w-full space-y-4 max-h-[92vh] overflow-y-auto">
+    <div class="flex items-center justify-between border-b border-gray-800 pb-3"><h3 class="font-extrabold text-white text-base flex items-center gap-2"><i data-lucide="utensils" class="w-4 h-4 text-emerald-400"></i><span>Редактировать блюдо</span></h3><button onclick="closeEditProd()" class="text-gray-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+    <form id="edit-prod-form" class="space-y-3">
+      <input type="hidden" id="ep-id">
+      <div><label class="text-[11px] text-gray-400 font-semibold">Название</label><input type="text" id="ep-name" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-[11px] text-gray-400 font-semibold">Цена (с.)</label><input type="number" id="ep-price" min="0" step="0.01" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+        <div><label class="text-[11px] text-gray-400 font-semibold">Категория</label><select id="ep-category" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"><option value="plov">🍚 Плов</option><option value="shashlik">🍢 Шашлык</option><option value="pizza">🍕 Пицца</option><option value="burger">🍔 Бургеры</option><option value="fastfood">🌭 Фастфуд</option><option value="soup">🍲 Супы</option><option value="salad">🥗 Салаты</option><option value="bakery">🥐 Выпечка</option><option value="dessert">🍰 Десерты</option><option value="drinks">🥤 Напитки</option><option value="other">🍽 Другое</option></select></div>
+      </div>
+      <div><label class="text-[11px] text-gray-400 font-semibold">Фото (URL)</label><input type="url" id="ep-img" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs"></div>
+      <div><label class="text-[11px] text-gray-400 font-semibold">Описание</label><textarea id="ep-desc" rows="2" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs resize-none"></textarea></div>
+      <div class="grid grid-cols-2 gap-2">
+        <label class="flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer"><input type="checkbox" id="ep-instock" class="w-4 h-4 accent-emerald-500"> В наличии</label>
+        <label class="flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer"><input type="checkbox" id="ep-hit" class="w-4 h-4 accent-yellow-400"> 🔥 Хит</label>
+        <label class="flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer"><input type="checkbox" id="ep-popular" class="w-4 h-4 accent-orange-400"> ⭐ Популярное</label>
+        <label class="flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer"><input type="checkbox" id="ep-new" class="w-4 h-4 accent-blue-400"> ✨ Новинка</label>
+      </div>
+      <div class="flex gap-2 pt-2"><button type="button" onclick="closeEditProd()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2.5 rounded-xl text-xs">Отмена</button><button type="submit" id="save-prod-btn" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-2.5 rounded-xl text-xs">Сохранить</button></div>
+    </form>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, serverTimestamp, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyBGUkISLQ1Qm9xfYkVgZhoLeR_P_VTSrhM", authDomain: "peshras-delivery.firebaseapp.com", projectId: "peshras-delivery", storageBucket: "peshras-delivery.firebasestorage.app", messagingSenderId: "790787117044", appId: "1:790787117044:web:217ef1bea4edbab24873a1" };
@@ -87,98 +290,148 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let allR = [], allP = [], allO = [];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' с.';
+const fmtDate = t => { if (!t) return ''; const d = t.toDate ? t.toDate() : new Date(t); return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }); };
 
-document.getElementById('login-form').onsubmit = async (e) => {
-  e.preventDefault();
-  try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); } catch { alert('Ошибка'); }
-};
-window.logout = () => signOut(auth);
+let allRestaurants = {}, allProducts = [], allOrders = [], allBlocked = [], currentPeriod = 'today', selectedProducts = new Set(), settingsData = {};
 
-onAuthStateChanged(auth, u => {
-  if (u) { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden'); init(); }
-  else { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); }
+document.getElementById('admin-login-form').addEventListener('submit', async (e) => { e.preventDefault(); const err = document.getElementById('admin-error'); err.classList.add('hidden'); try { await signInWithEmailAndPassword(auth, document.getElementById('admin-email').value, document.getElementById('admin-password').value); } catch { err.innerText = 'Неверный email или пароль'; err.classList.remove('hidden'); } });
+onAuthStateChanged(auth, (user) => { if (user) { document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('admin-app').classList.remove('hidden'); initData(); } else { document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('admin-app').classList.add('hidden'); } lucide.createIcons(); });
+window.adminLogout = () => signOut(auth);
+
+document.getElementById('add-restaurant-form').addEventListener('submit', async (e) => {
+  e.preventDefault(); const btn = document.getElementById('create-rest-btn'); const status = document.getElementById('create-rest-status');
+  const email = document.getElementById('res-email').value.trim(); const pass = document.getElementById('res-password').value;
+  btn.disabled = true; btn.innerHTML = 'Создаём...'; status.classList.add('hidden'); let secondaryApp = null;
+  try {
+    secondaryApp = initializeApp(firebaseConfig, 'sec-' + Date.now()); const sa = getAuth(secondaryApp);
+    const cred = await createUserWithEmailAndPassword(sa, email, pass); const uid = cred.user.uid;
+    await addDoc(collection(db, 'restaurants'), { name: document.getElementById('res-name').value.trim(), address: document.getElementById('res-address').value.trim(), phone: document.getElementById('res-phone').value.trim(), logo_url: document.getElementById('res-logo').value.trim(), cuisine: document.getElementById('res-cuisine').value.trim(), commission: Number(document.getElementById('res-commission').value) || 0, owner_uid: uid, owner_email: email, is_banned: false, created_at: serverTimestamp() });
+    await signOut(sa); await deleteApp(secondaryApp);
+    status.className = 'text-xs mt-2 text-emerald-400'; status.innerText = `✅ Ресторан создан. UID: ${uid}`; status.classList.remove('hidden'); e.target.reset(); document.getElementById('res-commission').value = '10';
+  } catch (err) { console.error(err); status.className = 'text-xs mt-2 text-red-400'; status.innerText = '❌ Ошибка: ' + (err.code || err.message); status.classList.remove('hidden'); if (secondaryApp) try { await deleteApp(secondaryApp); } catch {} }
+  finally { btn.disabled = false; btn.innerHTML = 'Зарегистрировать + создать аккаунт'; }
 });
 
-function init() {
-  onSnapshot(collection(db, 'restaurants'), s => { allR = s.docs.map(d => ({id: d.id, ...d.data()})); renderR(); });
-  onSnapshot(collection(db, 'products'), s => { allP = s.docs.map(d => ({id: d.id, ...d.data()})); renderP(); });
-  onSnapshot(collection(db, 'orders'), s => { allO = s.docs.map(d => ({id: d.id, ...d.data()})); renderO(); renderDash(); });
+function initData() {
+  onSnapshot(collection(db, 'restaurants'), snap => { allRestaurants = {}; snap.forEach(d => allRestaurants[d.id] = { id: d.id, ...d.data() }); renderRestaurants(); fillRestFilters(); renderProductsList(); renderDashboard(); });
+  onSnapshot(collection(db, 'products'), snap => { allProducts = []; snap.forEach(d => allProducts.push({ id: d.id, ...d.data() })); renderProductsList(); renderRestaurants(); renderDashboard(); });
+  onSnapshot(collection(db, 'orders'), snap => { allOrders = []; snap.forEach(d => allOrders.push({ id: d.id, ...d.data() })); renderOrders(); renderAnalytics(); renderDashboard(); updateNewOrdersBanner(); });
+  onSnapshot(collection(db, 'blocked_phones'), snap => { allBlocked = []; snap.forEach(d => allBlocked.push({ id: d.id, ...d.data() })); renderBlockedList(); });
+  getDoc(doc(db, 'settings', 'config')).then(s => { if (s.exists()) { settingsData = s.data(); fillSettingsForm(); } });
 }
 
-document.getElementById('add-rest-form').onsubmit = async (e) => {
-  e.preventDefault();
-  const sec = initializeApp(firebaseConfig, 'sec'+Date.now());
-  const sa = getAuth(sec);
-  const cred = await createUserWithEmailAndPassword(sa, document.getElementById('r-email').value, document.getElementById('r-pass').value);
-  await addDoc(collection(db, 'restaurants'), {
-    name: document.getElementById('r-name').value, address: document.getElementById('r-addr').value,
-    commission: Number(document.getElementById('r-comm').value), owner_uid: cred.user.uid, is_banned: false, created_at: serverTimestamp()
-  });
-  await signOut(sa); await deleteApp(sec); e.target.reset();
-};
+function renderDashboard() {
+  const now = new Date(); const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const todayOrders = allOrders.filter(o => (o.created_at?.toMillis?.() || 0) >= todayStart && o.status !== 'cancelled');
+  const todayRevenue = todayOrders.reduce((s, o) => s + (o.total_price || 0), 0);
+  const todayCommission = todayOrders.reduce((s, o) => s + (o.commission_amount !== undefined ? o.commission_amount : (o.total_price || 0) * (allRestaurants[o.restaurant_id]?.commission ?? 0) / 100), 0);
+  const newOrders = allOrders.filter(o => o.status === 'new').length;
+  const stopped = allProducts.filter(p => p.in_stock === false).length;
+  const hidden = allProducts.filter(p => p.is_hidden === true).length;
 
-function renderR() {
-  document.getElementById('admin-rest-list').innerHTML = allR.map(r => `
-    <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl flex justify-between items-center text-xs">
-      <div><b class="text-white">${r.name}</b> (${r.commission}%)<br><span class="text-gray-500">${r.address}</span></div>
-      <div class="flex gap-1">
-        <button onclick="updateDoc(doc(db,'restaurants','${r.id}'),{shift_open: ${r.shift_open===false}})" class="px-2 py-1 rounded ${r.shift_open===false?'bg-red-500/20 text-red-400':'bg-emerald-500/20 text-emerald-400'}">${r.shift_open===false?'Закрыт':'Открыт'}</button>
-        <button onclick="deleteDoc(doc(db,'restaurants','${r.id}'))" class="text-red-400 px-1">✕</button>
-      </div>
-    </div>`).join('');
+  document.getElementById('dash-new').innerText = newOrders; document.getElementById('dash-orders').innerText = todayOrders.length; document.getElementById('dash-revenue').innerText = fmt(todayRevenue); document.getElementById('dash-commission').innerText = fmt(todayCommission);
+  document.getElementById('dash-rest').innerText = Object.keys(allRestaurants).length; document.getElementById('dash-products').innerText = allProducts.length; document.getElementById('dash-stopped').innerText = stopped; document.getElementById('dash-hidden').innerText = hidden;
+
+  const days = []; for (let i = 6; i >= 0; i--) { const d = new Date(todayStart - i * 86400000); const dayEnd = d.getTime() + 86400000; const dayOrders = allOrders.filter(o => { const t = o.created_at?.toMillis?.() || 0; return t >= d.getTime() && t < dayEnd && o.status !== 'cancelled'; }); days.push({ label: d.toLocaleDateString('ru-RU', { weekday: 'short' }), sum: dayOrders.reduce((s, o) => s + (o.total_price || 0), 0) }); }
+  const maxSum = Math.max(...days.map(d => d.sum), 1);
+  document.getElementById('chart-7days').innerHTML = days.map(d => `<div class="flex flex-col items-center gap-1 flex-1"><div class="w-full flex items-end justify-center h-24"><div class="chart-bar w-full max-w-[40px] bg-emerald-500 rounded-t-lg" style="height: ${Math.max(4, (d.sum / maxSum) * 100)}%"></div></div><span class="text-[9px] text-gray-500">${d.label}</span></div>`).join('');
+
+  const noPhoto = allProducts.filter(p => !p.image_url).length; const noDesc = allProducts.filter(p => !p.description).length; const noCat = allProducts.filter(p => !p.category).length; const noCommission = Object.values(allRestaurants).filter(r => !r.commission).length;
+  const audit = [];
+  if (newOrders) audit.push(`<div class="flex items-center justify-between bg-amber-500/10 border border-amber-500/30 rounded-lg p-2"><span class="text-amber-400 font-bold">🆕 ${newOrders} новых заказов</span><button onclick="switchAdminTab('all-orders');document.getElementById('order-filter-status').value='new';renderOrders();" class="text-[10px] bg-amber-500 text-black font-bold px-2 py-1 rounded">Открыть</button></div>`);
+  if (noPhoto) audit.push(`<div class="text-yellow-400">📷 Товаров без фото: <b>${noPhoto}</b></div>`); if (noDesc) audit.push(`<div class="text-yellow-400">📝 Товаров без описания: <b>${noDesc}</b></div>`); if (noCat) audit.push(`<div class="text-yellow-400">🏷 Товаров без категории: <b>${noCat}</b></div>`); if (noCommission) audit.push(`<div class="text-red-400">💸 Ресторанов без комиссии: <b>${noCommission}</b></div>`);
+  document.getElementById('audit-list').innerHTML = audit.length ? audit.join('') : `<p class="text-emerald-400">✅ Всё в порядке</p>`;
 }
 
-function renderP() {
-  document.getElementById('admin-prod-list').innerHTML = allP.map(p => `
-    <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs">
-      <b class="text-white">${p.name}</b> — ${p.price} с.<br>
-      <button onclick="deleteDoc(doc(db,'products','${p.id}'))" class="text-red-400 mt-2">Удалить</button>
-    </div>`).join('');
+function updateNewOrdersBanner() { const newOrders = allOrders.filter(o => o.status === 'new'); const banner = document.getElementById('new-orders-banner'); if (newOrders.length > 0) { banner.classList.remove('hidden'); document.getElementById('new-orders-text').innerText = `Новых заказов: ${newOrders.length}`; } else { banner.classList.add('hidden'); } }
+
+function renderRestaurants() {
+  const container = document.getElementById('admin-restaurants-list'); const list = Object.values(allRestaurants);
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Ресторанов пока нет</div>`; return; }
+  container.innerHTML = list.map(r => { const prodCount = allProducts.filter(p => p.restaurant_id === r.id).length; return `<div class="bg-gray-900 border ${r.is_banned ? 'border-red-500/40' : 'border-gray-800'} rounded-2xl p-4 space-y-2"><div class="flex items-start gap-3"><div class="w-12 h-12 rounded-xl bg-gray-800 overflow-hidden flex-shrink-0">${r.logo_url ? `<img src="${esc(r.logo_url)}" class="w-full h-full object-cover" onerror="this.style.display='none'">` : ''}</div><div class="flex-1 min-w-0"><div class="flex items-center justify-between gap-2 flex-wrap"><h4 class="font-extrabold text-white text-sm truncate">${esc(r.name)}</h4><span class="text-[10px] bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/20">${r.commission}%</span></div><p class="text-xs text-gray-400 truncate">📍 ${esc(r.address || '—')}</p><p class="text-xs text-gray-400 truncate">📞 ${esc(r.phone || '—')}</p></div></div><div class="flex items-center justify-between pt-2 border-t border-gray-800 flex-wrap gap-1"><span class="text-xs text-gray-400">Блюд: <b class="text-emerald-400">${prodCount}</b></span><div class="flex gap-1 flex-wrap"><button onclick="openEditRest('${r.id}')" class="text-[10px] bg-emerald-500/20 text-emerald-400 font-bold px-2 py-1 rounded">✏️ Изменить</button><button onclick="toggleBanRestaurant('${r.id}', ${!r.is_banned})" class="text-[10px] font-bold px-2 py-1 rounded ${r.is_banned ? 'bg-red-500/20 text-red-400' : 'bg-gray-800 text-gray-400'}">${r.is_banned ? 'Запрещён' : 'Запретить'}</button><button onclick="toggleShiftAdmin('${r.id}', ${r.shift_open === false})" class="text-[10px] font-bold px-2 py-1 rounded ${r.shift_open === false ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}">${r.shift_open === false ? '🔴 Смена закрыта' : '🟢 Смена открыта'}</button><button onclick="delRestaurant('${r.id}')" class="text-red-400 hover:text-red-300 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div></div>`; }).join('');
+  lucide.createIcons();
 }
 
-function renderO() {
-  document.getElementById('admin-ord-list').innerHTML = allO.map(o => `
-    <div class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs space-y-1">
-      <div class="flex justify-between"><b>#${o.order_number}</b><span class="text-amber-400">${o.status}</span></div>
-      <div class="text-gray-400">${o.client_name} · ${o.total_price} с.</div>
-      <div class="flex justify-between items-center pt-2">
-        <select onchange="updateDoc(doc(db,'orders','${o.id}'),{status:this.value})" class="bg-gray-950 p-1 rounded">
-          <option value="new" ${o.status==='new'?'selected':''}>Новый</option>
-          <option value="delivering" ${o.status==='delivering'?'selected':''}>В пути</option>
-          <option value="delivered" ${o.status==='delivered'?'selected':''}>Доставлен</option>
-        </select>
-        <button onclick="deleteDoc(doc(db,'orders','${o.id}'))" class="text-red-400">Удалить</button>
-      </div>
-    </div>`).join('');
+window.toggleBanRestaurant = async (id, newBan) => { if (!confirm(newBan ? 'Запретить ресторан? Все его товары скроются с главной.' : 'Разрешить ресторан?')) return; try { await updateDoc(doc(db, 'restaurants', id), { is_banned: newBan }); } catch (e) { alert('Ошибка'); } };
+window.delRestaurant = async (id) => { if (!confirm('Удалить ресторан? Блюда останутся в базе.')) return; try { await deleteDoc(doc(db, 'restaurants', id)); } catch (e) { alert('Ошибка'); } };
+window.toggleShiftAdmin = async (id, isClosed) => { const open = !isClosed; if (!confirm(open ? 'Открыть смену ресторана?' : 'Закрыть смену?')) return; try { await updateDoc(doc(db, 'restaurants', id), { shift_open: open, shift_changed_at: serverTimestamp() }); } catch (e) { alert('Ошибка'); } };
+
+window.openEditRest = (id) => { const r = allRestaurants[id]; if (!r) return; document.getElementById('er-id').value = id; document.getElementById('er-name').value = r.name || ''; document.getElementById('er-address').value = r.address || ''; document.getElementById('er-phone').value = r.phone || ''; document.getElementById('er-logo').value = r.logo_url || ''; document.getElementById('er-cuisine').value = r.cuisine || ''; document.getElementById('er-commission').value = r.commission ?? 10; document.getElementById('er-email').innerText = r.owner_email || '—'; document.getElementById('er-uid').innerText = r.owner_uid || '—'; document.getElementById('edit-rest-modal').classList.remove('hidden'); document.getElementById('edit-rest-modal').classList.add('flex'); };
+window.closeEditRest = () => { document.getElementById('edit-rest-modal').classList.add('hidden'); document.getElementById('edit-rest-modal').classList.remove('flex'); };
+document.getElementById('edit-rest-form').addEventListener('submit', async (e) => { e.preventDefault(); const btn = document.getElementById('save-rest-btn'); const id = document.getElementById('er-id').value; btn.disabled = true; btn.textContent = 'Сохраняем...'; try { await updateDoc(doc(db, 'restaurants', id), { name: document.getElementById('er-name').value.trim(), address: document.getElementById('er-address').value.trim(), phone: document.getElementById('er-phone').value.trim(), logo_url: document.getElementById('er-logo').value.trim(), cuisine: document.getElementById('er-cuisine').value.trim(), commission: Number(document.getElementById('er-commission').value) || 0 }); closeEditRest(); } catch (err) { alert('Ошибка'); } finally { btn.disabled = false; btn.textContent = 'Сохранить'; } });
+
+function fillRestFilters() { const ids = Object.keys(allRestaurants); ['prod-filter-rest', 'order-filter-rest'].forEach(id => { const sel = document.getElementById(id); const cur = sel.value; sel.innerHTML = `<option value="">Все рестораны</option>` + ids.map(rid => `<option value="${rid}">${esc(allRestaurants[rid].name)}</option>`).join(''); sel.value = cur; }); }
+
+function renderProductsList() {
+  const container = document.getElementById('admin-products-list'); const restF = document.getElementById('prod-filter-rest')?.value || ''; const statusF = document.getElementById('prod-filter-status')?.value || ''; const sort = document.getElementById('prod-sort')?.value || 'new'; const search = (document.getElementById('prod-search')?.value || '').toLowerCase();
+  let list = [...allProducts]; if (restF) list = list.filter(p => p.restaurant_id === restF); if (search) list = list.filter(p => (p.name || '').toLowerCase().includes(search));
+  if (statusF === 'in_stock') list = list.filter(p => p.in_stock !== false && p.is_hidden !== true); if (statusF === 'stopped') list = list.filter(p => p.in_stock === false); if (statusF === 'hidden') list = list.filter(p => p.is_hidden === true); if (statusF === 'hit') list = list.filter(p => p.is_hit === true); if (statusF === 'popular') list = list.filter(p => p.is_popular === true); if (statusF === 'new') list = list.filter(p => p.is_new === true);
+  if (sort === 'price-asc') list.sort((a, b) => (a.price || 0) - (b.price || 0)); if (sort === 'price-desc') list.sort((a, b) => (b.price || 0) - (a.price || 0)); if (sort === 'name') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Товаров нет</div>`; return; }
+  container.innerHTML = list.map(p => { const rest = allRestaurants[p.restaurant_id]; const isHidden = p.is_hidden === true; const checked = selectedProducts.has(p.id) ? 'checked' : ''; return `<div class="bg-gray-900 border ${isHidden ? 'border-red-500/40 opacity-70' : 'border-gray-800'} rounded-2xl p-3 space-y-2"><div class="flex gap-2"><input type="checkbox" class="prod-check w-4 h-4 accent-emerald-500 mt-1" data-id="${p.id}" ${checked}><img src="${esc(p.image_url || 'https://via.placeholder.com/80')}" class="w-16 h-16 rounded-xl object-cover bg-gray-800 flex-shrink-0" onerror="this.src='https://via.placeholder.com/80'"><div class="flex-1 min-w-0"><h4 class="font-bold text-xs text-white truncate">${esc(p.name)}</h4><p class="text-[10px] text-gray-500 truncate">${esc(rest?.name || '—')}</p><p class="text-yellow-400 font-black text-sm">${p.price} с.</p><div class="flex gap-1 mt-1">${p.is_hit ? '<span class="text-[8px] bg-yellow-400/20 text-yellow-400 px-1 rounded">🔥 Хит</span>' : ''}${p.is_popular ? '<span class="text-[8px] bg-orange-400/20 text-orange-400 px-1 rounded">⭐ Поп</span>' : ''}${p.is_new ? '<span class="text-[8px] bg-blue-400/20 text-blue-400 px-1 rounded">✨ New</span>' : ''}</div></div></div><div class="flex flex-wrap gap-1 pt-2 border-t border-gray-800"><button onclick="editProduct('${p.id}')" class="text-[10px] bg-gray-800 hover:bg-gray-700 text-white font-bold px-2 py-1 rounded">✏️ Ред.</button><button onclick="toggleHideProduct('${p.id}', ${!isHidden})" class="text-[10px] ${isHidden ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-400'} font-bold px-2 py-1 rounded">${isHidden ? '👁' : '🚫'}</button><button onclick="delProduct('${p.id}')" class="text-[10px] bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded">🗑</button></div></div>`; }).join('');
+  lucide.createIcons();
+  container.querySelectorAll('.prod-check').forEach(cb => { cb.addEventListener('change', () => { if (cb.checked) selectedProducts.add(cb.dataset.id); else selectedProducts.delete(cb.dataset.id); updateBulkBar(); }); });
+  updateBulkBar();
 }
 
-function renderDash() {
-  const today = new Date().setHours(0,0,0,0);
-  const list = allO.filter(o => (o.created_at?.toMillis?.() || 0) >= today && o.status !== 'cancelled');
-  const rev = list.reduce((s,o) => s + o.total_price, 0);
-  const comm = list.reduce((s,o) => s + (o.commission_amount || 0), 0);
-  document.getElementById('d-ord').textContent = list.length;
-  document.getElementById('d-rev').textContent = rev + ' с.';
-  document.getElementById('d-comm').textContent = comm + ' с.';
+function updateBulkBar() { const bar = document.getElementById('bulk-bar'); const count = selectedProducts.size; document.getElementById('bulk-count').innerText = count; bar.classList.toggle('hidden', count === 0); }
+window.bulkAction = async (action) => { const ids = [...selectedProducts]; if (!ids.length) return; if (action === 'delete' && !confirm(`Удалить ${ids.length} товаров?`)) return; for (const id of ids) { try { if (action === 'hide') await updateDoc(doc(db, 'products', id), { is_hidden: true }); if (action === 'show') await updateDoc(doc(db, 'products', id), { is_hidden: false }); if (action === 'stop') await updateDoc(doc(db, 'products', id), { in_stock: false }); if (action === 'delete') await deleteDoc(doc(db, 'products', id)); } catch (e) {} } selectedProducts.clear(); document.getElementById('select-all-prods').checked = false; renderProductsList(); };
+document.getElementById('select-all-prods').addEventListener('change', (e) => { const visible = document.querySelectorAll('.prod-check'); if (e.target.checked) visible.forEach(cb => { selectedProducts.add(cb.dataset.id); cb.checked = true; }); else { selectedProducts.clear(); visible.forEach(cb => cb.checked = false); } updateBulkBar(); });
+window.delProduct = async (id) => { if (!confirm('Удалить товар навсегда?')) return; try { await deleteDoc(doc(db, 'products', id)); } catch (e) { alert('Ошибка'); } };
+window.toggleHideProduct = async (id, hide) => { try { await updateDoc(doc(db, 'products', id), { is_hidden: hide }); } catch (e) { alert('Ошибка'); } };
+window.editProduct = (id) => { const p = allProducts.find(x => x.id === id); if (!p) return; document.getElementById('ep-id').value = id; document.getElementById('ep-name').value = p.name || ''; document.getElementById('ep-price').value = p.price || 0; document.getElementById('ep-category').value = p.category || 'other'; document.getElementById('ep-img').value = p.image_url || ''; document.getElementById('ep-desc').value = p.description || ''; document.getElementById('ep-instock').checked = p.in_stock !== false; document.getElementById('ep-hit').checked = p.is_hit === true; document.getElementById('ep-popular').checked = p.is_popular === true; document.getElementById('ep-new').checked = p.is_new === true; document.getElementById('edit-prod-modal').classList.remove('hidden'); document.getElementById('edit-prod-modal').classList.add('flex'); };
+window.closeEditProd = () => { document.getElementById('edit-prod-modal').classList.add('hidden'); document.getElementById('edit-prod-modal').classList.remove('flex'); };
+document.getElementById('edit-prod-form').addEventListener('submit', async (e) => { e.preventDefault(); const btn = document.getElementById('save-prod-btn'); const id = document.getElementById('ep-id').value; btn.disabled = true; btn.textContent = 'Сохраняем...'; try { await updateDoc(doc(db, 'products', id), { name: document.getElementById('ep-name').value.trim(), price: Number(document.getElementById('ep-price').value) || 0, category: document.getElementById('ep-category').value, image_url: document.getElementById('ep-img').value.trim(), description: document.getElementById('ep-desc').value.trim(), in_stock: document.getElementById('ep-instock').checked, is_hit: document.getElementById('ep-hit').checked, is_popular: document.getElementById('ep-popular').checked, is_new: document.getElementById('ep-new').checked }); closeEditProd(); } catch (err) { alert('Ошибка'); } finally { btn.disabled = false; btn.textContent = 'Сохранить'; } });
+
+document.getElementById('prod-filter-rest').addEventListener('change', renderProductsList); document.getElementById('prod-filter-status').addEventListener('change', renderProductsList); document.getElementById('prod-sort').addEventListener('change', renderProductsList); document.getElementById('prod-search').addEventListener('input', renderProductsList);
+
+const STATUS_LABEL = { new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится', delivering: '🛵 В пути', delivered: '🏁 Доставлен', cancelled: '❌ Отменён' };
+function renderOrders() {
+  const container = document.getElementById('admin-orders-list'); const statusF = document.getElementById('order-filter-status')?.value || ''; const restF = document.getElementById('order-filter-rest')?.value || '';
+  let list = [...allOrders]; if (statusF) list = list.filter(o => o.status === statusF); if (restF) list = list.filter(o => o.restaurant_id === restF); list.sort((a, b) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Заказов нет</div>`; return; }
+  container.innerHTML = list.map(o => { const rest = allRestaurants[o.restaurant_id]; const items = o.items || []; return `<div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 space-y-2 text-xs"><div class="flex justify-between items-center"><span class="font-mono text-gray-400">#${o.order_number || o.id.substring(0,6)}</span><span class="text-amber-400 font-bold">${STATUS_LABEL[o.status] || o.status}</span></div><p class="text-white font-bold">${esc(o.client_name)} · ${esc(o.client_phone)}</p><p class="text-gray-400">📍 ${esc(o.delivery_address)}</p><p class="text-gray-500">🏪 ${esc(rest?.name || o.restaurant_id || '—')}</p>${o.comment ? `<p class="text-amber-400 text-[10px]">💬 ${esc(o.comment)}</p>` : ''}<div class="bg-gray-950 rounded-lg p-2 space-y-0.5">${items.map(it => `<div class="flex justify-between text-[10px]"><span class="text-gray-300">${esc(it.name)}</span><span class="text-white">×${it.qty} — ${fmt(it.price * it.qty)}</span></div>`).join('') || '<span class="text-gray-500">—</span>'}</div><p class="text-yellow-400 font-black text-sm">${fmt(o.total_price)}</p><p class="text-[9px] text-gray-600">${fmtDate(o.created_at)}</p><div class="flex gap-1 flex-wrap pt-1"><select onchange="changeOrderStatus('${o.id}', this.value)" class="bg-gray-950 border border-gray-800 rounded px-2 py-1 text-[10px]">${Object.entries(STATUS_LABEL).map(([k, v]) => `<option value="${k}" ${o.status === k ? 'selected' : ''}>${v}</option>`).join('')}</select><button onclick="delOrder('${o.id}')" class="bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded text-[10px]">🗑 Удалить</button></div></div>`; }).join('');
 }
+window.changeOrderStatus = async (id, status) => { try { await updateDoc(doc(db, 'orders', id), { status }); } catch (e) { alert('Ошибка'); } };
+window.delOrder = async (id) => { if (!confirm('Удалить заказ навсегда?')) return; try { await deleteDoc(doc(db, 'orders', id)); } catch (e) { alert('Ошибка'); } };
+document.getElementById('order-filter-status').addEventListener('change', renderOrders); document.getElementById('order-filter-rest').addEventListener('change', renderOrders);
+function exportOrdersCSV() { const statusF = document.getElementById('order-filter-status')?.value || ''; const restF = document.getElementById('order-filter-rest')?.value || ''; let list = [...allOrders]; if (statusF) list = list.filter(o => o.status === statusF); if (restF) list = list.filter(o => o.restaurant_id === restF); const rows = [['ID', 'Дата', 'Ресторан', 'Клиент', 'Телефон', 'Адрес', 'Комментарий', 'Блюда', 'Сумма', 'Статус']]; list.forEach(o => { rows.push([o.order_number || o.id, o.created_at?.toDate?.().toLocaleString('ru-RU') || '', allRestaurants[o.restaurant_id]?.name || o.restaurant_id || '', o.client_name || '', o.client_phone || '', o.delivery_address || '', o.comment || '', (o.items || []).map(it => `${it.name}×${it.qty}`).join('; '), o.total_price || 0, o.status || '']); }); downloadCSV(rows, `peshras-orders-${Date.now()}.csv`); }
+window.exportOrdersCSV = exportOrdersCSV;
+function downloadCSV(rows, name) { const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n'); const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); }
 
-window.switchTab = t => {
-  ['dash','rest','prod','ord','set'].forEach(x => {
-    document.getElementById('sec-'+x).classList.toggle('hidden', x!==t);
-    document.getElementById('tb-'+x).className = x===t ? 'text-yellow-400' : 'text-gray-400';
-  });
-};
+function getPeriodRange(period) { const now = new Date(); const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (period === 'today') return start; if (period === 'yesterday') return new Date(start.getTime() - 86400000); if (period === 'week') return new Date(start.getTime() - 6 * 86400000); if (period === 'month') return new Date(start.getTime() - 29 * 86400000); return null; }
+function renderAnalytics() {
+  const start = getPeriodRange(currentPeriod); let list = [...allOrders]; if (start) list = list.filter(o => (o.created_at?.toMillis?.() || 0) >= start.getTime()); const counted = list.filter(o => o.status !== 'cancelled');
+  const orders = counted.length; const revenue = counted.reduce((s, o) => s + (o.total_price || 0), 0);
+  
+  // ФИКСАЦИЯ КОМИССИИ В АНАЛИТИКЕ
+  const commission = counted.reduce((s, o) => s + (o.commission_amount !== undefined ? o.commission_amount : (o.total_price || 0) * (allRestaurants[o.restaurant_id]?.commission ?? 0) / 100), 0);
+  const avg = orders ? revenue / orders : 0;
+  
+  document.getElementById('stat-orders').innerText = orders; document.getElementById('stat-revenue').innerText = fmt(revenue); document.getElementById('stat-commission').innerText = fmt(commission); document.getElementById('stat-avg').innerText = fmt(avg);
 
-document.getElementById('settings-form').onsubmit = async (e) => {
-  e.preventDefault();
-  await setDoc(doc(db, 'settings', 'config'), {
-    delivery_price: Number(document.getElementById('s-deliv').value),
-    min_order: Number(document.getElementById('s-min').value),
-    about_text: document.getElementById('s-about').value
-  }, { merge: true });
-  alert('Сохранено');
-};
+  const byRest = {}; counted.forEach(o => { const rid = o.restaurant_id || 'unknown'; if (!byRest[rid]) byRest[rid] = { count: 0, sum: 0, commission: 0 }; byRest[rid].count++; byRest[rid].sum += o.total_price || 0; const r = allRestaurants[rid]; byRest[rid].commission += (o.commission_amount !== undefined ? o.commission_amount : (o.total_price || 0) * (r?.commission ?? 0) / 100); });
+  const rows = Object.entries(byRest).sort((a, b) => b[1].sum - a[1].sum); const el = document.getElementById('analytics-restaurants');
+  if (!rows.length) { el.innerHTML = `<p class="text-gray-500">Нет данных</p>`; return; }
+  el.innerHTML = rows.map(([rid, s]) => { const r = allRestaurants[rid]; return `<div class="flex items-center justify-between bg-gray-950 rounded-xl p-2.5 border border-gray-800"><div class="min-w-0"><p class="font-bold text-white truncate">${esc(r?.name || 'Неизвестно')}</p><p class="text-[10px] text-gray-500">${s.count} заказ${s.count === 1 ? '' : 'ов'} · комиссия ${r?.commission ?? 0}%</p></div><div class="text-right"><p class="text-yellow-400 font-black">${fmt(s.sum)}</p><p class="text-[10px] text-emerald-400">сервис: ${fmt(s.commission)}</p><p class="text-[10px] text-gray-400">ресторану: ${fmt(s.sum - s.commission)}</p></div></div>`; }).join('');
+}
+document.querySelectorAll('.period-btn').forEach(btn => { btn.addEventListener('click', () => { currentPeriod = btn.dataset.period; document.querySelectorAll('.period-btn').forEach(b => { b.className = 'period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs'; }); btn.className = 'period-btn bg-yellow-400 text-black font-bold px-4 py-2 rounded-xl text-xs'; renderAnalytics(); }); });
+
+const DEFAULT_SETTINGS = { delivery_price: 10, free_from: 100, min_order: 30, hours: '09:00 – 23:00', payments: 'Наличные, Корварок, Алиф Мобайл', phone: '', telegram: '@peshras_support', whatsapp: '', email: '', maintenance: false, about_text: 'Peshras — сервис доставки еды в городе Исфара. Мы объединяем лучшие рестораны, кафе и точки фастфуда на одной платформе.\n\nНаша миссия — сделать вкусную еду доступной каждому жителю Исфары за 30–40 минут.', terms_text: '🕐 Время работы: ежедневно.\n🚴 Доставка: 30–40 минут.\n💰 Оплата: наличными или переводом на Корварок/Алиф Мобайл.\n📦 Минимальный заказ — 30 сомонӣ.\n❌ Отмена возможна до начала готовки.', partner_text: 'У вас есть ресторан, кафе или точка фастфуда в Исфаре? Подключитесь к Peshras и получайте новых клиентов каждый день.\n\nСвяжитесь с нами: @peshras_partner' };
+function fillSettingsForm() { const s = { ...DEFAULT_SETTINGS, ...settingsData }; document.getElementById('set-delivery').value = s.delivery_price; document.getElementById('set-free-from').value = s.free_from; document.getElementById('set-min-order').value = s.min_order; document.getElementById('set-hours').value = s.hours; document.getElementById('set-payments').value = s.payments; document.getElementById('set-maintenance').checked = s.maintenance; document.getElementById('set-phone').value = s.phone; document.getElementById('set-telegram').value = s.telegram; document.getElementById('set-whatsapp').value = s.whatsapp; document.getElementById('set-email').value = s.email; document.getElementById('set-about').value = s.about_text; document.getElementById('set-terms').value = s.terms_text; document.getElementById('set-partner').value = s.partner_text; }
+document.getElementById('settings-form').addEventListener('submit', async (e) => { e.preventDefault(); const btn = document.getElementById('save-settings-btn'); const status = document.getElementById('settings-status'); btn.disabled = true; btn.textContent = 'Сохраняем...'; try { await setDoc(doc(db, 'settings', 'config'), { delivery_price: Number(document.getElementById('set-delivery').value) || 0, free_from: Number(document.getElementById('set-free-from').value) || 0, min_order: Number(document.getElementById('set-min-order').value) || 0, hours: document.getElementById('set-hours').value.trim(), payments: document.getElementById('set-payments').value.trim(), maintenance: document.getElementById('set-maintenance').checked, phone: document.getElementById('set-phone').value.trim(), telegram: document.getElementById('set-telegram').value.trim(), whatsapp: document.getElementById('set-whatsapp').value.trim(), email: document.getElementById('set-email').value.trim(), about_text: document.getElementById('set-about').value, terms_text: document.getElementById('set-terms').value, partner_text: document.getElementById('set-partner').value, updated_at: serverTimestamp() }); status.className = 'text-xs ml-2 text-emerald-400'; status.innerText = '✅ Сохранено'; status.classList.remove('hidden'); setTimeout(() => status.classList.add('hidden'), 3000); } catch (err) { alert('Ошибка'); } finally { btn.disabled = false; btn.textContent = '💾 Сохранить настройки'; } });
+
+function renderBlockedList() { const el = document.getElementById('blocked-list'); if (!allBlocked.length) { el.innerHTML = `<p class="text-gray-500 text-xs">Список пуст</p>`; return; } el.innerHTML = allBlocked.map(b => `<div class="flex items-center justify-between bg-gray-950 border border-gray-800 rounded-lg p-2"><span class="text-xs text-white font-mono">${esc(b.phone)}</span><button onclick="removeBlockedPhone('${b.id}')" class="text-red-400 hover:text-red-300 text-xs">✕</button></div>`).join(''); }
+window.addBlockedPhone = async () => { const phone = document.getElementById('block-phone').value.trim(); if (!phone) return; try { await addDoc(collection(db, 'blocked_phones'), { phone, created_at: serverTimestamp() }); document.getElementById('block-phone').value = ''; } catch (e) { alert('Ошибка'); } };
+window.removeBlockedPhone = async (id) => { if (!confirm('Убрать из чёрного списка?')) return; try { await deleteDoc(doc(db, 'blocked_phones', id)); } catch (e) { alert('Ошибка'); } };
+
+window.downloadBackup = () => { const backup = { exported_at: new Date().toISOString(), restaurants: Object.values(allRestaurants).map(({ id, ...rest }) => ({ _id: id, ...rest })), products: allProducts.map(({ id, ...rest }) => ({ _id: id, ...rest })), orders: allOrders.map(({ id, ...rest }) => ({ _id: id, ...rest })), settings: settingsData }; const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `peshras-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); };
+
+const TABS = { dashboard: 'atab-dashboard', restaurants: 'atab-restaurants', products: 'atab-products', 'all-orders': 'atab-orders', analytics: 'atab-analytics', settings: 'atab-settings' }; const SECS = { dashboard: 'sec-dashboard', restaurants: 'sec-restaurants', products: 'sec-products', 'all-orders': 'sec-orders', analytics: 'sec-analytics', settings: 'sec-settings' };
+window.switchAdminTab = function (tab) { Object.values(SECS).forEach(id => document.getElementById(id).classList.add('hidden')); document.getElementById(SECS[tab]).classList.remove('hidden'); Object.entries(TABS).forEach(([k, id]) => { const el = document.getElementById(id); el.className = k === tab ? 'admin-tab pb-3 border-b-2 border-yellow-400 text-yellow-400 flex items-center gap-2 whitespace-nowrap' : 'admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap'; }); if (tab === 'analytics') renderAnalytics(); if (tab === 'settings') fillSettingsForm(); lucide.createIcons(); };
+lucide.createIcons();
 </script>
 </body>
 </html>
