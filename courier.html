@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Peshras Курьер</title>
+<meta name="theme-color" content="#0a0a0a">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .anim-in { animation: slideIn .35s ease-out; }
+  @keyframes pulse-border { 0%, 100% { border-color: #f59e0b; } 50% { border-color: #fbbf24; box-shadow: 0 0 20px rgba(245,158,11,.3); } }
+  .order-new { animation: pulse-border 1.5s infinite; }
+</style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+
+<!-- ЭКРАН ВХОДА -->
+<div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 w-full max-w-md space-y-6 shadow-2xl">
+    <div class="text-center space-y-2">
+      <div class="inline-flex p-3 rounded-2xl bg-blue-500/10 text-blue-400 mb-2 border border-blue-500/20"><i data-lucide="bike" class="w-8 h-8"></i></div>
+      <h1 class="text-2xl font-black text-white">Peshras Курьер</h1>
+      <p class="text-xs text-gray-400">Вход для водителей доставки</p>
+    </div>
+    <form id="login-form" class="space-y-4">
+      <div><input type="email" id="email" required placeholder="Email" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:border-blue-500 focus:outline-none"></div>
+      <div><input type="password" id="password" required placeholder="Пароль" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:border-blue-500 focus:outline-none"></div>
+      <div id="login-error" class="text-xs text-red-400 hidden"></div>
+      <button type="submit" class="w-full bg-blue-500 hover:bg-blue-400 text-white font-extrabold py-3.5 rounded-xl transition">Войти</button>
+    </form>
+  </div>
+</div>
+
+<!-- ОСНОВНОЙ ЭКРАН -->
+<div id="app-screen" class="hidden min-h-screen flex flex-col">
+  <header class="bg-gray-900 border-b border-gray-800 px-4 py-3 sticky top-0 z-30">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span id="courier-name" class="text-sm font-bold text-white">Загрузка...</span>
+        <span id="shift-status" class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400">Смена закрыта</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleShift()" id="shift-btn" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-500 text-black transition">Открыть смену</button>
+        <button onclick="logout()" class="text-gray-400 p-1"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 p-4 space-y-4 overflow-y-auto">
+    <!-- НОВЫЕ ЗАКАЗЫ -->
+    <div id="available-orders-section" class="space-y-3">
+      <h2 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i data-lucide="bell" class="w-4 h-4"></i> Доступные заказы</h2>
+      <div id="available-orders" class="space-y-3">
+        <div class="text-gray-500 text-xs text-center py-8">Смена закрыта. Откройте смену, чтобы получать заказы.</div>
+      </div>
+    </div>
+
+    <!-- МОИ ЗАКАЗЫ -->
+    <div id="my-orders-section" class="hidden space-y-3">
+      <h2 class="text-sm font-bold text-blue-400 flex items-center gap-2"><i data-lucide="bike" class="w-4 h-4"></i> В работе</h2>
+      <div id="my-orders" class="space-y-3"></div>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-3 mt-6">
+      <h2 class="text-sm font-bold text-yellow-400 flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4"></i> Статистика за смену</h2>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
+          <p class="text-gray-500 text-[10px]">Доставлено заказов</p>
+          <p id="stat-orders" class="text-lg font-black text-white">0</p>
+        </div>
+        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
+          <p class="text-gray-500 text-[10px]">Ваш заработок</p>
+          <p id="stat-earned" class="text-lg font-black text-emerald-400">0 с.</p>
+        </div>
+        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
+          <p class="text-gray-500 text-[10px]">Собрано наличных</p>
+          <p id="stat-cash" class="text-lg font-black text-white">0 с.</p>
+        </div>
+        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
+          <p class="text-gray-500 text-[10px]">К сдаче в кассу</p>
+          <p id="stat-debt" class="text-lg font-black text-red-400">0 с.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, getDocs, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyBGUkISLQ1Qm9xfYkVgZhoLeR_P_VTSrhM", authDomain: "peshras-delivery.firebaseapp.com", projectId: "peshras-delivery", storageBucket: "peshras-delivery.firebasestorage.app", messagingSenderId: "790787117044", appId: "1:790787117044:web:217ef1bea4edbab24873a1" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' с.';
+let currentCourierId = null, currentCourierData = null;
+let unsubscribeAvailable = null, unsubscribeMyOrders = null;
+let allMyOrders = [];
+
+// Вход
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); }
+  catch { document.getElementById('login-error').classList.remove('hidden'); document.getElementById('login-error').textContent='Неверный логин или пароль'; }
+});
+window.logout = () => signOut(auth);
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); return; }
+  document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden');
+  
+  const snap = await getDocs(query(collection(db, 'couriers'), where('owner_uid', '==', user.uid)));
+  if (snap.empty) { alert('Вы не зарегистрированы как курьер.'); logout(); return; }
+  
+  const d = snap.docs[0]; currentCourierId = d.id; currentCourierData = d.data();
+  document.getElementById('courier-name').textContent = currentCourierData.name || 'Курьер';
+  updateShiftUI();
+  listenToMyOrders();
+});
+
+// Смена
+function updateShiftUI() {
+  const isOpen = currentCourierData?.shift_open === true;
+  const btn = document.getElementById('shift-btn');
+  const status = document.getElementById('shift-status');
+  if (isOpen) {
+    btn.className = 'text-xs font-bold px-3 py-1.5 rounded-xl bg-red-500 text-white transition'; btn.textContent = 'Закрыть смену';
+    status.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400'; status.textContent = 'Смена открыта';
+    document.getElementById('available-orders').innerHTML = '<div class="text-gray-500 text-xs text-center py-4">Ждем новые заказы...</div>';
+    listenToAvailableOrders();
+  } else {
+    btn.className = 'text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-500 text-black transition'; btn.textContent = 'Открыть смену';
+    status.className = 'text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400'; status.textContent = 'Смена закрыта';
+    document.getElementById('available-orders').innerHTML = '<div class="text-gray-500 text-xs text-center py-8">Смена закрыта. Откройте смену, чтобы получать заказы.</div>';
+    if (unsubscribeAvailable) { unsubscribeAvailable(); unsubscribeAvailable = null; }
+  }
+}
+window.toggleShift = async () => {
+  const newState = !(currentCourierData?.shift_open === true);
+  const updates = { shift_open: newState };
+  if (newState) updates.shift_start = serverTimestamp(); // Засекаем начало смены
+  await updateDoc(doc(db, 'couriers', currentCourierId), updates);
+  currentCourierData.shift_open = newState;
+  updateShiftUI();
+};
+
+// Слушаем доступные заказы (только если смена открыта)
+function listenToAvailableOrders() {
+  if (unsubscribeAvailable) unsubscribeAvailable();
+  const q = query(collection(db, 'orders'), where('status', '==', 'delivering'));
+  unsubscribeAvailable = onSnapshot(q, (snap) => {
+    const container = document.getElementById('available-orders');
+    const orders = [];
+    snap.forEach(d => { const o = { id: d.id, ...d.data() }; if (!o.courier_id) orders.push(o); });
+    
+    if (!orders.length) { container.innerHTML = '<div class="text-gray-500 text-xs text-center py-4">Нет доступных заказов</div>'; return; }
+    container.innerHTML = orders.map(o => `
+      <div class="bg-gray-900 border border-amber-500/50 rounded-2xl p-4 space-y-2 order-new">
+        <div class="flex justify-between font-bold text-xs"><span class="text-white">#${o.order_number || o.id.substring(0,6)}</span><span class="text-yellow-400">${fmt(o.total_price)}</span></div>
+        <p class="text-sm text-white font-bold">${o.client_name} (${o.client_phone})</p>
+        <p class="text-xs text-gray-400">📍 ${o.delivery_address}</p>
+        <p class="text-xs text-gray-400">Оплата: ${o.payment_method === 'cash' ? '💵 Наличные' : '💳 Онлайн'}</p>
+        <button onclick="acceptOrder('${o.id}')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2.5 rounded-xl text-xs mt-2">Принять заказ</button>
+      </div>
+    `).join('');
+    lucide.createIcons();
+  });
+}
+
+// Принятие заказа
+window.acceptOrder = async (orderId) => {
+  try {
+    const orderRef = doc(db, 'orders', orderId);
+    await runTransaction(db, async (transaction) => {
+      const orderDoc = await transaction.get(orderRef);
+      if (!orderDoc.exists()) throw new Error("Заказ не существует");
+      if (orderDoc.data().courier_id) throw new Error("Заказ уже принят другим курьером");
+      transaction.update(orderRef, { status: 'courier_accepted', courier_id: currentCourierId, courier_name: currentCourierData.name, courier_rate: currentCourierData.rate || 0 });
+    });
+    alert('Заказ принят!');
+  } catch (e) { alert('Ошибка: ' + e.message); }
+};
+
+// Слушаем мои заказы
+function listenToMyOrders() {
+  const q = query(collection(db, 'orders'), where('courier_id', '==', currentCourierId));
+  unsubscribeMyOrders = onSnapshot(q, (snap) => {
+    const container = document.getElementById('my-orders');
+    const myOrdersSection = document.getElementById('my-orders-section');
+    allMyOrders = [];
+    snap.forEach(d => allMyOrders.push({ id: d.id, ...d.data() }));
+    
+    const active = allMyOrders.filter(o => ['courier_accepted'].includes(o.status));
+    if (!active.length) { myOrdersSection.classList.add('hidden'); } 
+    else {
+      myOrdersSection.classList.remove('hidden');
+      container.innerHTML = active.map(o => `
+        <div class="bg-gray-900 border border-blue-500/50 rounded-2xl p-4 space-y-2 anim-in">
+          <div class="flex justify-between font-bold text-xs"><span class="text-white">#${o.order_number || o.id.substring(0,6)}</span><span class="text-yellow-400">${fmt(o.total_price)}</span></div>
+          <p class="text-sm text-white font-bold">${o.client_name} (${o.client_phone})</p>
+          <p class="text-xs text-gray-400">📍 ${o.delivery_address}</p>
+          <a href="tel:${o.client_phone}" class="block text-center bg-gray-800 text-white font-bold py-1.5 rounded text-[10px] mt-1"><i data-lucide="phone" class="w-3 h-3 inline mr-1"></i> Позвонить</a>
+          <button onclick="deliverOrder('${o.id}')" class="w-full bg-blue-500 hover:bg-blue-400 text-white font-extrabold py-2.5 rounded-xl text-xs mt-2">Доставлено</button>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+    calculateStats();
+  });
+}
+
+// Завершение доставки
+window.deliverOrder = async (orderId) => {
+  if (!confirm('Подтверждаете, что заказ доставлен?')) return;
+  try {
+    await updateDoc(doc(db, 'orders', orderId), { status: 'delivered', delivered_at: serverTimestamp() });
+    calculateStats();
+  } catch (e) { alert('Ошибка: ' + e.message); }
+};
+
+// Статистика (за текущую смену)
+function calculateStats() {
+  // Если смены нет, статистику не считаем
+  if (!currentCourierData?.shift_start) return; 
+  
+  const shiftStart = currentCourierData.shift_start.toDate();
+  
+  // Берем только заказы, доставленные ПОСЛЕ открытия смены
+  const delivered = allMyOrders.filter(o => {
+    if (o.status !== 'delivered') return false;
+    const deliveredAt = o.delivered_at?.toDate ? o.delivered_at.toDate() : new Date(0);
+    return deliveredAt >= shiftStart;
+  });
+
+  let cashCollected = 0, totalEarned = 0;
+  
+  delivered.forEach(o => {
+    totalEarned += (o.courier_rate || 0); 
+    if (o.payment_method === 'cash') cashCollected += o.total_price;
+  });
+  
+  const debt = cashCollected - totalEarned;
+  
+  document.getElementById('stat-orders').textContent = delivered.length;
+  document.getElementById('stat-earned').textContent = fmt(totalEarned);
+  document.getElementById('stat-cash').textContent = fmt(cashCollected);
+  
+  const debtEl = document.getElementById('stat-debt');
+  if (debt > 0) {
+    debtEl.textContent = fmt(debt);
+    debtEl.className = 'text-lg font-black text-red-400';
+  } else if (debt < 0) {
+    debtEl.textContent = 'Вам должны: ' + fmt(Math.abs(debt));
+    debtEl.className = 'text-[12px] font-black text-emerald-400';
+  } else {
+    debtEl.textContent = '0 с.';
+    debtEl.className = 'text-lg font-black text-gray-400';
+  }
+}
+</script>
+</body>
+</html>
