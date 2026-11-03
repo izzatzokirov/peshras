@@ -11,6 +11,7 @@
   body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
   .scrollbar-none::-webkit-scrollbar { display: none; }
   .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  .chart-bar { transition: height .3s ease; }
 </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
@@ -87,7 +88,7 @@
           <div><label class="text-[11px] text-gray-400 font-semibold">Комиссия (%) *</label><input type="number" id="res-commission" required min="0" max="100" value="10" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
           <div><label class="text-[11px] text-gray-400 font-semibold">Email *</label><input type="email" id="res-email" required placeholder="rayhon@peshras.online" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
           <div><label class="text-[11px] text-gray-400 font-semibold">Пароль *</label><input type="password" id="res-password" required minlength="6" placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500"></div>
-          <div class="sm:col-span-2 lg:col-span-3 pt-2"><button type="submit" id="create-rest-btn" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-6 py-2.5 rounded-xl transition text-xs flex items-center gap-2">Создать</button><p id="create-rest-status" class="text-xs mt-2 hidden"></p></div>
+          <div class="sm:col-span-2 lg:col-span-3 pt-2"><button type="submit" id="create-rest-btn" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-6 py-2.5 rounded-xl transition text-xs flex items-center gap-2">Создать ресторан</button><p id="create-rest-status" class="text-xs mt-2 hidden"></p></div>
         </form>
       </div>
       <div class="space-y-3"><h4 class="font-bold text-white text-sm">Заведения:</h4><div id="admin-restaurants-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div>
@@ -218,7 +219,7 @@ document.getElementById('add-restaurant-form').addEventListener('submit', async 
     await signOut(sa); await deleteApp(secondaryApp);
     status.className = 'text-xs mt-2 text-emerald-400'; status.innerText = `✅ Ресторан создан. UID: ${uid}`; status.classList.remove('hidden'); e.target.reset(); document.getElementById('res-commission').value = '10';
   } catch (err) { status.className = 'text-xs mt-2 text-red-400'; status.innerText = '❌ Ошибка: ' + (err.code || err.message); status.classList.remove('hidden'); if (secondaryApp) try { await deleteApp(secondaryApp); } catch {} }
-  finally { btn.disabled = false; btn.innerHTML = 'Создать'; }
+  finally { btn.disabled = false; btn.innerHTML = 'Создать ресторан'; }
 });
 
 // Создание курьера
@@ -302,7 +303,6 @@ function renderCouriers() {
 }
 window.delCourier = async (id) => { if (!confirm('Удалить курьера?')) return; try { await deleteDoc(doc(db, 'couriers', id)); } catch (e) { alert('Ошибка'); } };
 
-// Статистика курьера (За смену)
 window.showCourierStats = async (courierId) => {
   const c = allCouriers.find(x => x.id === courierId);
   if (!c) return;
@@ -312,12 +312,10 @@ window.showCourierStats = async (courierId) => {
   content.innerHTML = `<p class="text-center text-gray-500">Загрузка...</p>`;
   modal.classList.remove('hidden'); modal.classList.add('flex');
 
-  // Берем заказы этого курьера
   const q = query(collection(db, 'orders'), where('courier_id', '==', courierId));
   const snap = await getDocs(q);
   const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-  // Фильтруем по смене (если смена была открыта)
   let filteredOrders = orders;
   if (c.shift_start) {
     const startTime = c.shift_start.toDate();
@@ -369,9 +367,183 @@ window.closeCourierShift = async (courierId) => {
   document.getElementById('courier-stats-modal').classList.remove('flex');
 };
 
-// ... Остальные функции (Товары, Заказы, Аналитика, Настройки) остаются без изменений ...
-// Для краткости я не дублирую их здесь, они точно такие же, как в предыдущей рабочей версии.
+// Товары
+function fillRestFilters() {
+  const ids = Object.keys(allRestaurants);
+  ['prod-filter-rest', 'order-filter-rest'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = `<option value="">Все рестораны</option>` + ids.map(rid => `<option value="${rid}">${esc(allRestaurants[rid].name)}</option>`).join('');
+    sel.value = cur;
+  });
+}
 
+function renderProductsList() {
+  const container = document.getElementById('admin-products-list');
+  const restF = document.getElementById('prod-filter-rest')?.value || '';
+  const statusF = document.getElementById('prod-filter-status')?.value || '';
+  const search = (document.getElementById('prod-search')?.value || '').toLowerCase();
+  let list = [...allProducts];
+  if (restF) list = list.filter(p => p.restaurant_id === restF);
+  if (search) list = list.filter(p => (p.name || '').toLowerCase().includes(search));
+  if (statusF === 'in_stock') list = list.filter(p => p.in_stock !== false && p.is_hidden !== true);
+  if (statusF === 'stopped') list = list.filter(p => p.in_stock === false);
+  if (statusF === 'hidden') list = list.filter(p => p.is_hidden === true);
+  
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Товаров нет</div>`; return; }
+  container.innerHTML = list.map(p => {
+    const rest = allRestaurants[p.restaurant_id];
+    const isHidden = p.is_hidden === true;
+    return `<div class="bg-gray-900 border ${isHidden ? 'border-red-500/40 opacity-70' : 'border-gray-800'} rounded-2xl p-3 space-y-2"><div class="flex gap-2"><img src="${esc(p.image_url || 'https://via.placeholder.com/80')}" class="w-16 h-16 rounded-xl object-cover bg-gray-800 flex-shrink-0" onerror="this.src='https://via.placeholder.com/80'"><div class="flex-1 min-w-0"><h4 class="font-bold text-xs text-white truncate">${esc(p.name)}</h4><p class="text-[10px] text-gray-500 truncate">${esc(rest?.name || '—')}</p><p class="text-yellow-400 font-black text-sm">${p.price} с.</p></div></div><div class="flex flex-wrap gap-1 pt-2 border-t border-gray-800"><button onclick="toggleHideProduct('${p.id}', ${!isHidden})" class="text-[10px] ${isHidden ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-400'} font-bold px-2 py-1 rounded">${isHidden ? '👁' : '🚫'}</button><button onclick="delProduct('${p.id}')" class="text-[10px] bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded">🗑</button></div></div>`;
+  }).join('');
+  lucide.createIcons();
+}
+window.delProduct = async (id) => { if (!confirm('Удалить товар?')) return; try { await deleteDoc(doc(db, 'products', id)); } catch (e) { alert('Ошибка'); } };
+window.toggleHideProduct = async (id, hide) => { try { await updateDoc(doc(db, 'products', id), { is_hidden: hide }); } catch (e) { alert('Ошибка'); } };
+
+document.getElementById('prod-filter-rest').addEventListener('change', renderProductsList);
+document.getElementById('prod-filter-status').addEventListener('change', renderProductsList);
+document.getElementById('prod-search').addEventListener('input', renderProductsList);
+
+// Заказы
+const STATUS_LABEL = { new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится', delivering: '🛵 В пути', courier_accepted: '🛵 У курьера', delivered: '🏁 Доставлен', cancelled: '❌ Отменён' };
+function renderOrders() {
+  const container = document.getElementById('admin-orders-list');
+  const statusF = document.getElementById('order-filter-status')?.value || '';
+  const restF = document.getElementById('order-filter-rest')?.value || '';
+  let list = [...allOrders];
+  if (statusF) list = list.filter(o => o.status === statusF);
+  if (restF) list = list.filter(o => o.restaurant_id === restF);
+  list.sort((a, b) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
+  
+  if (!list.length) { container.innerHTML = `<div class="text-gray-500 text-xs py-4 col-span-full">Заказов нет</div>`; return; }
+  container.innerHTML = list.map(o => {
+    const rest = allRestaurants[o.restaurant_id];
+    const items = o.items || [];
+    return `<div class="bg-gray-900 border border-gray-800 rounded-2xl p-3 space-y-2 text-xs"><div class="flex justify-between items-center"><span class="font-mono text-gray-400">#${o.order_number || o.id.substring(0,6)}</span><span class="text-amber-400 font-bold">${STATUS_LABEL[o.status] || o.status}</span></div><p class="text-white font-bold">${esc(o.client_name)} · ${esc(o.client_phone)}</p><p class="text-gray-400">📍 ${esc(o.delivery_address)}</p><p class="text-gray-500">🏪 ${esc(rest?.name || o.restaurant_id || '—')}</p>${o.comment ? `<p class="text-amber-400 text-[10px]">💬 ${esc(o.comment)}</p>` : ''}<div class="bg-gray-950 rounded-lg p-2 space-y-0.5">${items.map(it => `<div class="flex justify-between text-[10px]"><span class="text-gray-300">${esc(it.name)}</span><span class="text-white">×${it.qty} — ${fmt(it.price * it.qty)}</span></div>`).join('') || '<span class="text-gray-500">—</span>'}</div><p class="text-yellow-400 font-black text-sm">${fmt(o.total_price)}</p><p class="text-[9px] text-gray-600">${fmtDate(o.created_at)}</p><div class="flex gap-1 flex-wrap pt-1"><select onchange="changeOrderStatus('${o.id}', this.value)" class="bg-gray-950 border border-gray-800 rounded px-2 py-1 text-[10px]">${Object.entries(STATUS_LABEL).map(([k, v]) => `<option value="${k}" ${o.status === k ? 'selected' : ''}>${v}</option>`).join('')}</select><button onclick="delOrder('${o.id}')" class="bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded text-[10px]">🗑 Удалить</button></div></div>`;
+  }).join('');
+}
+window.changeOrderStatus = async (id, status) => { try { await updateDoc(doc(db, 'orders', id), { status }); } catch (e) { alert('Ошибка'); } };
+window.delOrder = async (id) => { if (!confirm('Удалить заказ навсегда?')) return; try { await deleteDoc(doc(db, 'orders', id)); } catch (e) { alert('Ошибка'); } };
+
+document.getElementById('order-filter-status').addEventListener('change', renderOrders);
+document.getElementById('order-filter-rest').addEventListener('change', renderOrders);
+
+function exportOrdersCSV() {
+  const statusF = document.getElementById('order-filter-status')?.value || '';
+  const restF = document.getElementById('order-filter-rest')?.value || '';
+  let list = [...allOrders];
+  if (statusF) list = list.filter(o => o.status === statusF);
+  if (restF) list = list.filter(o => o.restaurant_id === restF);
+  const rows = [['Номер', 'Дата', 'Ресторан', 'Клиент', 'Телефон', 'Адрес', 'Блюда', 'Сумма', 'Статус']];
+  list.forEach(o => { rows.push([o.order_number || o.id, o.created_at?.toDate?.().toLocaleString('ru-RU') || '', allRestaurants[o.restaurant_id]?.name || o.restaurant_id || '', o.client_name || '', o.client_phone || '', o.delivery_address || '', (o.items || []).map(it => `${it.name}×${it.qty}`).join('; '), o.total_price || 0, o.status || '']); });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `peshras-orders-${Date.now()}.csv`; a.click();
+}
+window.exportOrdersCSV = exportOrdersCSV;
+
+// Аналитика
+function getPeriodRange(period) {
+  const now = new Date(); const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (period === 'today') return start;
+  if (period === 'week') return new Date(start.getTime() - 6 * 86400000);
+  if (period === 'month') return new Date(start.getTime() - 29 * 86400000);
+  return null;
+}
+
+function renderAnalytics() {
+  const start = getPeriodRange(currentPeriod);
+  let list = [...allOrders];
+  if (start) list = list.filter(o => (o.created_at?.toMillis?.() || 0) >= start.getTime());
+  const counted = list.filter(o => o.status !== 'cancelled');
+  const orders = counted.length;
+  const revenue = counted.reduce((s, o) => s + (o.total_price || 0), 0);
+  const commission = counted.reduce((s, o) => s + (o.commission_amount !== undefined ? o.commission_amount : (o.total_price || 0) * (allRestaurants[o.restaurant_id]?.commission ?? 0) / 100), 0);
+  const avg = orders ? revenue / orders : 0;
+
+  document.getElementById('stat-orders').innerText = orders;
+  document.getElementById('stat-revenue').innerText = fmt(revenue);
+  document.getElementById('stat-commission').innerText = fmt(commission);
+  document.getElementById('stat-avg').innerText = fmt(avg);
+
+  const byRest = {};
+  counted.forEach(o => {
+    const rid = o.restaurant_id || 'unknown';
+    if (!byRest[rid]) byRest[rid] = { count: 0, sum: 0, commission: 0 };
+    byRest[rid].count++;
+    byRest[rid].sum += o.total_price || 0;
+    const r = allRestaurants[rid];
+    byRest[rid].commission += (o.commission_amount !== undefined ? o.commission_amount : (o.total_price || 0) * (r?.commission ?? 0) / 100);
+  });
+  const rows = Object.entries(byRest).sort((a, b) => b[1].sum - a[1].sum);
+  const el = document.getElementById('analytics-restaurants');
+  if (!rows.length) { el.innerHTML = `<p class="text-gray-500">Нет данных</p>`; return; }
+  el.innerHTML = rows.map(([rid, s]) => {
+    const r = allRestaurants[rid];
+    return `<div class="flex items-center justify-between bg-gray-950 rounded-xl p-2.5 border border-gray-800"><div class="min-w-0"><p class="font-bold text-white truncate">${esc(r?.name || 'Неизвестно')}</p><p class="text-[10px] text-gray-500">${s.count} заказов</p></div><div class="text-right"><p class="text-yellow-400 font-black">${fmt(s.sum)}</p><p class="text-[10px] text-emerald-400">сервис: ${fmt(s.commission)}</p></div></div>`;
+  }).join('');
+}
+
+document.querySelectorAll('.period-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentPeriod = btn.dataset.period;
+    document.querySelectorAll('.period-btn').forEach(b => { b.className = 'period-btn bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2 rounded-xl text-xs'; });
+    btn.className = 'period-btn bg-yellow-400 text-black font-bold px-4 py-2 rounded-xl text-xs';
+    renderAnalytics();
+  });
+});
+
+// Настройки
+const DEFAULT_SETTINGS = { delivery_price: 10, free_from: 100, min_order: 30, maintenance: false, phone: '', telegram: '', about_text: 'Peshras — сервис доставки еды в городе Исфара.', terms_text: 'Информация об условиях доставки.' };
+function fillSettingsForm() {
+  const s = { ...DEFAULT_SETTINGS, ...settingsData };
+  document.getElementById('set-delivery').value = s.delivery_price;
+  document.getElementById('set-free-from').value = s.free_from;
+  document.getElementById('set-min-order').value = s.min_order;
+  document.getElementById('set-maintenance').checked = s.maintenance;
+  document.getElementById('set-phone').value = s.phone;
+  document.getElementById('set-telegram').value = s.telegram;
+  document.getElementById('set-about').value = s.about_text;
+  document.getElementById('set-terms').value = s.terms_text;
+}
+
+document.getElementById('settings-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('save-settings-btn');
+  btn.disabled = true; btn.textContent = 'Сохраняем...';
+  try {
+    await setDoc(doc(db, 'settings', 'config'), {
+      delivery_price: Number(document.getElementById('set-delivery').value) || 0,
+      free_from: Number(document.getElementById('set-free-from').value) || 0,
+      min_order: Number(document.getElementById('set-min-order').value) || 0,
+      maintenance: document.getElementById('set-maintenance').checked,
+      phone: document.getElementById('set-phone').value.trim(),
+      telegram: document.getElementById('set-telegram').value.trim(),
+      about_text: document.getElementById('set-about').value,
+      terms_text: document.getElementById('set-terms').value,
+      updated_at: serverTimestamp()
+    }, { merge: true });
+    alert('Настройки сохранены');
+  } catch (err) { alert('Ошибка сохранения'); }
+  finally { btn.disabled = false; btn.textContent = '💾 Сохранить'; }
+});
+
+const TABS = { dashboard: 'atab-dashboard', restaurants: 'atab-restaurants', couriers: 'atab-couriers', products: 'atab-products', 'all-orders': 'atab-orders', analytics: 'atab-analytics', settings: 'atab-settings' };
+const SECS = { dashboard: 'sec-dashboard', restaurants: 'sec-restaurants', couriers: 'sec-couriers', products: 'sec-products', 'all-orders': 'sec-orders', analytics: 'sec-analytics', settings: 'sec-settings' };
+
+window.switchAdminTab = function (tab) {
+  Object.values(SECS).forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById(SECS[tab]).classList.remove('hidden');
+  Object.entries(TABS).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    el.className = k === tab ? 'admin-tab pb-3 border-b-2 border-yellow-400 text-yellow-400 flex items-center gap-2 whitespace-nowrap' : 'admin-tab pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap';
+  });
+  if (tab === 'analytics') renderAnalytics();
+  if (tab === 'settings') fillSettingsForm();
+  lucide.createIcons();
+};
 lucide.createIcons();
 </script>
 </body>
