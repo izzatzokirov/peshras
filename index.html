@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Peshras — Доставка еды в Исфаре</title>
 <meta name="theme-color" content="#0a0a0a">
 <link rel="manifest" href="manifest.json">
@@ -10,7 +10,7 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; display: flex; flex-direction: column; min-height: 100vh; }
   .scrollbar-none::-webkit-scrollbar { display: none; }
   .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
   .line-clamp-1 { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
@@ -19,39 +19,37 @@
   @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-  @keyframes pulseGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,.4); } 50% { box-shadow: 0 0 24px 4px rgba(16,185,129,.35); } }
+  @keyframes bounceIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
   @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
   .anim-slide-up { animation: slideUp .3s ease-out; }
   .anim-fade { animation: fadeIn .25s ease-out; }
   .anim-pop { animation: pop .25s ease-out; }
-  .fab-glow { animation: pulseGlow 2s infinite; }
+  .nav-active { color: #10b981 !important; }
+  .nav-active i { animation: bounceIcon .3s ease-out; }
   .skeleton { background: linear-gradient(90deg, #1f2937 0%, #374151 50%, #1f2937 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
   .cat-active { background: #10b981 !important; color: #000 !important; box-shadow: 0 8px 24px rgba(16,185,129,.35); }
-  .modal-bg { animation: fadeIn .2s ease-out; }
   .hide-scroll { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
   .hide-scroll > * { scroll-snap-align: start; }
+  
+  /* Панели профиля */
+  .full-screen-panel { position: fixed; inset: 0; z-index: 100; background: #0a0a0a; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+  .full-screen-panel.open { transform: translateX(0); }
 </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col" style="padding-bottom: calc(180px + env(safe-area-inset-bottom, 0px))">
+<body class="bg-gray-950 text-gray-100" style="padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));">
 
-<div id="maintenance-banner" class="hidden bg-amber-500 text-black text-center text-xs font-bold py-2 sticky top-0 z-[60]">
-  🔧 Идут технические работы. Заказы временно недоступны.
-</div>
+<div id="maintenance-banner" class="hidden bg-amber-500 text-black text-center text-xs font-bold py-2 sticky top-0 z-[60]">🔧 Идут технические работы. Заказы временно недоступны.</div>
 
 <header class="bg-gray-900/95 backdrop-blur border-b border-gray-800 sticky top-0 z-30 shadow-lg">
   <div class="max-w-7xl mx-auto px-4 py-3">
     <div class="flex items-center justify-between gap-3">
-      <div class="flex items-center gap-2.5" onclick="switchScreen('home')" role="button">
+      <div class="flex items-center gap-2.5" onclick="switchScreen('home')" style="cursor:pointer">
         <img src="https://i.ibb.co/FbhxLR8c/1786542023977.png" alt="Peshras" class="h-9 w-9 rounded-xl object-cover bg-gray-800" onerror="this.style.display='none'">
         <span class="text-lg font-black tracking-wider text-emerald-400">PESHRAS</span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="search-toggle" class="w-9 h-9 rounded-xl bg-gray-950 border border-gray-800 flex items-center justify-center text-gray-400 hover:text-emerald-400 transition">
-          <i data-lucide="search" class="w-4 h-4"></i>
-        </button>
-        <div class="flex items-center gap-1.5 text-xs text-gray-400 bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-800">
-          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i><span>Исфара</span>
-        </div>
+        <button id="search-toggle" class="w-9 h-9 rounded-xl bg-gray-950 border border-gray-800 flex items-center justify-center text-gray-400 hover:text-emerald-400 transition"><i data-lucide="search" class="w-4 h-4"></i></button>
+        <div class="flex items-center gap-1.5 text-xs text-gray-400 bg-gray-950 px-3 py-1.5 rounded-xl border border-gray-800"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-400"></i><span>Исфара</span></div>
       </div>
     </div>
     <div id="search-wrap" class="hidden pt-3 anim-fade">
@@ -63,112 +61,70 @@
   </div>
 </header>
 
-<main class="max-w-7xl mx-auto px-4 py-5 space-y-6 w-full flex-1">
+<main class="max-w-7xl mx-auto px-4 py-5 w-full flex-1 flex flex-col space-y-6">
 
   <!-- ЭКРАН: ГЛАВНАЯ -->
-  <div id="screen-home" class="space-y-6">
+  <div id="screen-home" class="space-y-6 flex-1">
+    <!-- Промо-баннеры -->
     <div class="hide-scroll flex gap-3 pb-1 scrollbar-none">
-      <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] rounded-3xl p-5 bg-gradient-to-br from-yellow-400 to-amber-600 text-black relative overflow-hidden shadow-xl shrink-0">
+      <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] rounded-3xl p-5 bg-gradient-to-br from-yellow-400 to-amber-600 text-black shadow-xl shrink-0 relative overflow-hidden">
         <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/20 rounded-full blur-xl"></div>
-        <div class="relative flex items-start justify-between gap-2">
-          <div class="space-y-1">
-            <span class="inline-block bg-black/30 text-white text-[9px] font-black px-2 py-0.5 rounded-full">СКОРО</span>
-            <h3 class="font-black text-base leading-tight">Бонусные баллы<br>за каждый заказ</h3>
-            <p class="text-[11px] opacity-80">Копите баллы и получайте бесплатную еду</p>
-          </div>
-          <div class="w-12 h-12 rounded-2xl bg-white/30 flex items-center justify-center shrink-0"><i data-lucide="gift" class="w-6 h-6"></i></div>
-        </div>
+        <div class="relative flex items-start justify-between gap-2"><div class="space-y-1"><span class="inline-block bg-black/30 text-white text-[9px] font-black px-2 py-0.5 rounded-full">СКОРО</span><h3 class="font-black text-base leading-tight">Бонусные баллы<br>за каждый заказ</h3><p class="text-[11px] opacity-80">Копите баллы и получайте бесплатную еду</p></div><div class="w-12 h-12 rounded-2xl bg-white/30 flex items-center justify-center shrink-0"><i data-lucide="gift" class="w-6 h-6"></i></div></div>
       </div>
-      <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] rounded-3xl p-5 bg-gradient-to-br from-emerald-500 to-teal-700 text-white relative overflow-hidden shadow-xl shrink-0">
+      <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] rounded-3xl p-5 bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-xl shrink-0 relative overflow-hidden">
         <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/20 rounded-full blur-xl"></div>
-        <div class="relative flex items-start justify-between gap-2">
-          <div class="space-y-1">
-            <span class="inline-block bg-white/20 text-white text-[9px] font-black px-2 py-0.5 rounded-full">ХИТ</span>
-            <h3 class="font-black text-base leading-tight">Бесплатная доставка<br>от <span id="promo-free-from">100</span> сомонӣ</h3>
-            <p class="text-[11px] opacity-80">Закажите больше — доставим за наш счёт</p>
-          </div>
-          <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0"><i data-lucide="truck" class="w-6 h-6"></i></div>
-        </div>
-      </div>
-      <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] rounded-3xl p-5 bg-gradient-to-br from-indigo-500 to-violet-700 text-white relative overflow-hidden shadow-xl shrink-0">
-        <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/20 rounded-full blur-xl"></div>
-        <div class="relative flex items-start justify-between gap-2">
-          <div class="space-y-1">
-            <span class="inline-block bg-white/20 text-white text-[9px] font-black px-2 py-0.5 rounded-full">СКОРО</span>
-            <h3 class="font-black text-base leading-tight">Скидки и акции<br>каждый день</h3>
-            <p class="text-[11px] opacity-80">Следите за обновлениями — будет вкусно и выгодно</p>
-          </div>
-          <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0"><i data-lucide="percent" class="w-6 h-6"></i></div>
-        </div>
+        <div class="relative flex items-start justify-between gap-2"><div class="space-y-1"><span class="inline-block bg-white/20 text-white text-[9px] font-black px-2 py-0.5 rounded-full">ХИТ</span><h3 class="font-black text-base leading-tight">Бесплатная доставка<br>от <span id="promo-free-from">100</span> сомонӣ</h3><p class="text-[11px] opacity-80">Закажите больше — доставим за наш счёт</p></div><div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0"><i data-lucide="truck" class="w-6 h-6"></i></div></div>
       </div>
     </div>
 
-    <section id="section-new" class="hidden space-y-3">
-      <div class="flex items-center justify-between"><h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5 text-blue-400"></i> Новинки</h2></div>
-      <div id="new-list" class="hide-scroll flex gap-3 pb-1 scrollbar-none"></div>
+    <!-- БЫСТРЫЕ КАТЕГОРИИ -->
+    <section class="space-y-3">
+      <h2 class="text-sm font-bold text-white">Что закажем сегодня?</h2>
+      <div class="hide-scroll flex gap-4 pb-2">
+        <div onclick="openCategory('plov')" class="flex flex-col items-center gap-2 shrink-0 cursor-pointer group"><div class="w-16 h-16 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-2xl group-hover:border-emerald-500 transition">🍚</div><span class="text-[10px] text-gray-400 font-bold">Плов</span></div>
+        <div onclick="openCategory('shashlik')" class="flex flex-col items-center gap-2 shrink-0 cursor-pointer group"><div class="w-16 h-16 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-2xl group-hover:border-emerald-500 transition">🍢</div><span class="text-[10px] text-gray-400 font-bold">Шашлык</span></div>
+        <div onclick="openCategory('pizza')" class="flex flex-col items-center gap-2 shrink-0 cursor-pointer group"><div class="w-16 h-16 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-2xl group-hover:border-emerald-500 transition">🍕</div><span class="text-[10px] text-gray-400 font-bold">Пицца</span></div>
+        <div onclick="openCategory('burger')" class="flex flex-col items-center gap-2 shrink-0 cursor-pointer group"><div class="w-16 h-16 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-2xl group-hover:border-emerald-500 transition">🍔</div><span class="text-[10px] text-gray-400 font-bold">Бургеры</span></div>
+        <div onclick="openCategory('drinks')" class="flex flex-col items-center gap-2 shrink-0 cursor-pointer group"><div class="w-16 h-16 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-2xl group-hover:border-emerald-500 transition">🥤</div><span class="text-[10px] text-gray-400 font-bold">Напитки</span></div>
+      </div>
     </section>
 
-    <section id="section-hit" class="hidden space-y-3">
-      <div class="flex items-center justify-between"><h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="flame" class="w-5 h-5 text-orange-400"></i> Хит сезона</h2></div>
-      <div id="hit-list" class="hide-scroll flex gap-3 pb-1 scrollbar-none"></div>
-    </section>
-
-    <section id="section-popular" class="hidden space-y-3">
-      <div class="flex items-center justify-between"><h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="star" class="w-5 h-5 text-yellow-400"></i> Популярное</h2></div>
-      <div id="popular-list" class="hide-scroll flex gap-3 pb-1 scrollbar-none"></div>
-    </section>
-
-    <footer class="border-t border-gray-800 pt-6 pb-2 space-y-4">
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2.5">
-          <img src="https://i.ibb.co/FbhxLR8c/1786542023977.png" alt="Peshras" class="h-8 w-8 rounded-xl object-cover bg-gray-800" onerror="this.style.display='none'">
-          <div>
-            <p class="text-sm font-black tracking-wider text-emerald-400">PESHRAS</p>
-            <p class="text-[10px] text-gray-500">Доставка еды · Исфара</p>
-          </div>
+    <!-- БОЛЬШОЙ БАННЕР -->
+    <div class="rounded-3xl bg-gray-900 border border-gray-800 overflow-hidden relative shadow-lg">
+      <div class="p-6 flex items-center justify-between relative z-10">
+        <div class="space-y-2 max-w-[60%]">
+          <h3 class="text-xl font-black text-white leading-tight">Скидка 20% на первый заказ!</h3>
+          <p class="text-xs text-gray-400">При заказе от 150 сомонӣ. Введите промокод <b class="text-emerald-400">WELCOME</b> в комментарии.</p>
         </div>
-        <a href="https://instagram.com/peshras" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-400 hover:text-pink-400 hover:border-pink-500 transition" title="@peshras">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-          </svg>
-        </a>
+        <div class="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="percent" class="w-8 h-8"></i></div>
       </div>
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-gray-500">
-        <p>© <span id="footer-year"></span> Peshras. Все права защищены.</p>
-        <a href="https://kurushdigital.one" target="_blank" rel="noopener" class="hover:text-emerald-400 transition">Сделано <span class="font-bold text-gray-300">Kurushdigital.one</span></a>
-      </div>
-    </footer>
+    </div>
+
+    <!-- РЕСТОРАНЫ РЯДОМ -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between"><h2 class="text-lg font-bold text-white">Рестораны рядом</h2><button onclick="switchScreen('restaurants')" class="text-xs text-emerald-400 font-bold">Все</button></div>
+      <div id="home-restaurants-list" class="hide-scroll flex gap-3 pb-1 scrollbar-none"></div>
+    </section>
+
+    <section id="section-new" class="hidden space-y-3"><div class="flex items-center justify-between"><h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5 text-blue-400"></i> Новинки</h2></div><div id="new-list" class="hide-scroll flex gap-3 pb-1 scrollbar-none"></div></section>
+    <section id="section-hit" class="hidden space-y-3"><div class="flex items-center justify-between"><h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="flame" class="w-5 h-5 text-orange-400"></i> Хит сезона</h2></div><div id="hit-list" class="hide-scroll flex gap-3 pb-1 scrollbar-none"></div></section>
+    <section id="section-popular" class="hidden space-y-3"><div class="flex items-center justify-between"><h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="star" class="w-5 h-5 text-yellow-400"></i> Популярное</h2></div><div id="popular-list" class="hide-scroll flex gap-3 pb-1 scrollbar-none"></div></section>
   </div>
 
   <!-- ЭКРАН: РЕСТОРАНЫ -->
-  <div id="screen-restaurants" class="hidden space-y-3">
+  <div id="screen-restaurants" class="hidden space-y-3 flex-1">
     <h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="store" class="w-5 h-5 text-emerald-400"></i> Рестораны Исфары</h2>
-    <div id="restaurants-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      <div class="col-span-full skeleton h-24 rounded-2xl"></div>
-    </div>
+    <div id="restaurants-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"><div class="col-span-full skeleton h-24 rounded-2xl"></div></div>
   </div>
 
   <!-- ЭКРАН: РЕСТОРАН -->
-  <div id="screen-restaurant" class="hidden space-y-5">
-    <button id="back-to-restaurants" class="text-xs text-emerald-400 font-bold flex items-center gap-1 hover:text-emerald-300">
-      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Все рестораны
-    </button>
-
+  <div id="screen-restaurant" class="hidden space-y-5 flex-1">
+    <button id="back-to-restaurants" class="text-xs text-emerald-400 font-bold flex items-center gap-1 hover:text-emerald-300"><i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Все рестораны</button>
     <div id="restaurant-header" class="bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden">
-      <div class="h-32 sm:h-44 bg-gray-800 relative overflow-hidden">
-        <img id="rh-cover" src="" class="w-full h-full object-cover" onerror="this.style.display='none'">
-        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent"></div>
-      </div>
+      <div class="h-32 sm:h-44 bg-gray-800 relative overflow-hidden"><img id="rh-cover" src="" class="w-full h-full object-cover" onerror="this.style.display='none'"><div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent"></div></div>
       <div class="px-4 sm:px-5 pb-4 -mt-10 relative flex items-end gap-3">
-        <div class="w-20 h-20 rounded-2xl bg-gray-800 border-4 border-gray-900 overflow-hidden shrink-0">
-          <img id="rh-logo" src="" class="w-full h-full object-cover" onerror="this.style.display='none'">
-        </div>
-        <div class="flex-1 min-w-0 pb-1">
-          <h1 id="rh-name" class="text-lg font-black text-white truncate">Ресторан</h1>
-          <p id="rh-address" class="text-[11px] text-gray-400 truncate flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> Исфара</p>
-        </div>
+        <div class="w-20 h-20 rounded-2xl bg-gray-800 border-4 border-gray-900 overflow-hidden shrink-0"><img id="rh-logo" src="" class="w-full h-full object-cover" onerror="this.style.display='none'"></div>
+        <div class="flex-1 min-w-0 pb-1"><h1 id="rh-name" class="text-lg font-black text-white truncate">Ресторан</h1><p id="rh-address" class="text-[11px] text-gray-400 truncate flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> Исфара</p></div>
       </div>
       <div class="px-4 sm:px-5 pb-4 flex flex-wrap items-center gap-2 text-[11px]">
         <span id="rh-cuisine" class="hidden text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg"></span>
@@ -177,125 +133,139 @@
         <span id="rh-shift" class="hidden px-2 py-1 rounded-lg"></span>
       </div>
     </div>
-
-    <div>
-      <h2 class="text-sm font-bold text-white mb-2 flex items-center gap-2"><i data-lucide="layout-grid" class="w-4 h-4 text-emerald-400"></i> Категории</h2>
-      <div id="restaurant-categories" class="hide-scroll flex gap-2 pb-1 scrollbar-none text-xs font-bold"></div>
-    </div>
-
-    <div>
-      <h2 id="restaurant-menu-title" class="text-lg font-bold text-white flex items-center gap-2 mb-3"><i data-lucide="utensils" class="w-5 h-5 text-emerald-400"></i> Меню</h2>
-      <div id="restaurant-products" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
-    </div>
+    <div><h2 class="text-sm font-bold text-white mb-2 flex items-center gap-2"><i data-lucide="layout-grid" class="w-4 h-4 text-emerald-400"></i> Категории</h2><div id="restaurant-categories" class="hide-scroll flex gap-2 pb-1 scrollbar-none text-xs font-bold"></div></div>
+    <div><h2 id="restaurant-menu-title" class="text-lg font-bold text-white flex items-center gap-2 mb-3"><i data-lucide="utensils" class="w-5 h-5 text-emerald-400"></i> Меню</h2><div id="restaurant-products" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div></div>
   </div>
 
   <!-- ЭКРАН: ПОИСК -->
-  <div id="screen-search" class="hidden space-y-3">
+  <div id="screen-search" class="hidden space-y-3 flex-1">
     <h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="search" class="w-5 h-5 text-emerald-400"></i> Результаты поиска</h2>
     <div id="search-results" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
   </div>
 
+  <!-- ФУТЕР -->
+  <footer class="pt-8 pb-4 mt-auto border-t border-gray-800 space-y-4">
+    <div class="flex justify-center gap-4">
+      <a href="https://instagram.com/peshras" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-pink-400 hover:border-pink-500 transition"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+      <a href="https://t.me/peshras_support" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-blue-400 hover:border-blue-500 transition"><i data-lucide="send" class="w-5 h-5"></i></a>
+      <a href="https://wa.me/992000000000" target="_blank" rel="noopener" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-green-400 hover:border-green-500 transition"><i data-lucide="message-circle" class="w-5 h-5"></i></a>
+    </div>
+    <p class="text-center text-[10px] text-gray-500">© <span id="footer-year"></span> Peshras. Сделано <a href="https://kurushdigital.one" target="_blank" rel="noopener" class="text-emerald-400 font-bold hover:underline">Kurushdigital.one</a></p>
+  </footer>
 </main>
 
-<div id="cart-floating-bar" class="fixed left-4 right-4 max-w-md mx-auto hidden z-40 transition-all duration-300" style="bottom: calc(88px + env(safe-area-inset-bottom, 0px));">
-  <button onclick="openCartModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 px-5 rounded-2xl shadow-2xl shadow-emerald-500/40 flex items-center justify-between transition-all duration-300 active:scale-95">
-    <div class="flex items-center gap-2">
-      <span id="cart-count-badge" class="bg-black text-emerald-400 text-xs px-2 py-0.5 rounded-full font-black">0</span>
-      <span>Корзина</span>
-    </div>
+<!-- FAB КОРЗИНА -->
+<div id="cart-floating-bar" class="fixed left-4 right-4 max-w-md mx-auto hidden z-40" style="bottom: calc(88px + env(safe-area-inset-bottom, 0px));">
+  <button onclick="openCartModal()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 px-5 rounded-2xl shadow-2xl shadow-emerald-500/30 flex items-center justify-between transition transform active:scale-95">
+    <div class="flex items-center gap-2"><span id="cart-count-badge" class="bg-black text-emerald-400 text-xs px-2 py-0.5 rounded-full font-black">0</span><span>Корзина</span></div>
     <span id="cart-total-badge" class="text-sm">0 сомонӣ</span>
   </button>
 </div>
 
-<!-- ===================== МОДАЛ КОРЗИНЫ ===================== -->
-<div id="cart-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 modal-bg">
-  <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-6 space-y-5 max-h-[92vh] overflow-y-auto anim-slide-up">
+<!-- МОДАЛКА КОРЗИНЫ -->
+<div id="cart-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-6 space-y-5 max-h-[92vh] overflow-y-auto anim-slide-up shadow-2xl">
     <div id="cart-step-items" class="space-y-5">
-      <div class="flex items-center justify-between border-b border-gray-800 pb-4">
-        <h3 class="font-extrabold text-lg text-white flex items-center gap-2"><i data-lucide="shopping-bag" class="w-5 h-5 text-emerald-400"></i><span>Ваша корзина</span></h3>
-        <button onclick="closeCartModal()" class="text-gray-400 hover:text-white p-1"><i data-lucide="x" class="w-6 h-6"></i></button>
-      </div>
+      <div class="flex items-center justify-between border-b border-gray-800 pb-4"><h3 class="font-extrabold text-lg text-white flex items-center gap-2"><i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-400"></i>Корзина</h3><button onclick="closeCartModal()" class="text-gray-400 hover:text-white p-1"><i data-lucide="x" class="w-6 h-6"></i></button></div>
       <div id="cart-items-container" class="space-y-3"><div class="text-gray-500 text-xs text-center py-4">Корзина пуста</div></div>
-      <div class="space-y-1.5 pt-2 border-t border-gray-800 text-xs">
+      <div class="bg-gray-950 rounded-2xl p-4 border border-gray-800 space-y-2 text-xs">
         <div class="flex justify-between text-gray-400"><span>Товары:</span><span id="cart-subtotal" class="text-white font-bold">0 с.</span></div>
         <div class="flex justify-between text-gray-400"><span>Доставка:</span><span id="cart-delivery" class="text-white font-bold">0 с.</span></div>
-        <div id="cart-free-hint" class="hidden text-[10px] text-emerald-400 text-right"></div>
-        <div class="flex justify-between font-black text-base pt-1 border-t border-gray-800"><span>Итого:</span><span id="cart-modal-total" class="text-yellow-400">0 сомонӣ</span></div>
+        <div id="cart-free-hint" class="hidden text-[10px] text-emerald-400 text-right font-bold mt-1"></div>
+        <div class="flex justify-between font-black text-lg pt-2 border-t border-gray-800"><span>Итого:</span><span id="cart-modal-total" class="text-yellow-400">0 сомонӣ</span></div>
       </div>
       <div id="min-order-hint" class="hidden text-[11px] text-red-400 text-center bg-red-500/10 border border-red-500/30 rounded-xl p-2"></div>
       <div class="space-y-2">
-        <button id="go-checkout-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"><span>Оформить заказ</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
-        <button id="clear-cart-btn" class="w-full bg-transparent border border-gray-800 hover:border-red-500/50 hover:text-red-400 text-gray-400 font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i><span>Очистить корзину</span></button>
+        <button id="go-checkout-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg disabled:opacity-50"><span>Оформить заказ</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+        <button id="clear-cart-btn" class="w-full bg-transparent border border-gray-800 hover:border-red-500/50 hover:text-red-400 text-gray-400 font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2"><i data-lucide="trash-2" class="w-4 h-4"></i>Очистить</button>
       </div>
     </div>
     <div id="cart-step-form" class="hidden space-y-4">
-      <div class="flex items-center justify-between border-b border-gray-800 pb-4">
-        <button id="back-to-items" class="text-gray-400 hover:text-white flex items-center gap-1 text-xs font-bold"><i data-lucide="arrow-left" class="w-4 h-4"></i> Назад</button>
-        <h3 class="font-extrabold text-base text-white">Данные для доставки</h3><div class="w-8"></div>
-      </div>
+      <div class="flex items-center justify-between border-b border-gray-800 pb-4"><button id="back-to-items" class="text-gray-400 hover:text-white flex items-center gap-1 text-xs font-bold"><i data-lucide="arrow-left" class="w-4 h-4"></i> Назад</button><h3 class="font-extrabold text-base text-white">Оформление</h3><div class="w-8"></div></div>
       <form id="checkout-form" class="space-y-3">
         <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Ваше имя</label><input type="text" id="client-name" required placeholder="Изат" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
-        <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Номер телефона</label><input type="tel" id="client-phone" required placeholder="+992 92 XXX XX XX" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
-        <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Адрес доставки в Исфаре</label><input type="text" id="client-address" required placeholder="Улица, дом, ориентир" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
+        <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Телефон</label><input type="tel" id="client-phone" required placeholder="+992 92 XXX XX XX" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
+        <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Адрес</label><input type="text" id="client-address" required placeholder="Улица, дом" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
         <div class="grid grid-cols-2 gap-2">
           <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Персон</label><input type="number" id="client-persons" min="1" max="20" value="1" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
-          <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Способ оплаты</label><select id="client-payment" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"><option value="cash">💵 Наличные</option><option value="korvarok">💳 Корварок</option><option value="alif">📱 Алиф Мобайл</option></select></div>
+          <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Оплата</label><select id="client-payment" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"><option value="cash">💵 Наличные</option><option value="online">💳 Онлайн-перевод</option></select></div>
         </div>
-        <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Комментарий (опционально)</label><input type="text" id="client-comment" placeholder="Подъезд, этаж, пожелания" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
+        <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Комментарий</label><input type="text" id="client-comment" placeholder="Подъезд, пожелания" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
+        
         <div class="space-y-1.5 text-[11px] text-gray-300">
           <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="client-no-intercom" class="w-4 h-4 accent-emerald-500"> Не звонить в домофон</label>
           <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="client-call-first" class="w-4 h-4 accent-emerald-500"> Перезвонить перед доставкой</label>
         </div>
-        <div class="space-y-1 pt-2 border-t border-gray-800 text-xs">
+
+        <div class="bg-gray-950 border border-gray-800 rounded-xl p-3 space-y-1.5 text-xs">
           <div class="flex justify-between text-gray-400"><span>Товары:</span><span id="checkout-subtotal" class="text-white font-bold">0 с.</span></div>
           <div class="flex justify-between text-gray-400"><span>Доставка:</span><span id="checkout-delivery" class="text-white font-bold">0 с.</span></div>
-          <div class="flex justify-between font-black text-base pt-1"><span>Итого:</span><span id="cart-modal-total-2" class="text-yellow-400">0 сомонӣ</span></div>
+          <div class="flex justify-between font-black text-base pt-2 border-t border-gray-800"><span>Итого:</span><span id="cart-modal-total-2" class="text-yellow-400">0 сомонӣ</span></div>
         </div>
-        <button type="submit" id="submit-order-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/20 disabled:opacity-50"><span>Подтвердить заказ</span><i data-lucide="send" class="w-4 h-4"></i></button>
+
+        <div class="flex items-start gap-2 pt-2">
+          <input type="checkbox" id="client-privacy" required class="mt-1 w-4 h-4 accent-emerald-500">
+          <label for="client-privacy" class="text-[11px] text-gray-400 cursor-pointer leading-tight">Я согласен с <a href="privacy.html" target="_blank" class="text-emerald-400 hover:underline">политикой конфиденциальности</a> и обработкой персональных данных</label>
+        </div>
+
+        <button type="submit" id="submit-order-btn" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg"><span>Подтвердить заказ</span><i data-lucide="send" class="w-4 h-4"></i></button>
       </form>
     </div>
   </div>
-</div> <!-- ===================== МОДАЛ ПРОФИЛЯ ===================== -->
+</div>
+
+<!-- МОДАЛКА ПРОФИЛЯ (Список) -->
 <div id="profile-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
   <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 max-h-[92vh] overflow-y-auto anim-slide-up">
-    <div class="flex items-center justify-between border-b border-gray-800 pb-4">
-      <h3 class="font-extrabold text-lg text-white flex items-center gap-2"><i data-lucide="user" class="w-5 h-5 text-emerald-400"></i><span>Профиль</span></h3>
-      <button onclick="closeProfile()" class="text-gray-400 hover:text-white p-1"><i data-lucide="x" class="w-6 h-6"></i></button>
-    </div>
+    <div class="flex items-center justify-between border-b border-gray-800 pb-4 mb-4"><h3 class="font-extrabold text-lg text-white flex items-center gap-2"><i data-lucide="user" class="w-5 h-5 text-emerald-400"></i>Профиль</h3><button onclick="closeProfile()" class="text-gray-400 hover:text-white p-1"><i data-lucide="x" class="w-6 h-6"></i></button></div>
     <div class="grid grid-cols-1 gap-2">
-      <button data-panel="mydata" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center"><i data-lucide="user-circle" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">Мои данные</p><p class="text-[10px] text-gray-500">Имя, телефон, адрес</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
-      <button data-panel="about" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="info" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">О нас</p><p class="text-[10px] text-gray-500">Кто мы и чем занимаемся</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
-      <button data-panel="terms" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-yellow-400/10 text-yellow-400 flex items-center justify-center"><i data-lucide="file-text" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">Условия доставки и оплаты</p><p class="text-[10px] text-gray-500">Время, стоимость, оплата</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
-      <button data-panel="history" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="history" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">История заказов</p><p class="text-[10px] text-gray-500">По номеру телефона</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
-      <button data-panel="support" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center"><i data-lucide="headphones" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">Связаться с нами</p><p class="text-[10px] text-gray-500">Поддержка и жалобы</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
-      <button data-panel="partner" class="profile-item w-full flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="store" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">Стать партнёром</p><p class="text-[10px] text-gray-500">Подключите свой ресторан</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
+      <button onclick="openProfilePanel('mydata')" class="flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center"><i data-lucide="user-circle" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">Мои данные</p><p class="text-[10px] text-gray-500">Для быстрого заказа</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
+      <button onclick="openProfilePanel('about')" class="flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="info" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">О нас</p><p class="text-[10px] text-gray-500">Кто мы</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
+      <button onclick="openProfilePanel('terms')" class="flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-yellow-400/10 text-yellow-400 flex items-center justify-center"><i data-lucide="file-text" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">Условия</p><p class="text-[10px] text-gray-500">Оплата и время</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
+      <button onclick="openProfilePanel('history')" class="flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center"><i data-lucide="history" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">История</p><p class="text-[10px] text-gray-500">По номеру</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
+      <button onclick="openProfilePanel('support')" class="flex items-center justify-between bg-gray-950 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 text-left"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="headphones" class="w-4 h-4"></i></div><div><p class="text-sm font-bold text-white">Поддержка</p><p class="text-[10px] text-gray-500">Связаться</p></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></button>
     </div>
   </div>
 </div>
 
-<!-- ===================== ПОЛНОЭКРАННЫЙ ПОДРАЗДЕЛ ПРОФИЛЯ ===================== -->
-<div id="profile-subpage" class="fixed inset-0 bg-gray-950 z-[70] hidden flex-col anim-slide-up">
-  <div class="bg-gray-900/95 backdrop-blur border-b border-gray-800 sticky top-0 z-10">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-      <button id="subpage-back" class="w-9 h-9 rounded-xl bg-gray-950 border border-gray-800 flex items-center justify-center text-gray-400 hover:text-emerald-400 transition">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i>
-      </button>
-      <h3 id="subpage-title" class="font-extrabold text-base text-white">Раздел</h3>
-    </div>
-  </div>
-  <div class="flex-1 overflow-y-auto">
-    <div class="max-w-3xl mx-auto px-4 py-5 text-sm text-gray-300 leading-relaxed" id="subpage-body"></div>
-  </div>
+<!-- ПОЛНОЭКРАННЫЕ ПАНЕЛИ ПРОФИЛЯ (Выезжают сбоку) -->
+<div id="panel-mydata" class="full-screen-panel">
+  <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('mydata')" class="text-gray-400 hover:text-white"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h3 class="font-extrabold text-white text-lg">Мои данные</h3></div>
+  <div class="p-6 space-y-4 flex-1 overflow-y-auto"><div class="space-y-3"><input id="md-name" type="text" placeholder="Имя" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white"><input id="md-phone" type="tel" placeholder="+992..." class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white"><input id="md-address" type="text" placeholder="Адрес" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white"><button onclick="saveMyData()" class="w-full bg-emerald-500 text-black font-bold py-3 rounded-xl mt-2">Сохранить</button></div></div>
+</div>
+<div id="panel-about" class="full-screen-panel">
+  <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('about')" class="text-gray-400 hover:text-white"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h3 class="font-extrabold text-white text-lg">О нас</h3></div>
+  <div class="p-6 text-sm text-gray-300 leading-relaxed whitespace-pre-line text-center flex-1 overflow-y-auto" id="about-text-content"></div>
+</div>
+<div id="panel-terms" class="full-screen-panel">
+  <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('terms')" class="text-gray-400 hover:text-white"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h3 class="font-extrabold text-white text-lg">Условия</h3></div>
+  <div class="p-6 text-sm text-gray-300 leading-relaxed whitespace-pre-line text-center flex-1 overflow-y-auto" id="terms-text-content"></div>
+</div>
+<div id="panel-history" class="full-screen-panel">
+  <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('history')" class="text-gray-400 hover:text-white"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h3 class="font-extrabold text-white text-lg">История</h3></div>
+  <div class="p-6 flex-1 overflow-y-auto space-y-3"><div class="flex gap-2"><input id="history-phone" type="tel" placeholder="+992..." class="flex-1 bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-sm"><button onclick="searchHistory()" class="bg-emerald-500 text-black font-bold px-4 py-2 rounded-xl text-sm">Найти</button></div><div id="history-result" class="space-y-2 mt-4"></div></div>
+</div>
+<div id="panel-support" class="full-screen-panel">
+  <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('support')" class="text-gray-400 hover:text-white"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h3 class="font-extrabold text-white text-lg">Поддержка</h3></div>
+  <div class="p-6 flex-1 overflow-y-auto space-y-3" id="support-content"></div>
 </div>
 
-<div id="toast" class="fixed left-1/2 -translate-x-1/2 z-[9999] hidden font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm anim-fade" style="bottom: calc(160px + env(safe-area-inset-bottom, 0px));"></div>
+<div id="toast" class="fixed left-1/2 -translate-x-1/2 z-[9999] hidden font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm anim-fade" style="bottom: calc(100px + env(safe-area-inset-bottom, 0px));"></div>
 
-<nav class="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur border-t border-gray-800 z-40 safe-bottom">
-  <div class="max-w-7xl mx-auto grid grid-cols-4">
-    <button data-nav="home" class="nav-btn flex flex-col items-center gap-1 py-3 text-emerald-400 transition"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px] font-bold">Главная</span></button>
-    <button data-nav="restaurants" class="nav-btn flex flex-col items-center gap-1 py-3 text-gray-500 hover:text-emerald-400 transition"><i data-lucide="store" class="w-5 h-5"></i><span class="text-[10px] font-bold">Рестораны</span></button>
-    <button data-nav="cart" class="nav-btn relative flex flex-col items-center gap-1 py-3 text-gray-500 hover:text-emerald-400 transition"><span class="relative"><i data-lucide="shopping-bag" class="w-5 h-5"></i><span id="nav-cart-badge" class="hidden absolute -top-1.5 -right-2 bg-emerald-500 text-black text-[9px] font-black rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">0</span></span><span class="text-[10px] font-bold">Корзина</span></button>
-    <button data-nav="profile" class="nav-btn flex flex-col items-center gap-1 py-3 text-gray-500 hover:text-emerald-400 transition"><i data-lucide="user" class="w-5 h-5"></i><span class="text-[10px] font-bold">Профиль</span></button>
+<!-- НОВОЕ НИЖНЕЕ МЕНЮ (Плавающая капсула) -->
+<nav class="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-gray-900/95 backdrop-blur-md border border-gray-800 rounded-3xl z-40 shadow-2xl shadow-black/50 safe-bottom">
+  <div class="grid grid-cols-4 h-16 items-center">
+    <button id="nav-home" onclick="switchScreen('home')" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-emerald-400 nav-active transition"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px] font-bold">Главная</span></button>
+    <button id="nav-restaurants" onclick="switchScreen('restaurants')" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-gray-500 hover:text-emerald-400 transition"><i data-lucide="store" class="w-5 h-5"></i><span class="text-[10px] font-bold">Рестораны</span></button>
+    
+    <div class="flex justify-center relative h-full">
+       <button onclick="openCartModal()" class="absolute -top-5 w-14 h-14 bg-emerald-500 rounded-full text-black shadow-lg shadow-emerald-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition border-4 border-gray-950">
+         <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+         <span id="nav-cart-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center transform translate-x-1 -translate-y-1">0</span>
+       </button>
+    </div>
+
+    <button onclick="openProfile()" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-gray-500 hover:text-emerald-400 transition"><i data-lucide="user" class="w-5 h-5"></i><span class="text-[10px] font-bold">Профиль</span></button>
   </div>
 </nav>
 
@@ -326,7 +296,7 @@ function showToast(msg, type = 'success') {
   const t = $('#toast');
   t.textContent = msg;
   t.className = `fixed left-1/2 -translate-x-1/2 z-[9999] font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm anim-fade ${type === 'error' ? 'bg-red-500 text-white' : type === 'info' ? 'bg-blue-500 text-white' : 'bg-emerald-500 text-black'}`;
-  t.style.bottom = 'calc(160px + env(safe-area-inset-bottom, 0px))';
+  t.style.bottom = 'calc(100px + env(safe-area-inset-bottom, 0px))';
   t.classList.remove('hidden');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.add('hidden'), 2800);
@@ -348,7 +318,7 @@ async function loadBlockedPhones() {
   } catch (e) {}
 }
 
-function switchScreen(name) {
+function switchScreen(name, pushState = true) {
   activeScreen = name;
   ['home', 'restaurants', 'restaurant', 'search'].forEach(s => {
     const el = document.getElementById('screen-' + s);
@@ -359,10 +329,18 @@ function switchScreen(name) {
     const isActive = (target === 'home' && name === 'home') || (target === 'restaurants' && (name === 'restaurants' || name === 'restaurant'));
     b.classList.toggle('text-emerald-400', isActive);
     b.classList.toggle('text-gray-500', !isActive);
+    if(isActive) b.classList.add('nav-active'); else b.classList.remove('nav-active');
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
   lucide.createIcons();
+  
+  if (pushState) history.pushState({ screen: name }, '', '#' + name);
 }
+
+window.openCategory = function(cat) {
+  switchScreen('restaurants');
+  // можно добавить фильтрацию ресторанов по категории, если нужно
+};
 
 window.openRestaurant = function (id) {
   const r = allRestaurants.find(x => x.id === id);
@@ -402,6 +380,7 @@ function loadRestaurants() {
   onSnapshot(collection(db, 'restaurants'), snap => {
     allRestaurants = []; snap.forEach(d => allRestaurants.push({ id: d.id, ...d.data() }));
     renderRestaurants();
+    renderHomeRestaurants();
     renderSections();
   });
 }
@@ -425,6 +404,24 @@ function renderRestaurants() {
         </div>
       </div>`;
   }).join('');
+  lucide.createIcons();
+}
+
+function renderHomeRestaurants() {
+  const el = document.getElementById('home-restaurants-list');
+  if (!el) return;
+  const filtered = allRestaurants.filter(r => r.is_banned !== true).slice(0, 5);
+  el.innerHTML = filtered.map(r => `
+    <div onclick="openRestaurant('${r.id}')" class="w-40 shrink-0 bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden cursor-pointer group">
+      <div class="h-24 bg-gray-800 relative overflow-hidden">
+        ${r.logo_url ? `<img src="${esc(r.logo_url)}" class="w-full h-full object-cover group-hover:scale-105 transition">` : `<div class="w-full h-full flex items-center justify-center text-gray-600"><i data-lucide="store" class="w-8 h-8"></i></div>`}
+      </div>
+      <div class="p-2">
+        <h4 class="font-bold text-xs text-white truncate">${esc(r.name)}</h4>
+        <p class="text-[9px] text-gray-500 truncate mt-0.5">${esc(r.cuisine || 'Разное')}</p>
+      </div>
+    </div>
+  `).join('');
   lucide.createIcons();
 }
 
@@ -675,6 +672,8 @@ function saveUser(data) { localStorage.setItem('peshras_user', JSON.stringify(da
 document.getElementById('checkout-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (SETTINGS.maintenance === true) return showToast('🔧 Техработы', 'error');
+  if (!document.getElementById('client-privacy').checked) return showToast('Необходимо согласие с политикой', 'error');
+  
   const btn = document.getElementById('submit-order-btn');
   const itemsArray = Object.values(cart).map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.qty }));
   if (!itemsArray.length) return;
@@ -690,6 +689,7 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   const restaurantId = Object.values(cart)[0].product.restaurant_id;
   const rest = allRestaurants.find(r => r.id === restaurantId);
   if (rest?.shift_open === false) return showToast('⚠️ Ресторан не принимает заказы', 'error');
+  
   let orderNumber;
   try {
     const counterRef = doc(db, 'settings', 'counters');
@@ -697,6 +697,7 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
     orderNumber = (snap.exists() ? (snap.data().orders || 0) : 0) + 1;
     await setDoc(counterRef, { orders: orderNumber }, { merge: true });
   } catch (e) { orderNumber = Date.now(); }
+  
   const { subtotal, delivery, total } = calcTotals();
   const commPercent = rest?.commission || 0;
   const commAmount = total * (commPercent / 100);
@@ -720,16 +721,6 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   }
 });
 
-$$('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.dataset.nav;
-    if (target === 'home') switchScreen('home');
-    if (target === 'restaurants') switchScreen('restaurants');
-    if (target === 'cart') openCartModal();
-    if (target === 'profile') openProfile();
-  });
-});
-
 window.openProfile = function () {
   document.getElementById('profile-modal').classList.remove('hidden');
   document.getElementById('profile-modal').classList.add('flex');
@@ -742,145 +733,108 @@ window.closeProfile = function () {
 };
 document.getElementById('profile-modal').addEventListener('click', e => { if (e.target.id === 'profile-modal') closeProfile(); });
 
-function getPanels() {
-  const s = SETTINGS; const saved = getSavedUser();
-  return {
-    mydata: {
-      title: 'Мои данные',
-      html: `<div class="space-y-3">
-        <p class="text-gray-400 text-xs">Сохраним, чтобы не вводить при каждом заказе.</p>
-        <div class="space-y-2">
-          <input id="md-name" type="text" value="${esc(saved.name || '')}" placeholder="Имя" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
-          <input id="md-phone" type="tel" value="${esc(saved.phone || '')}" placeholder="+992..." class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
-          <input id="md-address" type="text" value="${esc(saved.address || '')}" placeholder="Адрес" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
-          <button onclick="saveMyData()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 rounded-xl text-sm transition">Сохранить</button>
-        </div>
-      </div>`
-    },
-    about: {
-      title: 'О нас',
-      html: `<div class="whitespace-pre-line text-sm text-gray-300 leading-relaxed">${esc(s.about_text || 'Peshras — сервис доставки еды в городе Исфара. Мы доставляем любимые блюда из лучших ресторанов города быстро и удобно.')}</div>`
-    },
-    terms: {
-      title: 'Условия доставки и оплаты',
-      html: `<div class="whitespace-pre-line text-sm text-gray-300 leading-relaxed">${esc(s.terms_text || 'Информация об условиях доставки и оплаты появится скоро.')}</div>`
-    },
-    partner: {
-      title: 'Стать партнёром',
-      html: `<div class="text-sm text-gray-300 leading-relaxed space-y-4">
-        <p class="whitespace-pre-line">${esc(s.partner_text || 'Хотите подключить свой ресторан к Peshras и принимать заказы онлайн? Мы открыты к сотрудничеству!')}</p>
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-2">
-          <p class="text-xs font-bold text-white">📋 Что вы получите:</p>
-          <ul class="text-xs text-gray-400 space-y-1.5 list-disc list-inside">
-            <li>Готовую витрину с вашим меню</li>
-            <li>Поток новых клиентов из Исфары</li>
-            <li>Личный кабинет для управления заказами</li>
-            <li>Прозрачные условия и выплаты</li>
-          </ul>
-        </div>
-        <button onclick="openPartnerTelegram()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3.5 rounded-xl text-sm transition flex items-center justify-center gap-2">
-          <i data-lucide="send" class="w-4 h-4"></i> Написать в Telegram
-        </button>
-      </div>`
-    },
-    support: {
-      title: 'Связаться с нами',
-      html: `<div class="space-y-4">
-        <p class="text-sm text-gray-300 leading-relaxed">
-          Мы всегда на связи! 💬<br>
-          Пишите по любым вопросам — предложения, идеи, жалобы или просто отзывы о сервисе.
-          Каждое сообщение читаем лично и стараемся отвечать быстро.
-        </p>
-        ${s.phone ? `<a href="tel:${esc(s.phone)}" class="flex items-center gap-3 bg-gray-900 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition"><div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="phone" class="w-5 h-5"></i></div><div class="flex-1"><p class="text-sm font-bold text-white">Позвонить</p><p class="text-xs text-gray-400">${esc(s.phone)}</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></a>` : ''}
-        <a href="https://t.me/${esc((s.telegram || 'peshras_support').replace('@',''))}" target="_blank" rel="noopener" class="flex items-center gap-3 bg-gray-900 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition"><div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center"><i data-lucide="send" class="w-5 h-5"></i></div><div class="flex-1"><p class="text-sm font-bold text-white">Telegram</p><p class="text-xs text-gray-400">${esc(s.telegram || '@peshras_support')}</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></a>
-        <a href="https://instagram.com/peshras" target="_blank" rel="noopener" class="flex items-center gap-3 bg-gray-900 border border-gray-800 hover:border-emerald-500 rounded-2xl p-4 transition"><div class="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center"><i data-lucide="instagram" class="w-5 h-5"></i></div><div class="flex-1"><p class="text-sm font-bold text-white">Instagram</p><p class="text-xs text-gray-400">@peshras</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-gray-600"></i></a>
-        <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4">
-          <p class="text-xs text-amber-400 font-bold mb-2">🚨 Что-то пошло не так с заказом?</p>
-          <p class="text-[11px] text-gray-400 mb-3">Напишите нам — разберёмся и решим вопрос в вашу пользу.</p>
-          <button onclick="reportIssue()" class="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold py-2.5 rounded-xl text-xs transition">Пожаловаться на заказ</button>
-        </div>
-      </div>`
-    },
-    history: {
-      title: 'История заказов',
-      html: `<div class="space-y-3">
-        <p class="text-gray-400 text-xs">Введите телефон, чтобы найти ваши заказы.</p>
-        <div class="flex gap-2">
-          <input id="history-phone" type="tel" value="${esc(saved.phone || '')}" placeholder="+992..." class="flex-1 bg-gray-900 border border-gray-800 rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
-          <button id="history-search-btn" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold px-4 py-3 rounded-xl text-sm transition">Найти</button>
-        </div>
-        <div id="history-result" class="space-y-2"></div>
-      </div>`
-    }
-  };
-}
+// ЛОГИКА ПАНЕЛЕЙ ПРОФИЛЯ
+window.openProfilePanel = function(key) {
+  closeProfile(); // Закрываем список профиля
+  const panel = document.getElementById('panel-' + key);
+  if (!panel) return;
+  
+  // Заполняем контентом
+  if (key === 'mydata') {
+    const saved = getSavedUser();
+    document.getElementById('md-name').value = saved.name || '';
+    document.getElementById('md-phone').value = saved.phone || '';
+    document.getElementById('md-address').value = saved.address || '';
+  }
+  if (key === 'about') {
+    document.getElementById('about-text-content').innerText = SETTINGS.about_text || 'Peshras — сервис доставки еды в городе Исфара.';
+  }
+  if (key === 'terms') {
+    document.getElementById('terms-text-content').innerText = SETTINGS.terms_text || 'Информация об условиях доставки и оплаты появится скоро.';
+  }
+  if (key === 'support') {
+    const el = document.getElementById('support-content');
+    const s = SETTINGS;
+    el.innerHTML = `
+      <p class="text-sm text-gray-300 leading-relaxed mb-4">Мы всегда на связи! Пишите по любым вопросам.</p>
+      ${s.phone ? `<a href="tel:${esc(s.phone)}" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-2xl p-4 transition"><div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i data-lucide="phone" class="w-5 h-5"></i></div><div class="flex-1"><p class="text-sm font-bold text-white">Позвонить</p><p class="text-xs text-gray-400">${esc(s.phone)}</p></div></a>` : ''}
+      <a href="https://t.me/${esc((s.telegram || 'peshras_support').replace('@',''))}" target="_blank" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-2xl p-4 mt-2 transition"><div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center"><i data-lucide="send" class="w-5 h-5"></i></div><div class="flex-1"><p class="text-sm font-bold text-white">Telegram</p><p class="text-xs text-gray-400">${esc(s.telegram || '@peshras_support')}</p></div></a>
+      <a href="https://instagram.com/peshras" target="_blank" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-2xl p-4 mt-2 transition"><div class="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center"><i data-lucide="instagram" class="w-5 h-5"></i></div><div class="flex-1"><p class="text-sm font-bold text-white">Instagram</p><p class="text-xs text-gray-400">@peshras</p></div></a>
+    `;
+  }
+  
+  panel.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  lucide.createIcons();
+};
+
+window.closeProfilePanel = function(key) {
+  const panel = document.getElementById('panel-' + key);
+  if (panel) panel.classList.remove('open');
+  document.body.style.overflow = '';
+  // Если нажали "Назад" в браузере, вернем список профиля
+  if (key !== 'history') openProfile();
+};
 
 window.saveMyData = () => {
   saveUser({ name: document.getElementById('md-name').value.trim(), phone: document.getElementById('md-phone').value.trim(), address: document.getElementById('md-address').value.trim() });
   showToast('✅ Данные сохранены');
-};
-window.openPartnerTelegram = () => {
-  const tg = SETTINGS.partner_telegram || SETTINGS.telegram || 'peshras_support';
-  const text = encodeURIComponent('Здравствуйте! Хочу стать партнёром Peshras. Мой ресторан: ');
-  window.open(`https://t.me/${tg.replace('@','')}?text=${text}`, '_blank');
-};
-window.reportIssue = () => {
-  const tg = SETTINGS.telegram || 'peshras_support';
-  const text = encodeURIComponent('🚨 Жалоба на заказ Peshras\n\nНомер заказа: \nТелефон: \nЧто случилось: ');
-  window.open(`https://t.me/${tg.replace('@','')}?text=${text}`, '_blank');
+  closeProfilePanel('mydata');
 };
 
-function openSubpage(title, html) {
-  document.getElementById('subpage-title').textContent = title;
-  document.getElementById('subpage-body').innerHTML = html;
-  const sp = document.getElementById('profile-subpage');
-  sp.classList.remove('hidden'); sp.classList.add('flex');
-  document.body.style.overflow = 'hidden';
-  lucide.createIcons();
-}
-function closeSubpage() {
-  const sp = document.getElementById('profile-subpage');
-  sp.classList.add('hidden'); sp.classList.remove('flex');
-  document.body.style.overflow = '';
-}
-document.getElementById('subpage-back').addEventListener('click', closeSubpage);
+window.searchHistory = async () => {
+  const phone = document.getElementById('history-phone').value.trim();
+  const out = document.getElementById('history-result');
+  if (!phone) return;
+  out.innerHTML = `<p class="text-gray-500 text-xs text-center py-3">Ищем...</p>`;
+  try {
+    const q = query(collection(db, 'orders'), where('client_phone', '==', phone), orderBy('created_at', 'desc'), limit(20));
+    const snap = await getDocs(q);
+    if (snap.empty) { out.innerHTML = `<p class="text-gray-500 text-xs text-center py-3">Заказов не найдено.</p>`; return; }
+    const statusMap = { new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится', delivering: '🛵 В пути', delivered: '🏁 Доставлен', cancelled: '❌ Отменён' };
+    out.innerHTML = snap.docs.map(d => {
+      const o = d.data();
+      const date = o.created_at?.toDate?.().toLocaleString('ru-RU') || '—';
+      return `<div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-1.5"><div class="flex justify-between items-center"><span class="font-extrabold text-sm text-white">#${o.order_number || d.id.substring(0,6)}</span><span class="text-[11px] text-emerald-400 font-bold">${statusMap[o.status] || o.status}</span></div><p class="text-[10px] text-gray-500">${date}</p><p class="text-xs text-gray-400">${(o.items || []).map(i => `${esc(i.name)} ×${i.qty}`).join(', ')}</p><p class="text-sm font-black text-yellow-400 pt-1">${fmt(o.total_price)}</p></div>`;
+    }).join('');
+  } catch (err) { out.innerHTML = `<p class="text-red-400 text-xs text-center py-3">Ошибка поиска.</p>`; }
+};
 
-$$('.profile-item').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const key = btn.dataset.panel; const panels = getPanels(); const p = panels[key];
-    if (!p) return;
-    openSubpage(p.title, p.html);
-    if (key === 'history') {
-      const searchBtn = document.getElementById('history-search-btn');
-      if (searchBtn) {
-        searchBtn.addEventListener('click', async () => {
-          const phone = document.getElementById('history-phone').value.trim();
-          const out = document.getElementById('history-result');
-          if (!phone) return;
-          out.innerHTML = `<p class="text-gray-500 text-xs text-center py-3">Ищем...</p>`;
-          try {
-            const q = query(collection(db, 'orders'), where('client_phone', '==', phone), orderBy('created_at', 'desc'), limit(20));
-            const snap = await getDocs(q);
-            if (snap.empty) { out.innerHTML = `<p class="text-gray-500 text-xs text-center py-3">Заказов с этим номером не найдено.</p>`; return; }
-            const statusMap = { new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится', delivering: '🛵 В пути', delivered: '🏁 Доставлен', cancelled: '❌ Отменён' };
-            out.innerHTML = snap.docs.map(d => {
-              const o = d.data();
-              const date = o.created_at?.toDate?.().toLocaleString('ru-RU') || '—';
-              return `<div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-1.5">
-                <div class="flex justify-between items-center">
-                  <span class="font-extrabold text-sm text-white">#${o.order_number || d.id.substring(0,6)}</span>
-                  <span class="text-[11px] text-emerald-400 font-bold">${statusMap[o.status] || o.status}</span>
-                </div>
-                <p class="text-[10px] text-gray-500">${date}</p>
-                <p class="text-xs text-gray-400">${(o.items || []).map(i => `${esc(i.name)} ×${i.qty}`).join(', ')}</p>
-                <p class="text-sm font-black text-yellow-400 pt-1">${fmt(o.total_price)}</p>
-              </div>`;
-            }).join('');
-          } catch (err) { out.innerHTML = `<p class="text-red-400 text-xs text-center py-3">Ошибка поиска. Попробуйте позже.</p>`; }
-        });
+// ПЕРЕХВАТ КНОПКИ "НАЗАД" В ANDROID WEBVIEW
+history.pushState({ screen: 'home' }, '', '#home');
+window.addEventListener('popstate', (e) => {
+  const openPanels = document.querySelectorAll('.full-screen-panel.open');
+  if (openPanels.length > 0) {
+    openPanels.forEach(p => p.classList.remove('open'));
+    document.body.style.overflow = '';
+    openProfile(); // Возвращаем профиль
+    history.pushState({ screen: 'profile' }, '', '#profile');
+    return;
+  }
+  
+  const profileModal = document.getElementById('profile-modal');
+  if (!profileModal.classList.contains('hidden')) {
+    closeProfile();
+    history.pushState({ screen: activeScreen }, '', '#' + activeScreen);
+    return;
+  }
+
+  if (activeScreen !== 'home') {
+    switchScreen('home', false); // Возвращаемся на главную без добавления в историю
+    history.pushState({ screen: 'home' }, '', '#home');
+  } else {
+    // Если мы на главной, разрешаем выход (для WebView)
+    if (window.Android && window.Android.exitApp) {
+      window.Android.exitApp();
+    } else {
+      // В обычном браузере просто показываем предупреждение
+      if (confirm('Вы действительно хотите выйти из приложения?')) {
+        window.close();
+      } else {
+        history.pushState({ screen: 'home' }, '', '#home');
       }
     }
-  });
+  }
 });
 
 function showConfirm(msg, onOk, okText = 'Заменить', variant = 'success') {
@@ -892,13 +846,7 @@ function showConfirm(msg, onOk, okText = 'Заменить', variant = 'success'
     document.body.appendChild(m);
   }
   const btnColor = variant === 'danger' ? 'bg-red-500 hover:bg-red-400 text-white' : 'bg-emerald-500 hover:bg-emerald-400 text-black';
-  m.innerHTML = `<div class="bg-gray-900 border border-gray-800 rounded-3xl p-5 max-w-sm w-full space-y-4 anim-slide-up">
-    <p id="confirm-msg" class="text-sm text-white leading-relaxed"></p>
-    <div class="flex gap-2">
-      <button id="confirm-cancel" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl text-xs transition">Отмена</button>
-      <button id="confirm-ok" class="flex-1 ${btnColor} font-extrabold py-3 rounded-xl text-xs transition">${okText}</button>
-    </div>
-  </div>`;
+  m.innerHTML = `<div class="bg-gray-900 border border-gray-800 rounded-3xl p-5 max-w-sm w-full space-y-4 anim-slide-up"><p id="confirm-msg" class="text-sm text-white leading-relaxed"></p><div class="flex gap-2"><button id="confirm-cancel" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl text-xs transition">Отмена</button><button id="confirm-ok" class="flex-1 ${btnColor} font-extrabold py-3 rounded-xl text-xs transition">${okText}</button></div></div>`;
   m.style.display = 'flex';
   m.querySelector('#confirm-msg').textContent = msg;
   m.querySelector('#confirm-cancel').onclick = () => m.style.display = 'none';
