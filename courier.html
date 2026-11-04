@@ -2,22 +2,28 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Peshras Курьер</title>
 <meta name="theme-color" content="#0a0a0a">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; display: flex; flex-direction: column; min-height: 100vh; }
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
   @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   .anim-in { animation: slideIn .35s ease-out; }
+  .anim-fade { animation: fadeIn .25s ease-out; }
   @keyframes pulse-border { 0%, 100% { border-color: #f59e0b; } 50% { border-color: #fbbf24; box-shadow: 0 0 20px rgba(245,158,11,.3); } }
   .order-new { animation: pulse-border 1.5s infinite; }
+  
+  .nav-active { color: #10b981 !important; }
+  .hide-scroll::-webkit-scrollbar { display: none; }
+  .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-950 text-gray-100" style="padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));">
 
 <!-- ЭКРАН ВХОДА -->
 <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
@@ -52,44 +58,94 @@
   </header>
 
   <main class="flex-1 p-4 space-y-4 overflow-y-auto">
-    <!-- НОВЫЕ ЗАКАЗЫ -->
-    <div id="available-orders-section" class="space-y-3">
-      <h2 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i data-lucide="bell" class="w-4 h-4"></i> Доступные заказы</h2>
-      <div id="available-orders" class="space-y-3">
-        <div class="text-gray-500 text-xs text-center py-8">Смена закрыта. Откройте смену, чтобы получать заказы.</div>
+    
+    <!-- ВКЛАДКА 1: ЗАКАЗЫ -->
+    <div id="tab-orders" class="space-y-4">
+      <!-- Мои заказы в работе -->
+      <div id="my-orders-section" class="hidden space-y-3">
+        <h2 class="text-sm font-bold text-blue-400 flex items-center gap-2"><i data-lucide="bike" class="w-4 h-4"></i> В работе</h2>
+        <div id="my-orders" class="space-y-3"></div>
+      </div>
+
+      <!-- Доступные заказы -->
+      <div id="available-orders-section" class="space-y-3">
+        <h2 class="text-sm font-bold text-amber-400 flex items-center gap-2"><i data-lucide="bell" class="w-4 h-4"></i> Доступные заказы</h2>
+        <div id="available-orders" class="space-y-3">
+          <div class="text-gray-500 text-xs text-center py-8">Смена закрыта. Откройте смену, чтобы получать заказы.</div>
+        </div>
       </div>
     </div>
 
-    <!-- МОИ ЗАКАЗЫ -->
-    <div id="my-orders-section" class="hidden space-y-3">
-      <h2 class="text-sm font-bold text-blue-400 flex items-center gap-2"><i data-lucide="bike" class="w-4 h-4"></i> В работе</h2>
-      <div id="my-orders" class="space-y-3"></div>
-    </div>
+    <!-- ВКЛАДКА 2: СТАТИСТИКА -->
+    <div id="tab-stats" class="hidden space-y-4">
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-4">
+        <h2 class="text-sm font-bold text-yellow-400 flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4"></i> Заработок</h2>
+        
+        <!-- Переключатель периодов -->
+        <div class="flex bg-gray-950 p-1 rounded-xl border border-gray-800">
+          <button onclick="switchStatsPeriod('today')" id="btn-stat-today" class="flex-1 py-1.5 text-[10px] font-bold rounded-lg bg-emerald-500 text-black">Сегодня</button>
+          <button onclick="switchStatsPeriod('week')" id="btn-stat-week" class="flex-1 py-1.5 text-[10px] font-bold rounded-lg text-gray-400">Неделя</button>
+          <button onclick="switchStatsPeriod('month')" id="btn-stat-month" class="flex-1 py-1.5 text-[10px] font-bold rounded-lg text-gray-400">Месяц</button>
+        </div>
 
-    <!-- СТАТИСТИКА -->
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-3 mt-6">
-      <h2 class="text-sm font-bold text-yellow-400 flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4"></i> Статистика за смену</h2>
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
-          <p class="text-gray-500 text-[10px]">Доставлено заказов</p>
-          <p id="stat-orders" class="text-lg font-black text-white">0</p>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
+            <p class="text-gray-500 text-[10px]">Доставлено заказов</p>
+            <p id="stat-orders" class="text-xl font-black text-white mt-1">0</p>
+          </div>
+          <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
+            <p class="text-gray-500 text-[10px]">Заработано</p>
+            <p id="stat-earned" class="text-xl font-black text-emerald-400 mt-1">0 с.</p>
+          </div>
         </div>
-        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
-          <p class="text-gray-500 text-[10px]">Ваш заработок</p>
-          <p id="stat-earned" class="text-lg font-black text-emerald-400">0 с.</p>
-        </div>
-        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
-          <p class="text-gray-500 text-[10px]">Собрано наличных</p>
-          <p id="stat-cash" class="text-lg font-black text-white">0 с.</p>
-        </div>
-        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800">
-          <p class="text-gray-500 text-[10px]">К сдаче в кассу</p>
-          <p id="stat-debt" class="text-lg font-black text-red-400">0 с.</p>
+        
+        <div class="border-t border-gray-800 pt-3 space-y-2 text-xs">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400">Собрано наличных:</span>
+            <span id="stat-cash" class="text-white font-bold">0 с.</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-400">К сдаче в кассу:</span>
+            <span id="stat-debt" class="text-red-400 font-bold">0 с.</span>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- ВКЛАДКА 3: ИСТОРИЯ -->
+    <div id="tab-history" class="hidden space-y-3">
+      <h2 class="text-sm font-bold text-gray-400 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4"></i> История доставок</h2>
+      <div id="history-list" class="space-y-2"></div>
+    </div>
+
   </main>
 </div>
+
+<!-- КРАСИВОЕ НИЖНЕЕ МЕНЮ -->
+<nav id="bottom-nav" class="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-gray-900/95 backdrop-blur-md border border-gray-800 rounded-3xl z-40 shadow-2xl shadow-black/50 safe-bottom hidden">
+  <div class="grid grid-cols-3 h-16 items-center">
+    <button id="nav-orders" onclick="switchTab('orders')" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-emerald-400 nav-active transition"><i data-lucide="bike" class="w-5 h-5"></i><span class="text-[9px] font-bold">Заказы</span></button>
+    <button id="nav-stats" onclick="switchTab('stats')" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-gray-500 hover:text-emerald-400 transition"><i data-lucide="bar-chart-3" class="w-5 h-5"></i><span class="text-[9px] font-bold">Статистика</span></button>
+    <button id="nav-history" onclick="switchTab('history')" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-gray-500 hover:text-emerald-400 transition"><i data-lucide="history" class="w-5 h-5"></i><span class="text-[9px] font-bold">История</span></button>
+  </div>
+</nav>
+
+<!-- ДИАЛОГИ -->
+<div id="custom-dialog" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] hidden items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl anim-in">
+    <div class="text-center space-y-2">
+      <div id="dialog-icon-wrap" class="inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20"><i id="dialog-icon" data-lucide="help-circle" class="w-8 h-8"></i></div>
+      <h3 id="dialog-title" class="text-lg font-black text-white"></h3>
+      <p id="dialog-text" class="text-sm text-gray-400 leading-relaxed"></p>
+    </div>
+    <div class="flex gap-2 pt-2">
+      <button id="dialog-cancel" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl text-xs transition">Отмена</button>
+      <button id="dialog-confirm" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 rounded-xl text-xs transition">Да</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed left-1/2 -translate-x-1/2 z-[9999] hidden font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm anim-fade" style="bottom: calc(110px + env(safe-area-inset-bottom, 0px));"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -101,12 +157,49 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' с.';
-let currentCourierId = null, currentCourierData = null;
-let unsubscribeAvailable = null, unsubscribeMyOrders = null;
-let allMyOrders = [];
 
-// Вход
+let currentCourierId = null, currentCourierData = null;
+let unsubAvailable = null, unsubMyOrders = null;
+let allMyOrders = [], currentTab = 'orders', statsPeriod = 'today';
+
+// Красивый диалог
+function showDialog(title, text, confirmText = 'Да', cancelText = 'Отмена', type = 'info') {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('custom-dialog');
+    const iconWrap = document.getElementById('dialog-icon-wrap');
+    const icon = document.getElementById('dialog-icon');
+    document.getElementById('dialog-title').textContent = title;
+    document.getElementById('dialog-text').textContent = text;
+    document.getElementById('dialog-confirm').textContent = confirmText;
+    document.getElementById('dialog-cancel').textContent = cancelText;
+    if (type === 'danger') {
+      iconWrap.className = 'inline-flex p-3 rounded-2xl bg-red-500/10 text-red-400 mb-2 border border-red-500/20';
+      icon.setAttribute('data-lucide', 'alert-triangle');
+      document.getElementById('dialog-confirm').className = 'flex-1 bg-red-500 hover:bg-red-400 text-white font-extrabold py-3 rounded-xl text-xs transition';
+    } else {
+      iconWrap.className = 'inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20';
+      icon.setAttribute('data-lucide', 'help-circle');
+      document.getElementById('dialog-confirm').className = 'flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 rounded-xl text-xs transition';
+    }
+    lucide.createIcons();
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+    const handleYes = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); resolve(true); };
+    const handleNo = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); resolve(false); };
+    document.getElementById('dialog-confirm').addEventListener('click', handleYes, { once: true });
+    document.getElementById('dialog-cancel').addEventListener('click', handleNo, { once: true });
+  });
+}
+
+function showToast(msg, type = 'success') {
+  const t = $('#toast'); t.textContent = msg;
+  t.className = `fixed left-1/2 -translate-x-1/2 z-[9999] font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm anim-fade ${type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-black'}`;
+  t.classList.remove('hidden'); setTimeout(() => t.classList.add('hidden'), 2500);
+}
+
+// Авторизация
 document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); }
@@ -115,8 +208,8 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 window.logout = () => signOut(auth);
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) { document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); return; }
-  document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden');
+  if (!user) { document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); document.getElementById('bottom-nav').classList.add('hidden'); return; }
+  document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden'); document.getElementById('bottom-nav').classList.remove('hidden');
   
   const snap = await getDocs(query(collection(db, 'couriers'), where('owner_uid', '==', user.uid)));
   if (snap.empty) { alert('Вы не зарегистрированы как курьер.'); logout(); return; }
@@ -126,6 +219,19 @@ onAuthStateChanged(auth, async (user) => {
   updateShiftUI();
   listenToMyOrders();
 });
+
+// Переключение вкладок (Заказы / Статистика / История)
+window.switchTab = function(tab) {
+  currentTab = tab;
+  ['orders', 'stats', 'history'].forEach(x => document.getElementById('tab-' + x).classList.add('hidden'));
+  document.getElementById('tab-' + tab).classList.remove('hidden');
+  
+  document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('text-emerald-400', 'nav-active'); b.classList.add('text-gray-500'); });
+  document.getElementById('nav-' + tab).classList.add('text-emerald-400', 'nav-active'); document.getElementById('nav-' + tab).classList.remove('text-gray-500');
+  
+  if (tab === 'stats') renderStats();
+  if (tab === 'history') renderHistory();
+};
 
 // Смена
 function updateShiftUI() {
@@ -141,34 +247,39 @@ function updateShiftUI() {
     btn.className = 'text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-500 text-black transition'; btn.textContent = 'Открыть смену';
     status.className = 'text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400'; status.textContent = 'Смена закрыта';
     document.getElementById('available-orders').innerHTML = '<div class="text-gray-500 text-xs text-center py-8">Смена закрыта. Откройте смену, чтобы получать заказы.</div>';
-    if (unsubscribeAvailable) { unsubscribeAvailable(); unsubscribeAvailable = null; }
+    if (unsubAvailable) { unsubAvailable(); unsubAvailable = null; }
   }
 }
+
 window.toggleShift = async () => {
   const newState = !(currentCourierData?.shift_open === true);
   const updates = { shift_open: newState };
-  if (newState) updates.shift_start = serverTimestamp(); // Засекаем начало смены
+  if (newState) updates.shift_start = serverTimestamp();
   await updateDoc(doc(db, 'couriers', currentCourierId), updates);
   currentCourierData.shift_open = newState;
+  if (newState) currentCourierData.shift_start = new Date(); // Локально для UI
   updateShiftUI();
+  if (newState) showToast('Смена открыта. Ждем заказы!');
+  else showToast('Смена закрыта.', 'error');
 };
 
-// Слушаем доступные заказы (только если смена открыта)
+// Доступные заказы
 function listenToAvailableOrders() {
-  if (unsubscribeAvailable) unsubscribeAvailable();
-  const q = query(collection(db, 'orders'), where('status', '==', 'delivering'));
-  unsubscribeAvailable = onSnapshot(q, (snap) => {
+  if (unsubAvailable) unsubAvailable();
+  // Ищем заказы, которые ресторан УЖЕ ПРИНЯЛ (accepted) или готовит (cooking), и у которых нет курьера
+  const q = query(collection(db, 'orders'), where('status', 'in', ['accepted', 'cooking']));
+  unsubAvailable = onSnapshot(q, (snap) => {
     const container = document.getElementById('available-orders');
     const orders = [];
     snap.forEach(d => { const o = { id: d.id, ...d.data() }; if (!o.courier_id) orders.push(o); });
     
     if (!orders.length) { container.innerHTML = '<div class="text-gray-500 text-xs text-center py-4">Нет доступных заказов</div>'; return; }
     container.innerHTML = orders.map(o => `
-      <div class="bg-gray-900 border border-amber-500/50 rounded-2xl p-4 space-y-2 order-new">
+      <div class="bg-gray-900 border border-amber-500/50 rounded-2xl p-4 space-y-2 order-new anim-in">
         <div class="flex justify-between font-bold text-xs"><span class="text-white">#${o.order_number || o.id.substring(0,6)}</span><span class="text-yellow-400">${fmt(o.total_price)}</span></div>
-        <p class="text-sm text-white font-bold">${o.client_name} (${o.client_phone})</p>
-        <p class="text-xs text-gray-400">📍 ${o.delivery_address}</p>
-        <p class="text-xs text-gray-400">Оплата: ${o.payment_method === 'cash' ? '💵 Наличные' : '💳 Онлайн'}</p>
+        <p class="text-sm text-white font-bold">${esc(o.client_name)} (${esc(o.client_phone)})</p>
+        <p class="text-xs text-gray-400">📍 ${esc(o.delivery_address)}</p>
+        <p class="text-[10px] text-emerald-400 font-bold">${o.status === 'accepted' ? '🍳 Ресторан начал готовить' : '✅ Еда готова'}</p>
         <button onclick="acceptOrder('${o.id}')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2.5 rounded-xl text-xs mt-2">Принять заказ</button>
       </div>
     `).join('');
@@ -184,72 +295,103 @@ window.acceptOrder = async (orderId) => {
       const orderDoc = await transaction.get(orderRef);
       if (!orderDoc.exists()) throw new Error("Заказ не существует");
       if (orderDoc.data().courier_id) throw new Error("Заказ уже принят другим курьером");
-      transaction.update(orderRef, { status: 'courier_accepted', courier_id: currentCourierId, courier_name: currentCourierData.name, courier_rate: currentCourierData.rate || 0 });
+      
+      transaction.update(orderRef, { 
+        status: 'courier_accepted', 
+        courier_id: currentCourierId, 
+        courier_name: currentCourierData.name, 
+        courier_rate: currentCourierData.rate || 0 
+      });
     });
-    alert('Заказ принят!');
-  } catch (e) { alert('Ошибка: ' + e.message); }
+    showToast('Заказ принят! Едем в ресторан.');
+  } catch (e) { showToast(e.message, 'error'); }
 };
 
-// Слушаем мои заказы
+// Мои заказы (в работе и история)
 function listenToMyOrders() {
+  if (unsubMyOrders) unsubMyOrders();
   const q = query(collection(db, 'orders'), where('courier_id', '==', currentCourierId));
-  unsubscribeMyOrders = onSnapshot(q, (snap) => {
-    const container = document.getElementById('my-orders');
-    const myOrdersSection = document.getElementById('my-orders-section');
+  unsubMyOrders = onSnapshot(q, (snap) => {
     allMyOrders = [];
     snap.forEach(d => allMyOrders.push({ id: d.id, ...d.data() }));
+    allMyOrders.sort((a, b) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
     
-    const active = allMyOrders.filter(o => ['courier_accepted'].includes(o.status));
-    if (!active.length) { myOrdersSection.classList.add('hidden'); } 
+    // Рендер "В работе"
+    const active = allMyOrders.filter(o => o.status === 'courier_accepted' || o.status === 'delivering');
+    const container = document.getElementById('my-orders');
+    const section = document.getElementById('my-orders-section');
+    
+    if (!active.length) { section.classList.add('hidden'); } 
     else {
-      myOrdersSection.classList.remove('hidden');
+      section.classList.remove('hidden');
       container.innerHTML = active.map(o => `
         <div class="bg-gray-900 border border-blue-500/50 rounded-2xl p-4 space-y-2 anim-in">
           <div class="flex justify-between font-bold text-xs"><span class="text-white">#${o.order_number || o.id.substring(0,6)}</span><span class="text-yellow-400">${fmt(o.total_price)}</span></div>
-          <p class="text-sm text-white font-bold">${o.client_name} (${o.client_phone})</p>
-          <p class="text-xs text-gray-400">📍 ${o.delivery_address}</p>
-          <a href="tel:${o.client_phone}" class="block text-center bg-gray-800 text-white font-bold py-1.5 rounded text-[10px] mt-1"><i data-lucide="phone" class="w-3 h-3 inline mr-1"></i> Позвонить</a>
-          <button onclick="deliverOrder('${o.id}')" class="w-full bg-blue-500 hover:bg-blue-400 text-white font-extrabold py-2.5 rounded-xl text-xs mt-2">Доставлено</button>
+          <p class="text-sm text-white font-bold">${esc(o.client_name)} (${esc(o.client_phone)})</p>
+          <p class="text-xs text-gray-400">📍 ${esc(o.delivery_address)}</p>
+          <div class="flex gap-2 mt-2">
+            <a href="tel:${esc(o.client_phone)}" class="flex-1 text-center bg-gray-800 text-white font-bold py-2 rounded-xl text-[10px]"><i data-lucide="phone" class="w-3 h-3 inline mr-1"></i> Позвонить</a>
+            ${o.status === 'courier_accepted' 
+              ? `<button onclick="startDelivery('${o.id}')" class="flex-1 bg-amber-500 text-black font-extrabold py-2 rounded-xl text-[10px]">Я забрал заказ</button>`
+              : `<button onclick="deliverOrder('${o.id}')" class="flex-1 bg-blue-500 text-white font-extrabold py-2 rounded-xl text-[10px]">Доставлено</button>`
+            }
+          </div>
         </div>
       `).join('');
       lucide.createIcons();
     }
-    calculateStats();
+    
+    if (currentTab === 'stats') renderStats();
+    if (currentTab === 'history') renderHistory();
   });
 }
 
-// Завершение доставки
-window.deliverOrder = async (orderId) => {
-  if (!confirm('Подтверждаете, что заказ доставлен?')) return;
-  try {
-    await updateDoc(doc(db, 'orders', orderId), { status: 'delivered', delivered_at: serverTimestamp() });
-    calculateStats();
-  } catch (e) { alert('Ошибка: ' + e.message); }
+window.startDelivery = async (orderId) => {
+  const sure = await showDialog('Забрали заказ?', 'Подтвердите, что вы забрали еду в ресторане и едете к клиенту.', 'Да, в пути', 'Отмена', 'info');
+  if (!sure) return;
+  await updateDoc(doc(db, 'orders', orderId), { status: 'delivering' });
+  showToast('Статус: В пути к клиенту');
 };
 
-// Статистика (за текущую смену)
-function calculateStats() {
-  // Если смены нет, статистику не считаем
-  if (!currentCourierData?.shift_start) return; 
-  
-  const shiftStart = currentCourierData.shift_start.toDate();
-  
-  // Берем только заказы, доставленные ПОСЛЕ открытия смены
+window.deliverOrder = async (orderId) => {
+  const sure = await showDialog('Заказ доставлен?', 'Подтвердите, что вы передали заказ клиенту и получили оплату (если наличные).', 'Да, доставлено', 'Отмена', 'info');
+  if (!sure) return;
+  await updateDoc(doc(db, 'orders', orderId), { status: 'delivered', delivered_at: serverTimestamp() });
+  showToast('🎉 Заказ успешно доставлен!');
+};
+
+// Статистика (по периодам)
+window.switchStatsPeriod = function(period) {
+  statsPeriod = period;
+  ['today', 'week', 'month'].forEach(p => {
+    const btn = document.getElementById('btn-stat-' + p);
+    if (p === period) { btn.className = 'flex-1 py-1.5 text-[10px] font-bold rounded-lg bg-emerald-500 text-black'; }
+    else { btn.className = 'flex-1 py-1.5 text-[10px] font-bold rounded-lg text-gray-400'; }
+  });
+  renderStats();
+};
+
+function renderStats() {
+  let startTime = new Date();
+  if (statsPeriod === 'today') startTime.setHours(0,0,0,0);
+  if (statsPeriod === 'week') startTime.setDate(startTime.getDate() - 7);
+  if (statsPeriod === 'month') startTime.setDate(startTime.getDate() - 30);
+
+  // Берем только доставленные заказы, у которых время доставки попадает в период
   const delivered = allMyOrders.filter(o => {
     if (o.status !== 'delivered') return false;
-    const deliveredAt = o.delivered_at?.toDate ? o.delivered_at.toDate() : new Date(0);
-    return deliveredAt >= shiftStart;
+    const dTime = o.delivered_at?.toDate ? o.delivered_at.toDate() : new Date(0);
+    return dTime >= startTime;
   });
 
   let cashCollected = 0, totalEarned = 0;
-  
   delivered.forEach(o => {
-    totalEarned += (o.courier_rate || 0); 
+    totalEarned += (o.courier_rate || 0);
     if (o.payment_method === 'cash') cashCollected += o.total_price;
   });
-  
+
   const debt = cashCollected - totalEarned;
-  
+
   document.getElementById('stat-orders').textContent = delivered.length;
   document.getElementById('stat-earned').textContent = fmt(totalEarned);
   document.getElementById('stat-cash').textContent = fmt(cashCollected);
@@ -257,15 +399,59 @@ function calculateStats() {
   const debtEl = document.getElementById('stat-debt');
   if (debt > 0) {
     debtEl.textContent = fmt(debt);
-    debtEl.className = 'text-lg font-black text-red-400';
+    debtEl.className = 'text-red-400 font-bold';
   } else if (debt < 0) {
     debtEl.textContent = 'Вам должны: ' + fmt(Math.abs(debt));
-    debtEl.className = 'text-[12px] font-black text-emerald-400';
+    debtEl.className = 'text-emerald-400 font-bold text-[10px]';
   } else {
     debtEl.textContent = '0 с.';
-    debtEl.className = 'text-lg font-black text-gray-400';
+    debtEl.className = 'text-gray-400 font-bold';
   }
 }
+
+// История (все доставленные)
+function renderHistory() {
+  const container = document.getElementById('history-list');
+  const delivered = allMyOrders.filter(o => o.status === 'delivered');
+  
+  if (!delivered.length) {
+    container.innerHTML = '<div class="text-gray-500 text-xs text-center py-8">У вас пока нет доставленных заказов</div>';
+    return;
+  }
+
+  container.innerHTML = delivered.map(o => {
+    const date = o.delivered_at?.toDate?.().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) || '—';
+    return `
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 flex justify-between items-center">
+        <div>
+          <p class="font-bold text-xs text-white">#${o.order_number || o.id.substring(0,6)}</p>
+          <p class="text-[10px] text-gray-500">${date}</p>
+          <p class="text-[10px] text-gray-400 mt-1">${esc(o.delivery_address)}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-xs font-black text-emerald-400">${fmt(o.courier_rate)}</p>
+          <p class="text-[9px] text-gray-500">${o.payment_method === 'cash' ? 'Наличные' : 'Онлайн'}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Обработка кнопки "Назад"
+window.addEventListener('popstate', async () => {
+  if (currentTab !== 'orders') {
+    switchTab('orders');
+    return;
+  }
+  history.pushState({}, '', '#orders');
+  const exit = await showDialog('Выход из Peshras Курьер', 'Закрыть приложение?', 'Выйти', 'Остаться', 'danger');
+  if (exit) {
+    if (window.Android) window.Android.closeApp();
+    else window.location.href = 'about:blank';
+  }
+});
+
+lucide.createIcons();
 </script>
 </body>
 </html>
