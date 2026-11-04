@@ -99,7 +99,7 @@
       <div class="p-6 flex items-center justify-between relative z-10">
         <div class="space-y-2 max-w-[65%]">
           <h3 class="text-xl font-black text-white leading-tight">Скидка 20% на первый заказ!</h3>
-          <p class="text-xs text-gray-400">При заказе от 150 сомонӣ. Введите промокод <b class="text-emerald-400">WELCOME</b> в комментарии.</p>
+          <p class="text-xs text-gray-400">Напишите в комментарии к заказу промокод <b class="text-emerald-400">WELCOME</b>, и мы применим скидку.</p>
         </div>
         <div class="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="percent" class="w-8 h-8"></i></div>
       </div>
@@ -129,7 +129,7 @@
     <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"><div class="skeleton aspect-square rounded-2xl"></div><div class="skeleton aspect-square rounded-2xl"></div></div>
   </div>
 
-  <!-- АПТЕКА (Заглушка) -->
+  <!-- АПТЕКА -->
   <div id="page-pharmacy" class="hidden flex-1 flex flex-col items-center justify-center space-y-6 py-20 animate-fade">
     <div class="relative">
       <div class="w-32 h-32 rounded-full bg-emerald-500/10 flex items-center justify-center anim-float">
@@ -147,7 +147,9 @@
   <!-- ФУТЕР -->
   <footer class="pt-8 pb-4 mt-auto border-t border-gray-800 space-y-4">
     <div class="flex justify-center gap-4">
-      <a href="https://instagram.com/peshras" target="_blank" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-pink-400 hover:border-pink-500 transition"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+      <a href="https://instagram.com/peshras" target="_blank" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-pink-400 hover:border-pink-500 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+      </a>
       <a href="https://t.me/peshras_support" target="_blank" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-blue-400 hover:border-blue-500 transition"><i data-lucide="send" class="w-5 h-5"></i></a>
       <a href="https://wa.me/992000000000" target="_blank" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-green-400 hover:border-green-500 transition"><i data-lucide="message-circle" class="w-5 h-5"></i></a>
     </div>
@@ -188,9 +190,8 @@
           <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Персон</label><input type="number" id="client-persons" min="1" max="20" value="1" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
           <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Оплата</label><select id="client-payment" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"><option value="cash">💵 Наличные</option><option value="online">💳 Онлайн-перевод</option></select></div>
         </div>
-        <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Комментарий</label><input type="text" id="client-comment" placeholder="Подъезд, пожелания" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
+        <div class="space-y-1"><label class="text-[11px] text-gray-400 font-semibold">Комментарий</label><input type="text" id="client-comment" placeholder="Подъезд, промокод, пожелания" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"></div>
         
-        <!-- Политика конфиденциальности -->
         <div class="flex items-start gap-2 pt-1">
           <input type="checkbox" id="client-privacy" required class="w-4 h-4 accent-emerald-500 mt-0.5">
           <label for="client-privacy" class="text-[10px] text-gray-400 leading-tight">Я согласен с <a href="privacy.html" target="_blank" class="text-emerald-400 hover:underline">политикой конфиденциальности</a> и обработкой персональных данных.</label>
@@ -203,7 +204,7 @@
   </div>
 </div>
 
-<!-- ПРОФИЛЬ (Меню) -->
+<!-- ПРОФИЛЬ -->
 <div id="profile-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
   <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 max-h-[92vh] overflow-y-auto anim-slide-up">
     <div id="profile-main-menu">
@@ -238,28 +239,44 @@
 </div>
 <div id="panel-support" class="full-screen-panel">
   <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('support')" class="text-gray-400 hover:text-white"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h3 class="font-extrabold text-white text-lg">Поддержка</h3></div>
-  <div class="p-6 flex-1 overflow-y-auto space-y-3" id="support-content">
-    <a href="tel:+992000000000" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl p-4"><i data-lucide="phone" class="w-5 h-5 text-emerald-400"></i><span class="text-sm font-bold">Позвонить</span></a>
-    <a href="https://t.me/peshras_support" target="_blank" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl p-4"><i data-lucide="send" class="w-5 h-5 text-blue-400"></i><span class="text-sm font-bold">Telegram</span></a>
-    <a href="https://wa.me/992000000000" target="_blank" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl p-4"><i data-lucide="message-circle" class="w-5 h-5 text-green-400"></i><span class="text-sm font-bold">WhatsApp</span></a>
+  <div class="p-6 flex-1 overflow-y-auto space-y-4">
+    <p class="text-sm text-gray-300 leading-relaxed text-center mb-6">Мы всегда открыты для сотрудничества и общения. Если у вас возникли вопросы по заказу, жалобы или предложения — свяжитесь с нами удобным способом:</p>
+    <a href="tel:+992000000000" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl p-4 hover:border-emerald-500 transition"><i data-lucide="phone" class="w-5 h-5 text-emerald-400"></i><span class="text-sm font-bold text-white">Позвонить</span></a>
+    <a href="https://t.me/peshras_support" target="_blank" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl p-4 hover:border-emerald-500 transition"><i data-lucide="send" class="w-5 h-5 text-blue-400"></i><span class="text-sm font-bold text-white">Telegram</span></a>
+    <a href="https://wa.me/992000000000" target="_blank" class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl p-4 hover:border-emerald-500 transition"><i data-lucide="message-circle" class="w-5 h-5 text-green-400"></i><span class="text-sm font-bold text-white">WhatsApp</span></a>
+  </div>
+</div>
+
+<!-- МОДАЛКА ДИАЛОГОВ -->
+<div id="custom-dialog" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] hidden items-center justify-center p-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl anim-slide-up">
+    <div class="text-center space-y-2">
+      <div id="dialog-icon-wrap" class="inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20">
+        <i id="dialog-icon" data-lucide="help-circle" class="w-8 h-8"></i>
+      </div>
+      <h3 id="dialog-title" class="text-lg font-black text-white"></h3>
+      <p id="dialog-text" class="text-sm text-gray-400 leading-relaxed"></p>
+    </div>
+    <div class="flex gap-2 pt-2">
+      <button id="dialog-cancel" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl text-xs transition">Отмена</button>
+      <button id="dialog-confirm" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 rounded-xl text-xs transition">Да</button>
+    </div>
   </div>
 </div>
 
 <div id="toast" class="fixed left-1/2 -translate-x-1/2 z-[9999] hidden font-bold px-5 py-3 rounded-2xl shadow-2xl text-sm anim-fade" style="bottom: calc(110px + env(safe-area-inset-bottom, 0px));"></div>
 
-<!-- НОВОЕ НИЖНЕЕ МЕНЮ (5 вкладок) -->
+<!-- НИЖНЕЕ МЕНЮ -->
 <nav class="fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-gray-900/95 backdrop-blur-md border border-gray-800 rounded-3xl z-40 shadow-2xl shadow-black/50 safe-bottom">
   <div class="grid grid-cols-5 h-16 items-center">
     <button id="nav-home" onclick="switchMainTab('home')" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-emerald-400 nav-active transition"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[9px] font-bold">Главная</span></button>
     <button id="nav-restaurants" onclick="switchMainTab('restaurants')" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-gray-500 hover:text-emerald-400 transition"><i data-lucide="store" class="w-5 h-5"></i><span class="text-[9px] font-bold">Рестораны</span></button>
-    
     <div class="flex justify-center relative h-full">
        <button onclick="openCartModal()" class="absolute -top-5 w-14 h-14 bg-emerald-500 rounded-full text-black shadow-lg shadow-emerald-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition border-4 border-gray-950">
          <i data-lucide="shopping-bag" class="w-6 h-6"></i>
          <span id="nav-cart-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center transform translate-x-1 -translate-y-1">0</span>
        </button>
     </div>
-
     <button id="nav-pharmacy" onclick="switchMainTab('pharmacy')" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-gray-500 hover:text-emerald-400 transition"><i data-lucide="pill" class="w-5 h-5"></i><span class="text-[9px] font-bold">Аптека</span></button>
     <button onclick="openProfile()" class="nav-btn flex flex-col items-center justify-center gap-1 w-full h-full text-gray-500 hover:text-emerald-400 transition"><i data-lucide="user" class="w-5 h-5"></i><span class="text-[9px] font-bold">Профиль</span></button>
   </div>
@@ -278,6 +295,39 @@ const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' сомонӣ';
 let allProducts = [], allRestaurants = [], cart = {}, activeCategory = 'all', activeRestaurantId = null, searchQuery = '', SETTINGS = {}, BLOCKED_PHONES = [];
 let currentTab = 'home';
 const CAT_LABEL = { plov: '🍚 Плов', shashlik: '🍢 Шашлык', pizza: '🍕 Пицца', burger: '🍔 Бургеры', fastfood: '🌭 Фастфуд', soup: '🍲 Супы', salad: '🥗 Салаты', bakery: '🥐 Выпечка', dessert: '🍰 Десерты', drinks: '🥤 Напитки', other: '🍽 Другое' };
+
+// ФИРМЕННЫЕ ДИАЛОГИ
+function showDialog(title, text, confirmText = 'Да', cancelText = 'Отмена', type = 'info') {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('custom-dialog');
+    const iconWrap = document.getElementById('dialog-icon-wrap');
+    const icon = document.getElementById('dialog-icon');
+    
+    document.getElementById('dialog-title').textContent = title;
+    document.getElementById('dialog-text').textContent = text;
+    document.getElementById('dialog-confirm').textContent = confirmText;
+    document.getElementById('dialog-cancel').textContent = cancelText;
+    
+    if (type === 'danger') {
+      iconWrap.className = 'inline-flex p-3 rounded-2xl bg-red-500/10 text-red-400 mb-2 border border-red-500/20';
+      icon.setAttribute('data-lucide', 'alert-triangle');
+      document.getElementById('dialog-confirm').className = 'flex-1 bg-red-500 hover:bg-red-400 text-white font-extrabold py-3 rounded-xl text-xs transition';
+    } else {
+      iconWrap.className = 'inline-flex p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20';
+      icon.setAttribute('data-lucide', 'help-circle');
+      document.getElementById('dialog-confirm').className = 'flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 rounded-xl text-xs transition';
+    }
+    
+    lucide.createIcons();
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+    
+    const handleYes = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); document.getElementById('dialog-confirm').removeEventListener('click', handleYes); document.getElementById('dialog-cancel').removeEventListener('click', handleNo); resolve(true); };
+    const handleNo = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); document.getElementById('dialog-confirm').removeEventListener('click', handleYes); document.getElementById('dialog-cancel').removeEventListener('click', handleNo); resolve(false); };
+    
+    document.getElementById('dialog-confirm').addEventListener('click', handleYes);
+    document.getElementById('dialog-cancel').addEventListener('click', handleNo);
+  });
+}
 
 let toastTimer;
 function showToast(msg, type = 'success') {
@@ -305,7 +355,7 @@ function loadRestaurants() {
 }
 
 function renderRestaurantsList() {
-  const list = document.getElementById('restaurants-list');
+  const list = document.getElementById('restaurants-list'); if (!list) return;
   let filtered = allRestaurants.filter(r => r.is_banned !== true);
   if (!filtered.length) { list.innerHTML = `<div class="col-span-full text-center py-8 text-gray-500 text-xs"><div class="text-4xl mb-2">🏪</div>Ресторанов пока нет</div>`; return; }
   list.innerHTML = filtered.map(r => {
@@ -316,8 +366,7 @@ function renderRestaurantsList() {
 }
 
 function renderHomeRestaurants() {
-  const list = document.getElementById('home-restaurants-list');
-  if (!list) return;
+  const list = document.getElementById('home-restaurants-list'); if (!list) return;
   let filtered = allRestaurants.filter(r => r.is_banned !== true).slice(0, 10);
   if (!filtered.length) { list.innerHTML = `<div class="text-gray-500 text-xs py-4">Ресторанов пока нет</div>`; return; }
   list.innerHTML = filtered.map(r => `
@@ -342,8 +391,7 @@ window.openSingleRestaurant = function(id) {
 };
 
 function renderSingleRestaurant(id) {
-  const r = allRestaurants.find(x => x.id === id);
-  if (!r) return;
+  const r = allRestaurants.find(x => x.id === id); if (!r) return;
   const isClosed = r.shift_open === false;
   document.getElementById('single-rest-header').innerHTML = `
     <div class="w-20 h-20 bg-gray-800 rounded-2xl overflow-hidden shrink-0">${r.logo_url ? `<img src="${esc(r.logo_url)}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-600"><i data-lucide="store" class="w-8 h-8"></i></div>`}</div>
@@ -418,7 +466,6 @@ function renderHomeSections() {
   lucide.createIcons();
 }
 
-// Обработка поиска
 $('#search-toggle').addEventListener('click', () => { const w = $('#search-wrap'); w.classList.toggle('hidden'); if (!w.classList.contains('hidden')) $('#search-input').focus(); });
 $('#search-input').addEventListener('input', e => { 
   searchQuery = e.target.value.trim(); 
@@ -436,7 +483,6 @@ $('#search-input').addEventListener('input', e => {
   }
 });
 
-// Навигация
 window.switchMainTab = function(tab) {
   currentTab = tab;
   ['home', 'restaurants', 'single-rest', 'pharmacy'].forEach(x => document.getElementById('page-' + x).classList.add('hidden'));
@@ -450,17 +496,19 @@ window.switchMainTab = function(tab) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// Корзина
+// КОРЗИНА
 function isSameRestaurantOnly(newProduct) { if (!Object.keys(cart).length) return true; const existingRids = [...new Set(Object.values(cart).map(i => i.product.restaurant_id))]; return existingRids.every(rid => rid === newProduct.restaurant_id); }
-window.addToCart = function (prodId) {
+window.addToCart = async function (prodId) {
   const product = allProducts.find(p => p.id === prodId); if (!product) return;
   const rest = allRestaurants.find(r => r.id === product.restaurant_id);
   if (rest?.shift_open === false) return showToast('⚠️ ' + (rest.name || 'Ресторан') + ' не принимает заказы', 'error');
   if (SETTINGS.maintenance === true) return showToast('🔧 Техработы', 'error');
+  
   if (!isSameRestaurantOnly(product)) {
     const existingRids = [...new Set(Object.values(cart).map(i => i.product.restaurant_id))];
-    const currentRest = allRestaurants.find(r => r.id === existingRids[0]); const newRest = rest;
-    if (!confirm(`В корзине уже есть блюда из «${currentRest?.name || 'другого ресторана'}». Заменить?`)) return;
+    const currentRest = allRestaurants.find(r => r.id === existingRids[0]);
+    const sure = await showDialog('Товар из другого ресторана', `В корзине уже есть блюда из «${currentRest?.name}». Заказ можно оформить только из одного ресторана. Заменить корзину?`, 'Заменить', 'Отмена', 'danger');
+    if (!sure) return;
     cart = {};
   }
   if (cart[prodId]) cart[prodId].qty++; else cart[prodId] = { product, qty: 1 };
@@ -510,7 +558,12 @@ window.closeCartModal = function () { document.getElementById('cart-modal').clas
 
 document.getElementById('go-checkout-btn').addEventListener('click', () => { if (!Object.keys(cart).length) return showToast('Корзина пуста', 'error'); document.getElementById('cart-step-items').classList.add('hidden'); document.getElementById('cart-step-form').classList.remove('hidden'); updateCartUI(); });
 document.getElementById('back-to-items').addEventListener('click', () => { document.getElementById('cart-step-form').classList.add('hidden'); document.getElementById('cart-step-items').classList.remove('hidden'); });
-document.getElementById('clear-cart-btn').addEventListener('click', () => { if (!Object.keys(cart).length) return; if (!confirm('Очистить корзину?')) return; cart = {}; updateCartUI(); renderCartItems(); showToast('Корзина очищена'); });
+document.getElementById('clear-cart-btn').addEventListener('click', async () => { 
+  if (!Object.keys(cart).length) return; 
+  const sure = await showDialog('Очистить корзину?', 'Все выбранные блюда будут удалены. Продолжить?', 'Очистить', 'Отмена', 'danger');
+  if (!sure) return; 
+  cart = {}; updateCartUI(); renderCartItems(); showToast('Корзина очищена'); 
+});
 document.getElementById('cart-modal').addEventListener('click', e => { if (e.target.id === 'cart-modal') closeCartModal(); });
 
 function getSavedUser() { try { return JSON.parse(localStorage.getItem('peshras_user') || '{}'); } catch { return {}; } }
@@ -530,22 +583,51 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   const restaurantId = Object.values(cart)[0].product.restaurant_id; const rest = allRestaurants.find(r => r.id === restaurantId);
   if (rest?.shift_open === false) return showToast('⚠️ Ресторан не принимает заказы', 'error');
   
-  // Номер заказа
-  let orderNumber; try { const counterRef = doc(db, 'settings', 'counters'); const snap = await getDoc(counterRef); orderNumber = (snap.exists() ? (snap.data().orders || 0) : 0) + 1; await setDoc(counterRef, { orders: orderNumber }, { merge: true }); } catch (e) { orderNumber = Date.now(); }
+  // Генерация номера заказа (#1042)
+  let orderNumber; 
+  try { 
+    const counterRef = doc(db, 'settings', 'counters'); 
+    const snap = await getDoc(counterRef); 
+    orderNumber = (snap.exists() ? (snap.data().orders || 0) : 0) + 1; 
+    await setDoc(counterRef, { orders: orderNumber }, { merge: true }); 
+  } catch (e) { 
+    orderNumber = Date.now(); 
+  }
+  
   const { subtotal, delivery, total } = calcTotals();
   
   const orderData = {
-    order_number: orderNumber, client_name: name, client_phone: phone, delivery_address: address, comment: comment, persons: persons,
-    payment_method: payment, items: itemsArray, subtotal: subtotal, delivery_price: delivery, total_price: total,
-    restaurant_id: restaurantId, status: 'new', city: 'Исфара', created_at: serverTimestamp()
+    order_number: orderNumber, 
+    client_name: name, 
+    client_phone: phone, 
+    delivery_address: address, 
+    comment: comment, 
+    persons: persons,
+    payment_method: payment, 
+    items: itemsArray, 
+    subtotal: subtotal, 
+    delivery_price: delivery, 
+    total_price: total,
+    restaurant_id: restaurantId, 
+    status: 'new', 
+    city: 'Исфара', 
+    created_at: serverTimestamp()
   };
+  
   btn.disabled = true; const oldHTML = btn.innerHTML; btn.innerHTML = '<span>Отправляем...</span>';
-  try { await addDoc(collection(db, 'orders'), orderData); saveUser({ name, phone, address }); cart = {}; updateCartUI(); closeCartModal(); document.getElementById('checkout-form').reset(); showToast(`🎉 Заказ #${orderNumber} отправлен!`); }
-  catch (err) { console.error(err); showToast('Ошибка отправки. Попробуйте ещё раз.', 'error'); }
+  try { 
+    await addDoc(collection(db, 'orders'), orderData); 
+    saveUser({ name, phone, address }); 
+    cart = {}; updateCartUI(); closeCartModal(); document.getElementById('checkout-form').reset(); 
+    showToast(`🎉 Заказ #${orderNumber} отправлен!`); 
+  }
+  catch (err) { 
+    console.error(err); showToast('Ошибка отправки. Попробуйте ещё раз.', 'error'); 
+  }
   finally { btn.disabled = false; btn.innerHTML = oldHTML; lucide.createIcons(); }
 });
 
-// Профиль (Меню)
+// ПРОФИЛЬ
 window.openProfile = function () { 
   document.getElementById('profile-modal').classList.remove('hidden'); 
   document.getElementById('profile-modal').classList.add('flex'); 
@@ -557,7 +639,6 @@ window.closeProfile = function () {
   document.body.style.overflow = ''; 
 };
 
-// Панели профиля
 window.openProfilePanel = function(key) {
   closeProfile();
   history.pushState({ panel: key }, '', '#' + key);
@@ -595,19 +676,18 @@ window.searchHistory = async function() {
   const phone = document.getElementById('history-phone').value.trim(); 
   const out = document.getElementById('history-result'); 
   if (!phone) return; 
-  out.innerHTML = `<p class="text-gray-500 text-xs">Ищем...</p>`;
+  out.innerHTML = `<p class="text-gray-500 text-xs text-center py-4">Ищем заказы...</p>`;
   try {
     const q = query(collection(db, 'orders'), where('client_phone', '==', phone), orderBy('created_at', 'desc'), limit(20)); 
     const snap = await getDocs(q);
-    if (snap.empty) { out.innerHTML = `<p class="text-gray-500 text-xs">Заказов не найдено.</p>`; return; }
+    if (snap.empty) { out.innerHTML = `<p class="text-gray-500 text-xs text-center py-4">Заказов не найдено.</p>`; return; }
     out.innerHTML = snap.docs.map(d => { 
       const o = d.data(); 
       const date = o.created_at?.toDate?.().toLocaleString('ru-RU') || '—'; 
       const statusMap = { new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится', delivering: '🛵 В пути', courier_accepted: '🛵 У курьера', delivered: '🏁 Доставлен', cancelled: '❌ Отменён' }; 
       
-      // Трекинг
+      // Трекинг статусов
       const steps = ['new', 'accepted', 'cooking', 'delivering', 'delivered'];
-      const statusLabels = { new: 'Принят', accepted: 'Готовится', cooking: 'В пути', delivering: 'В пути', delivered: 'Доставлен' };
       let trackHTML = '';
       if (o.status !== 'cancelled') {
         let currentIndex = steps.indexOf(o.status);
@@ -634,21 +714,34 @@ window.searchHistory = async function() {
         <p class="text-[11px] text-gray-400 pt-2 border-t border-gray-800 mt-2">${(o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ')}</p>
       </div>`; 
     }).join('');
-  } catch (err) { console.error(err); out.innerHTML = `<p class="text-red-400 text-xs">Ошибка поиска.</p>`; }
+  } catch (err) { console.error(err); out.innerHTML = `<p class="text-red-400 text-xs text-center py-4">Ошибка поиска.</p>`; }
 };
 
-// Обработка кнопки "Назад"
-window.addEventListener('popstate', (e) => {
+// Обработка аппаратной кнопки Назад (WebView)
+window.addEventListener('popstate', async (e) => {
   const openPanels = document.querySelectorAll('.full-screen-panel.open');
   if (openPanels.length > 0) {
     openPanels.forEach(p => p.classList.remove('open'));
-  } else if (currentTab === 'single-rest') {
+    return;
+  }
+  if (currentTab === 'single-rest') {
     switchMainTab('restaurants');
-  } else if (currentTab !== 'home') {
+    return;
+  }
+  if (currentTab !== 'home') {
     switchMainTab('home');
+    return;
+  }
+  
+  history.pushState({}, '', '#home'); 
+  const exit = await showDialog('Выход из Peshras', 'Вы действительно хотите закрыть приложение?', 'Выйти', 'Остаться', 'danger');
+  if (exit) {
+    if (window.Android) window.Android.closeApp(); 
+    else window.location.href = 'about:blank'; 
   }
 });
 
+// Запуск
 (async () => { 
   await loadSettings(); await loadBlockedPhones(); 
   loadRestaurants(); loadProducts(); updateCartUI(); 
