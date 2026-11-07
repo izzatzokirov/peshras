@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0a0a0a">
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@0.300.0/dist/umd/lucide.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
   body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; display: flex; flex-direction: column; min-height: 100vh; }
@@ -131,7 +131,7 @@
     <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"><div class="skeleton aspect-square rounded-2xl"></div><div class="skeleton aspect-square rounded-2xl"></div></div>
   </div>
 
-  <div id="page-pharmacy" class="hidden flex-1 flex flex-col items-center justify-center space-y-6 py-20 animate-fade">
+  <div id="page-pharmacy" class="hidden flex-1 flex flex-col items-center justify-center space-y-6 py-20 anim-fade">
     <div class="relative">
       <div class="w-32 h-32 rounded-full bg-emerald-500/10 flex items-center justify-center anim-float"><i data-lucide="pill" class="w-16 h-16 text-emerald-400"></i></div>
       <div class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-black text-xs font-black">NEW</div>
@@ -201,7 +201,7 @@
   </div>
 </div>
 
-<!-- МОДАЛКА ПРОФИЛЯ (НОВЫЙ ДИЗАЙН) -->
+<!-- МОДАЛКА ПРОФИЛЯ -->
 <div id="profile-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
   <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 max-h-[92vh] overflow-y-auto anim-slide-up">
     <div id="profile-main-menu" class="space-y-6 pb-6">
@@ -233,10 +233,7 @@
         <p class="text-[10px] font-black text-gray-500 uppercase tracking-wider ml-2">Поддержка</p>
         <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 space-y-4">
           <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white"><i data-lucide="message-circle" class="w-5 h-5"></i></div><div><p class="text-sm font-bold text-white">Нужна помощь?</p><p class="text-[10px] text-gray-400">Мы на связи</p></div></div>
-          <div class="flex gap-2">
-            <button onclick="openProfilePanel('support')" class="flex-1 bg-gray-950 text-white font-bold py-2.5 rounded-xl text-xs border border-gray-800">Чат</button>
-            <a href="tel:+992000000000" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2.5 rounded-xl text-xs text-center">Позвонить</a>
-          </div>
+          <div class="flex gap-2"><button onclick="openProfilePanel('support')" class="flex-1 bg-gray-950 text-white font-bold py-2.5 rounded-xl text-xs border border-gray-800">Чат</button><a href="tel:+992000000000" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2.5 rounded-xl text-xs text-center">Позвонить</a></div>
         </div>
       </div>
     </div>
@@ -255,18 +252,12 @@
 
 <div id="panel-about" class="full-screen-panel">
   <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('about')" class="text-gray-400 hover:text-white bg-gray-900 p-2 rounded-xl"><i data-lucide="arrow-left" class="w-5 h-5"></i></button><h3 class="font-extrabold text-white text-lg">О нас</h3></div>
-  <div class="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 overflow-y-auto">
-    <div class="w-24 h-24 rounded-full bg-emerald-500/10 flex items-center justify-center anim-float"><i data-lucide="heart-handshake" class="w-12 h-12 text-emerald-400"></i></div>
-    <div class="max-w-md space-y-4"><h2 class="text-2xl font-black text-white">Peshras — это забота</h2><p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line" id="about-text-content"></p><div class="flex justify-center gap-6 pt-4"><div class="text-center"><p class="text-xl font-black text-emerald-400">30-40</p><p class="text-[10px] text-gray-500 uppercase">минут</p></div><div class="text-center"><p class="text-xl font-black text-emerald-400">100+</p><p class="text-[10px] text-gray-500 uppercase">блюд</p></div><div class="text-center"><p class="text-xl font-black text-emerald-400">1</p><p class="text-[10px] text-gray-500 uppercase">город</p></div></div></div>
-  </div>
+  <div class="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 overflow-y-auto"><div class="w-24 h-24 rounded-full bg-emerald-500/10 flex items-center justify-center anim-float"><i data-lucide="heart-handshake" class="w-12 h-12 text-emerald-400"></i></div><div class="max-w-md space-y-4"><h2 class="text-2xl font-black text-white">Peshras — это забота</h2><p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line" id="about-text-content"></p><div class="flex justify-center gap-6 pt-4"><div class="text-center"><p class="text-xl font-black text-emerald-400">30-40</p><p class="text-[10px] text-gray-500 uppercase">минут</p></div><div class="text-center"><p class="text-xl font-black text-emerald-400">100+</p><p class="text-[10px] text-gray-500 uppercase">блюд</p></div><div class="text-center"><p class="text-xl font-black text-emerald-400">1</p><p class="text-[10px] text-gray-500 uppercase">город</p></div></div></div></div>
 </div>
 
 <div id="panel-terms" class="full-screen-panel">
   <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('terms')" class="text-gray-400 hover:text-white bg-gray-900 p-2 rounded-xl"><i data-lucide="arrow-left" class="w-5 h-5"></i></button><h3 class="font-extrabold text-white text-lg">Условия</h3></div>
-  <div class="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 overflow-y-auto">
-    <div class="w-24 h-24 rounded-full bg-yellow-400/10 flex items-center justify-center anim-float"><i data-lucide="file-check-2" class="w-12 h-12 text-yellow-400"></i></div>
-    <div class="max-w-md space-y-4"><h2 class="text-2xl font-black text-white">Прозрачные правила</h2><p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line" id="terms-text-content"></p></div>
-  </div>
+  <div class="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 overflow-y-auto"><div class="w-24 h-24 rounded-full bg-yellow-400/10 flex items-center justify-center anim-float"><i data-lucide="file-check-2" class="w-12 h-12 text-yellow-400"></i></div><div class="max-w-md space-y-4"><h2 class="text-2xl font-black text-white">Прозрачные правила</h2><p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line" id="terms-text-content"></p></div></div>
 </div>
 
 <div id="panel-support" class="full-screen-panel">
@@ -310,7 +301,7 @@
   </div>
 </nav>
 
-<!-- ЧАСТЬ 2 (JS) НИЖЕ -->
+<!-- ЧАСТЬ 2 (JS) -->
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs, orderBy, limit, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -322,10 +313,51 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' сомонӣ';
 
+// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 let allProducts = [], allRestaurants = [], cart = {}, activeCategory = 'all', activeRestaurantId = null, searchQuery = '', SETTINGS = {}, BLOCKED_PHONES = [];
 let currentTab = 'home';
 const CAT_LABEL = { plov: '🍚 Плов', shashlik: '🍢 Шашлык', pizza: '🍕 Пицца', burger: '🍔 Бургеры', fastfood: '🌭 Фастфуд', soup: '🍲 Супы', salad: '🥗 Салаты', bakery: '🥐 Выпечка', dessert: '🍰 Десерты', drinks: '🥤 Напитки', other: '🍽 Другое' };
 
+// ===== СТЕК НАВИГАЦИИ (Исправление кнопки Назад) =====
+const overlayStack = [];   
+let suppressPop = 0;       
+let exitDialogOpen = false;
+
+function pushOverlay(name) {
+  overlayStack.push(name);
+  history.pushState({ overlay: name }, '', '#' + name);
+}
+
+function hideCart() { const m = document.getElementById('cart-modal'); m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow = ''; }
+function hideProfile() { const m = document.getElementById('profile-modal'); m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow = ''; }
+function hideOverlayDOM(name) {
+  if (name === 'cart') hideCart();
+  else if (name === 'profile') hideProfile();
+  else if (name === 'rest') switchMainTab('restaurants');
+  else if (name.startsWith('panel-')) document.getElementById(name).classList.remove('open');
+}
+
+// Обработчик кнопки Назад
+window.addEventListener('popstate', async () => {
+  if (suppressPop > 0) { suppressPop--; return; }
+
+  if (overlayStack.length) {
+    hideOverlayDOM(overlayStack.pop());
+    return;
+  }
+
+  if (exitDialogOpen) return;
+  history.pushState({ guard: true }, '', '#home');
+  exitDialogOpen = true;
+  const exit = await showDialog('Выход из Peshras', 'Вы действительно хотите закрыть приложение?', 'Выйти', 'Остаться', 'danger');
+  exitDialogOpen = false;
+  if (exit) {
+    if (window.Android) window.Android.closeApp();
+    else window.location.href = 'about:blank';
+  }
+});
+
+// ===== ДИАЛОГИ И УВЕДОМЛЕНИЯ =====
 function showDialog(title, text, confirmText = 'Да', cancelText = 'Отмена', type = 'info') {
   return new Promise((resolve) => {
     const modal = document.getElementById('custom-dialog');
@@ -350,10 +382,10 @@ function showDialog(title, text, confirmText = 'Да', cancelText = 'Отмен�
     lucide.createIcons();
     modal.classList.remove('hidden'); modal.classList.add('flex');
     
-    const handleYes = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); resolve(true); };
-    const handleNo = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); resolve(false); };
-    document.getElementById('dialog-confirm').addEventListener('click', handleYes, { once: true });
-    document.getElementById('dialog-cancel').addEventListener('click', handleNo, { once: true });
+    const yes = document.getElementById('dialog-confirm'), no = document.getElementById('dialog-cancel');
+    const done = v => { modal.classList.add('hidden'); modal.classList.remove('flex'); yes.onclick = no.onclick = null; resolve(v); };
+    yes.onclick = () => done(true);
+    no.onclick  = () => done(false);
   });
 }
 
@@ -364,6 +396,7 @@ function showToast(msg, type = 'success') {
   t.classList.remove('hidden'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.add('hidden'), 2800);
 }
 
+// ===== ЗАГРУЗКА ДАННЫХ =====
 async function loadSettings() {
   try { 
     const s = await getDoc(doc(db, 'settings', 'config')); 
@@ -420,7 +453,7 @@ window.openCategory = function(cat) { activeCategory = cat; switchMainTab('resta
 
 window.openSingleRestaurant = function(id) {
   activeRestaurantId = id; activeCategory = 'all';
-  history.pushState({ panel: 'restaurant' }, '', '#restaurant');
+  if (overlayStack[overlayStack.length - 1] !== 'rest') pushOverlay('rest');
   switchMainTab('single-rest');
   renderSingleRestaurant(id);
 };
@@ -442,9 +475,7 @@ function loadProducts() {
       if (p.is_hidden === true) return; 
       allProducts.push(p); 
     });
-    renderCategories(); 
-    renderProducts(); 
-    renderHomeSections(); // <--- ТЕПЕРЬ СЕКЦИИ БУДУТ ОБНОВЛЯТЬСЯ
+    renderCategories(); renderProducts(); renderHomeSections(); // <--- Вызов секций
   });
 }
 function availableProducts() { return allProducts.filter(p => { const r = allRestaurants.find(x => x.id === p.restaurant_id); return !r || r.is_banned !== true; }); }
@@ -467,7 +498,7 @@ function productCard(p, small = false) {
     <div class="${small ? 'shrink-0 w-40' : ''} bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-gray-700 transition group">
       <div>
         <div class="aspect-square bg-gray-800 overflow-hidden relative">
-          <img src="${esc(p.image_url || p.image || 'https://via.placeholder.com/300')}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
+          <img src="${esc(p.image_url || p.image || 'https://placehold.co/300x300/1f2937/374151?text=No+Photo')}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" onerror="this.src='https://placehold.co/300x300/1f2937/374151?text=No+Photo'">
           ${p.is_hit ? '<span class="absolute top-1.5 left-1.5 bg-orange-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded">🔥 ХИТ</span>' : ''}
           ${p.is_new ? '<span class="absolute top-1.5 left-1.5 bg-blue-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded">✨ NEW</span>' : ''}
           ${p.is_popular ? '<span class="absolute top-1.5 left-1.5 bg-yellow-400 text-black text-[9px] font-black px-1.5 py-0.5 rounded">⭐ ТОП</span>' : ''}
@@ -526,6 +557,9 @@ $('#search-input').addEventListener('input', e => {
 });
 
 window.switchMainTab = function(tab) {
+  if (tab !== 'single-rest' && overlayStack[overlayStack.length - 1] === 'rest') {
+    overlayStack.pop(); suppressPop++; history.back();
+  }
   currentTab = tab;
   ['home', 'restaurants', 'single-rest', 'pharmacy'].forEach(x => document.getElementById('page-' + x).classList.add('hidden'));
   document.getElementById('page-' + tab).classList.remove('hidden');
@@ -538,7 +572,20 @@ window.switchMainTab = function(tab) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// КОРЗИНА
+// ===== КОРЗИНА =====
+function saveCartToStorage() {
+  localStorage.setItem('peshras_cart', JSON.stringify(cart));
+}
+function loadCartFromStorage() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('peshras_cart') || '{}');
+    for (const id in saved) {
+      const p = allProducts.find(x => x.id === id);
+      if (p) cart[id] = { product: p, qty: saved[id].qty };
+    }
+  } catch(e) {}
+}
+
 function isSameRestaurantOnly(newProduct) { if (!Object.keys(cart).length) return true; const existingRids = [...new Set(Object.values(cart).map(i => i.product.restaurant_id))]; return existingRids.every(rid => rid === newProduct.restaurant_id); }
 window.addToCart = async function (prodId) {
   const product = allProducts.find(p => p.id === prodId); if (!product) return;
@@ -554,9 +601,10 @@ window.addToCart = async function (prodId) {
     cart = {};
   }
   if (cart[prodId]) cart[prodId].qty++; else cart[prodId] = { product, qty: 1 };
+  saveCartToStorage();
   updateCartUI(); const b = document.getElementById('cart-count-badge'); b.classList.remove('anim-pop'); void b.offsetWidth; b.classList.add('anim-pop');
 };
-window.changeQty = function (prodId, delta) { if (!cart[prodId]) return; cart[prodId].qty += delta; if (cart[prodId].qty <= 0) delete cart[prodId]; updateCartUI(); renderCartItems(); };
+window.changeQty = function (prodId, delta) { if (!cart[prodId]) return; cart[prodId].qty += delta; if (cart[prodId].qty <= 0) delete cart[prodId]; saveCartToStorage(); updateCartUI(); renderCartItems(); };
 
 function calcTotals() {
   let subtotal = 0, count = 0; Object.values(cart).forEach(it => { subtotal += it.product.price * it.qty; count += it.qty; });
@@ -591,12 +639,16 @@ function renderCartItems() {
 }
 
 window.openCartModal = function () {
+  if (!overlayStack.includes('cart')) pushOverlay('cart');
   const saved = getSavedUser();
   if (saved.name) document.getElementById('client-name').value = saved.name; if (saved.phone) document.getElementById('client-phone').value = saved.phone; if (saved.address) document.getElementById('client-address').value = saved.address;
   renderCartItems(); updateCartUI(); document.getElementById('cart-step-items').classList.remove('hidden'); document.getElementById('cart-step-form').classList.add('hidden');
   document.getElementById('cart-modal').classList.remove('hidden'); document.getElementById('cart-modal').classList.add('flex'); document.body.style.overflow = 'hidden';
 };
-window.closeCartModal = function () { document.getElementById('cart-modal').classList.add('hidden'); document.getElementById('cart-modal').classList.remove('flex'); document.body.style.overflow = ''; };
+window.closeCartModal = function () {
+  if (overlayStack[overlayStack.length - 1] === 'cart') history.back();
+  else hideCart();
+};
 
 document.getElementById('go-checkout-btn').addEventListener('click', () => { if (!Object.keys(cart).length) return showToast('Корзина пуста', 'error'); document.getElementById('cart-step-items').classList.add('hidden'); document.getElementById('cart-step-form').classList.remove('hidden'); updateCartUI(); });
 document.getElementById('back-to-items').addEventListener('click', () => { document.getElementById('cart-step-form').classList.add('hidden'); document.getElementById('cart-step-items').classList.remove('hidden'); });
@@ -604,7 +656,7 @@ document.getElementById('clear-cart-btn').addEventListener('click', async () => 
   if (!Object.keys(cart).length) return; 
   const sure = await showDialog('Очистить корзину?', 'Все выбранные блюда будут удалены. Продолжить?', 'Очистить', 'Отмена', 'danger');
   if (!sure) return; 
-  cart = {}; updateCartUI(); renderCartItems(); showToast('Корзина очищена'); 
+  cart = {}; saveCartToStorage(); updateCartUI(); renderCartItems(); showToast('Корзина очищена'); 
 });
 document.getElementById('cart-modal').addEventListener('click', e => { if (e.target.id === 'cart-modal') closeCartModal(); });
 
@@ -632,7 +684,6 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   const rest = allRestaurants.find(r => r.id === restaurantId);
   if (rest?.shift_open === false) return showToast('⚠️ Ресторан не принимает заказы', 'error');
   
-  // Безопасный счетчик (без runTransaction, с фолбэком)
   let orderNumber = Math.floor(Math.random() * 9000) + 1000; 
   try { 
     const counterRef = doc(db, 'settings', 'counters');
@@ -663,7 +714,7 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
     if (!myOrders.includes(orderNumber)) myOrders.push(orderNumber);
     localStorage.setItem('peshras_my_orders', JSON.stringify(myOrders));
     
-    cart = {}; updateCartUI(); closeCartModal(); document.getElementById('checkout-form').reset(); 
+    cart = {}; saveCartToStorage(); updateCartUI(); closeCartModal(); document.getElementById('checkout-form').reset(); 
     showToast(`🎉 Заказ #${orderNumber} отправлен!`); 
   }
   catch (err) { 
@@ -672,7 +723,8 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   finally { btn.disabled = false; btn.innerHTML = oldHTML; lucide.createIcons(); }
 });
 
-window.openProfile = function () { 
+// ===== ПРОФИЛЬ И ПАНЕЛИ =====
+window.openProfile = function () {
   let myOrders = [];
   try { myOrders = JSON.parse(localStorage.getItem('peshras_my_orders') || '[]'); } catch(e){}
   document.getElementById('profile-stat-orders').textContent = myOrders.length;
@@ -680,19 +732,18 @@ window.openProfile = function () {
   const saved = getSavedUser();
   document.getElementById('profile-stat-address').textContent = saved.address ? 1 : 0;
 
-  document.getElementById('profile-modal').classList.remove('hidden'); 
-  document.getElementById('profile-modal').classList.add('flex'); 
+  const m = document.getElementById('profile-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
   document.body.style.overflow = 'hidden';
+  if (!overlayStack.includes('profile')) pushOverlay('profile');
 };
-window.closeProfile = function () { 
-  document.getElementById('profile-modal').classList.add('hidden'); 
-  document.getElementById('profile-modal').classList.remove('flex'); 
-  document.body.style.overflow = ''; 
+window.closeProfile = function () {
+  if (overlayStack[overlayStack.length - 1] === 'profile') history.back();
+  else hideProfile();
 };
 
 window.openProfilePanel = async function(key) {
-  closeProfile();
-  history.pushState({ panel: key }, '', '#' + key);
+  pushOverlay('panel-' + key);
   document.getElementById('panel-' + key).classList.add('open');
   
   if (key === 'mydata') {
@@ -776,7 +827,6 @@ window.openProfilePanel = async function(key) {
 };
 
 window.closeProfilePanel = function(key) {
-  document.getElementById('panel-' + key).classList.remove('open');
   history.back();
 };
 
@@ -785,54 +835,17 @@ window.saveMyData = function() {
   showToast('✅ Данные сохранены'); 
 };
 
-// Обработка кнопки "Назад" (WebView)
-window.addEventListener('popstate', async (e) => {
-  // 1. Закрываем профиль
-  const profileModal = document.getElementById('profile-modal');
-  if (!profileModal.classList.contains('hidden')) {
-    closeProfile();
-    return;
-  }
-
-  // 2. Закрываем корзину
-  const cartModal = document.getElementById('cart-modal');
-  if (!cartModal.classList.contains('hidden')) {
-    closeCartModal();
-    return;
-  }
-
-  // 3. Закрываем панели
-  const openPanels = document.querySelectorAll('.full-screen-panel.open');
-  if (openPanels.length > 0) {
-    openPanels.forEach(p => p.classList.remove('open'));
-    return;
-  }
-
-  // 4. Возврат из ресторана
-  if (currentTab === 'single-rest') {
-    switchMainTab('restaurants');
-    return;
-  }
-
-  // 5. Возврат на главную
-  if (currentTab !== 'home') {
-    switchMainTab('home');
-    return;
-  }
-
-  // 6. Выход (только с главной)
-  history.pushState({}, '', '#home'); 
-  const exit = await showDialog('Выход из Peshras', 'Вы действительно хотите закрыть приложение?', 'Выйти', 'Остаться', 'danger');
-  if (exit) {
-    if (window.Android) window.Android.closeApp(); 
-    else window.location.href = 'about:blank'; 
-  }
-});
-
-// Запуск
+// ===== СТАРТ =====
 (async () => { 
+  history.replaceState({ root: true }, '', '#home');
+  history.pushState({ guard: true }, '', '#home');
+
   await loadSettings(); await loadBlockedPhones(); 
-  loadRestaurants(); loadProducts(); updateCartUI(); 
+  loadRestaurants(); 
+  loadProducts(); 
+  // Загружаем корзину после загрузки товаров (с задержкой)
+  setTimeout(() => { loadCartFromStorage(); updateCartUI(); }, 1000);
+  
   lucide.createIcons(); 
   if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(() => {}); } 
 })();
