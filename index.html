@@ -162,6 +162,7 @@
   </button>
 </div>
 
+<!-- МОДАЛКА КОРЗИНЫ -->
 <div id="cart-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
   <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-6 space-y-5 max-h-[92vh] overflow-y-auto anim-slide-up shadow-2xl">
     <div id="cart-step-items" class="space-y-5">
@@ -200,87 +201,38 @@
   </div>
 </div>
 
+<!-- МОДАЛКА ПРОФИЛЯ (НОВЫЙ ДИЗАЙН) -->
 <div id="profile-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
   <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 max-h-[92vh] overflow-y-auto anim-slide-up">
-    
     <div id="profile-main-menu" class="space-y-6 pb-6">
       <div class="flex items-center justify-between border-b border-gray-800 pb-4">
         <h3 class="font-extrabold text-xl text-white">Профиль</h3>
         <button onclick="closeProfile()" class="text-gray-400 hover:text-white bg-gray-950 p-2 rounded-xl"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <div class="bg-gradient-to-r from-emerald-500/20 to-yellow-400/20 border border-emerald-500/30 rounded-3xl p-4 flex justify-between gap-2">
-        <div class="flex-1 bg-gray-950 rounded-2xl p-3 flex flex-col items-center justify-center shadow-lg">
-          <i data-lucide="shopping-bag" class="w-5 h-5 text-yellow-400 mb-1"></i>
-          <span id="profile-stat-orders" class="text-xl font-black text-white">0</span>
-          <span class="text-[9px] text-gray-400 font-bold uppercase mt-1">Заказов</span>
-        </div>
-        <div class="flex-1 bg-gray-950 rounded-2xl p-3 flex flex-col items-center justify-center shadow-lg">
-          <i data-lucide="heart" class="w-5 h-5 text-red-400 mb-1"></i>
-          <span class="text-xl font-black text-white">0</span>
-          <span class="text-[9px] text-gray-400 font-bold uppercase mt-1">Избранное</span>
-        </div>
-        <div class="flex-1 bg-gray-950 rounded-2xl p-3 flex flex-col items-center justify-center shadow-lg">
-          <i data-lucide="map-pin" class="w-5 h-5 text-blue-400 mb-1"></i>
-          <span id="profile-stat-address" class="text-xl font-black text-white">0</span>
-          <span class="text-[9px] text-gray-400 font-bold uppercase mt-1">Адрес</span>
-        </div>
+        <div class="flex-1 bg-gray-950 rounded-2xl p-3 flex flex-col items-center justify-center shadow-lg"><i data-lucide="shopping-bag" class="w-5 h-5 text-yellow-400 mb-1"></i><span id="profile-stat-orders" class="text-xl font-black text-white">0</span><span class="text-[9px] text-gray-400 font-bold uppercase mt-1">Заказов</span></div>
+        <div class="flex-1 bg-gray-950 rounded-2xl p-3 flex flex-col items-center justify-center shadow-lg"><i data-lucide="heart" class="w-5 h-5 text-red-400 mb-1"></i><span class="text-xl font-black text-white">0</span><span class="text-[9px] text-gray-400 font-bold uppercase mt-1">Избранное</span></div>
+        <div class="flex-1 bg-gray-950 rounded-2xl p-3 flex flex-col items-center justify-center shadow-lg"><i data-lucide="map-pin" class="w-5 h-5 text-blue-400 mb-1"></i><span id="profile-stat-address" class="text-xl font-black text-white">0</span><span class="text-[9px] text-gray-400 font-bold uppercase mt-1">Адрес</span></div>
       </div>
-
       <div class="space-y-2">
         <p class="text-[10px] font-black text-gray-500 uppercase tracking-wider ml-2">Аккаунт</p>
         <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
-          <button onclick="openProfilePanel('mydata')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition border-b border-gray-800">
-            <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white"><i data-lucide="user" class="w-5 h-5"></i></div>
-              <div class="text-left"><p class="text-sm font-bold text-white">Личные данные</p><p class="text-[10px] text-gray-500">Имя, телефон</p></div>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i>
-          </button>
-          <button onclick="openProfilePanel('mydata')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition">
-            <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center text-white"><i data-lucide="map-pin" class="w-5 h-5"></i></div>
-              <div class="text-left"><p class="text-sm font-bold text-white">Адрес доставки</p></div>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i>
-          </button>
+          <button onclick="openProfilePanel('mydata')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition border-b border-gray-800"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white"><i data-lucide="user" class="w-5 h-5"></i></div><div class="text-left"><p class="text-sm font-bold text-white">Личные данные</p><p class="text-[10px] text-gray-500">Имя, телефон</p></div></div><i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i></button>
+          <button onclick="openProfilePanel('mydata')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center text-white"><i data-lucide="map-pin" class="w-5 h-5"></i></div><div class="text-left"><p class="text-sm font-bold text-white">Адрес доставки</p></div></div><i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i></button>
         </div>
       </div>
-
       <div class="space-y-2">
         <p class="text-[10px] font-black text-gray-500 uppercase tracking-wider ml-2">Активность</p>
         <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
-          <button onclick="openProfilePanel('myorders')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition border-b border-gray-800">
-            <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-xl bg-yellow-500 flex items-center justify-center text-white"><i data-lucide="shopping-bag" class="w-5 h-5"></i></div>
-              <div class="text-left"><p class="text-sm font-bold text-white">Мои заказы</p></div>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i>
-          </button>
-          <button onclick="openProfilePanel('about')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition border-b border-gray-800">
-            <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white"><i data-lucide="info" class="w-5 h-5"></i></div>
-              <div class="text-left"><p class="text-sm font-bold text-white">О нас</p></div>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i>
-          </button>
-          <button onclick="openProfilePanel('terms')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition">
-            <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center text-white"><i data-lucide="file-text" class="w-5 h-5"></i></div>
-              <div class="text-left"><p class="text-sm font-bold text-white">Условия</p></div>
-            </div>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i>
-          </button>
+          <button onclick="openProfilePanel('myorders')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition border-b border-gray-800"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl bg-yellow-500 flex items-center justify-center text-white"><i data-lucide="shopping-bag" class="w-5 h-5"></i></div><div class="text-left"><p class="text-sm font-bold text-white">Мои заказы</p></div></div><i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i></button>
+          <button onclick="openProfilePanel('about')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition border-b border-gray-800"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white"><i data-lucide="info" class="w-5 h-5"></i></div><div class="text-left"><p class="text-sm font-bold text-white">О нас</p></div></div><i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i></button>
+          <button onclick="openProfilePanel('terms')" class="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center text-white"><i data-lucide="file-text" class="w-5 h-5"></i></div><div class="text-left"><p class="text-sm font-bold text-white">Условия</p></div></div><i data-lucide="chevron-right" class="w-5 h-5 text-gray-500"></i></button>
         </div>
       </div>
-
       <div class="space-y-2">
         <p class="text-[10px] font-black text-gray-500 uppercase tracking-wider ml-2">Поддержка</p>
         <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 space-y-4">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white"><i data-lucide="message-circle" class="w-5 h-5"></i></div>
-            <div><p class="text-sm font-bold text-white">Нужна помощь?</p><p class="text-[10px] text-gray-400">Мы на связи</p></div>
-          </div>
+          <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white"><i data-lucide="message-circle" class="w-5 h-5"></i></div><div><p class="text-sm font-bold text-white">Нужна помощь?</p><p class="text-[10px] text-gray-400">Мы на связи</p></div></div>
           <div class="flex gap-2">
             <button onclick="openProfilePanel('support')" class="flex-1 bg-gray-950 text-white font-bold py-2.5 rounded-xl text-xs border border-gray-800">Чат</button>
             <a href="tel:+992000000000" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2.5 rounded-xl text-xs text-center">Позвонить</a>
@@ -288,7 +240,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -306,15 +257,7 @@
   <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('about')" class="text-gray-400 hover:text-white bg-gray-900 p-2 rounded-xl"><i data-lucide="arrow-left" class="w-5 h-5"></i></button><h3 class="font-extrabold text-white text-lg">О нас</h3></div>
   <div class="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 overflow-y-auto">
     <div class="w-24 h-24 rounded-full bg-emerald-500/10 flex items-center justify-center anim-float"><i data-lucide="heart-handshake" class="w-12 h-12 text-emerald-400"></i></div>
-    <div class="max-w-md space-y-4">
-      <h2 class="text-2xl font-black text-white">Peshras — это забота</h2>
-      <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line" id="about-text-content"></p>
-      <div class="flex justify-center gap-6 pt-4">
-        <div class="text-center"><p class="text-xl font-black text-emerald-400">30-40</p><p class="text-[10px] text-gray-500 uppercase">минут</p></div>
-        <div class="text-center"><p class="text-xl font-black text-emerald-400">100+</p><p class="text-[10px] text-gray-500 uppercase">блюд</p></div>
-        <div class="text-center"><p class="text-xl font-black text-emerald-400">1</p><p class="text-[10px] text-gray-500 uppercase">город</p></div>
-      </div>
-    </div>
+    <div class="max-w-md space-y-4"><h2 class="text-2xl font-black text-white">Peshras — это забота</h2><p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line" id="about-text-content"></p><div class="flex justify-center gap-6 pt-4"><div class="text-center"><p class="text-xl font-black text-emerald-400">30-40</p><p class="text-[10px] text-gray-500 uppercase">минут</p></div><div class="text-center"><p class="text-xl font-black text-emerald-400">100+</p><p class="text-[10px] text-gray-500 uppercase">блюд</p></div><div class="text-center"><p class="text-xl font-black text-emerald-400">1</p><p class="text-[10px] text-gray-500 uppercase">город</p></div></div></div>
   </div>
 </div>
 
@@ -322,10 +265,7 @@
   <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('terms')" class="text-gray-400 hover:text-white bg-gray-900 p-2 rounded-xl"><i data-lucide="arrow-left" class="w-5 h-5"></i></button><h3 class="font-extrabold text-white text-lg">Условия</h3></div>
   <div class="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 overflow-y-auto">
     <div class="w-24 h-24 rounded-full bg-yellow-400/10 flex items-center justify-center anim-float"><i data-lucide="file-check-2" class="w-12 h-12 text-yellow-400"></i></div>
-    <div class="max-w-md space-y-4">
-      <h2 class="text-2xl font-black text-white">Прозрачные правила</h2>
-      <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line" id="terms-text-content"></p>
-    </div>
+    <div class="max-w-md space-y-4"><h2 class="text-2xl font-black text-white">Прозрачные правила</h2><p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line" id="terms-text-content"></p></div>
   </div>
 </div>
 
@@ -698,7 +638,6 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
     }
   } catch (err) { 
     console.error("Ошибка счетчика (используем случайный номер):", err);
-    // Не прерываем заказ, используем случайный номер
   }
   
   const { subtotal, delivery, total } = calcTotals();
@@ -839,42 +778,42 @@ window.saveMyData = function() {
   showToast('✅ Данные сохранены'); 
 };
 
-// Кнопка "Назад" (WebView)
+// Обработка кнопки "Назад" (WebView)
 window.addEventListener('popstate', async (e) => {
-  // 1. Закрываем профиль (модалку)
+  // 1. Закрываем профиль
   const profileModal = document.getElementById('profile-modal');
   if (!profileModal.classList.contains('hidden')) {
     closeProfile();
     return;
   }
 
-  // 2. Закрываем корзину (модалку)
+  // 2. Закрываем корзину
   const cartModal = document.getElementById('cart-modal');
   if (!cartModal.classList.contains('hidden')) {
     closeCartModal();
     return;
   }
 
-  // 3. Закрываем полноэкранные панели
+  // 3. Закрываем панели
   const openPanels = document.querySelectorAll('.full-screen-panel.open');
   if (openPanels.length > 0) {
     openPanels.forEach(p => p.classList.remove('open'));
     return;
   }
 
-  // 4. Возврат из ресторана в список ресторанов
+  // 4. Возврат из ресторана
   if (currentTab === 'single-rest') {
     switchMainTab('restaurants');
     return;
   }
 
-  // 5. Возврат на главную с других вкладок
+  // 5. Возврат на главную
   if (currentTab !== 'home') {
     switchMainTab('home');
     return;
   }
 
-  // 6. Спрашиваем выход только с главной
+  // 6. Выход (только с главной)
   history.pushState({}, '', '#home'); 
   const exit = await showDialog('Выход из Peshras', 'Вы действительно хотите закрыть приложение?', 'Выйти', 'Остаться', 'danger');
   if (exit) {
