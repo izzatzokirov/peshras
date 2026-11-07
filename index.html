@@ -436,8 +436,15 @@ function renderSingleRestaurant(id) {
 
 function loadProducts() {
   onSnapshot(collection(db, 'products'), snap => {
-    allProducts = []; snap.forEach(d => { const p = { id: d.id, ...d.data() }; if (p.is_hidden === true) return; allProducts.push(p); });
-    renderCategories(); renderProducts(); renderHomeSections();
+    allProducts = []; 
+    snap.forEach(d => { 
+      const p = { id: d.id, ...d.data() }; 
+      if (p.is_hidden === true) return; 
+      allProducts.push(p); 
+    });
+    renderCategories(); 
+    renderProducts(); 
+    renderHomeSections(); // <--- ТЕПЕРЬ СЕКЦИИ БУДУТ ОБНОВЛЯТЬСЯ
   });
 }
 function availableProducts() { return allProducts.filter(p => { const r = allRestaurants.find(x => x.id === p.restaurant_id); return !r || r.is_banned !== true; }); }
