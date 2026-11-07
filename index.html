@@ -43,6 +43,26 @@
 </head>
 <body class="bg-gray-950 text-gray-100" style="padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));">
 
+<!-- ЭКРАН ВХОДА (GOOGLE) -->
+<div id="auth-screen" class="fixed inset-0 bg-gray-950 z-[200] flex flex-col items-center justify-center p-6 anim-fade">
+  <div class="w-full max-w-sm space-y-8 flex flex-col items-center text-center">
+    <div class="w-24 h-24 rounded-3xl bg-gray-900 border border-gray-800 flex items-center justify-center shadow-2xl anim-float">
+      <img src="https://i.ibb.co/FbhxLR8c/1786542023977.png" alt="Peshras" class="w-16 h-16 object-contain" onerror="this.src='https://placehold.co/100x100/1f2937/10b981?text=P'">
+    </div>
+    <div class="space-y-2">
+      <h1 class="text-3xl font-black text-white tracking-wide">PESHRAS</h1>
+      <p class="text-sm text-gray-400">Доставка еды в Исфаре</p>
+    </div>
+    
+    <button id="google-login-btn" class="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center gap-3 shadow-lg mt-4">
+      <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/><path fill="#000000" d="M1 1h22v22H1z" fill-opacity="0"/></svg>
+      <span>Продолжить с Google</span>
+    </button>
+    
+    <p class="text-[10px] text-gray-500 leading-tight">Нажимая кнопку, вы соглашаетесь с <a href="privacy.html" target="_blank" class="text-emerald-400">политикой конфиденциальности</a>.</p>
+  </div>
+</div>
+
 <div id="maintenance-banner" class="hidden bg-amber-500 text-black text-center text-xs font-bold py-2 sticky top-0 z-[60]">🔧 Идут технические работы.</div>
 
 <header class="bg-gray-900/95 backdrop-blur border-b border-gray-800 sticky top-0 z-30 shadow-lg">
@@ -145,9 +165,7 @@
 
   <footer class="pt-8 pb-4 mt-auto border-t border-gray-800 space-y-4">
     <div class="flex justify-center gap-4">
-      <a href="https://instagram.com/peshras" target="_blank" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-pink-400 hover:border-pink-500 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-      </a>
+      <a href="https://instagram.com/peshras" target="_blank" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-pink-400 hover:border-pink-500 transition"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
       <a href="https://t.me/peshras_support" target="_blank" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-blue-400 hover:border-blue-500 transition"><i data-lucide="send" class="w-5 h-5"></i></a>
       <a href="https://wa.me/992000000000" target="_blank" class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-green-400 hover:border-green-500 transition"><i data-lucide="message-circle" class="w-5 h-5"></i></a>
     </div>
@@ -191,7 +209,7 @@
         
         <div class="flex items-start gap-2 pt-1">
           <input type="checkbox" id="client-privacy" required class="w-4 h-4 accent-emerald-500 mt-0.5">
-          <label for="client-privacy" class="text-[10px] text-gray-400 leading-tight">Я согласен с <a href="privacy.html" target="_blank" class="text-emerald-400 hover:underline">политикой конфиденциальности</a> и обработкой персональных данных.</label>
+          <label for="client-privacy" class="text-[10px] text-gray-400 leading-tight">Я согласен с <a href="privacy.html" target="_blank" class="text-emerald-400 hover:underline">политикой конфиденциальности</a>.</label>
         </div>
 
         <div class="bg-gray-950 border border-gray-800 rounded-xl p-3 space-y-1.5 text-xs"><div class="flex justify-between text-gray-400"><span>Товары:</span><span id="checkout-subtotal" class="text-white font-bold">0 с.</span></div><div class="flex justify-between text-gray-400"><span>Доставка:</span><span id="checkout-delivery" class="text-white font-bold">0 с.</span></div><div class="flex justify-between font-black text-base pt-2 border-t border-gray-800"><span>Итого:</span><span id="cart-modal-total-2" class="text-yellow-400">0 сомонӣ</span></div></div>
@@ -236,6 +254,7 @@
           <div class="flex gap-2"><button onclick="openProfilePanel('support')" class="flex-1 bg-gray-950 text-white font-bold py-2.5 rounded-xl text-xs border border-gray-800">Чат</button><a href="tel:+992000000000" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2.5 rounded-xl text-xs text-center">Позвонить</a></div>
         </div>
       </div>
+      <button onclick="logout()" class="w-full text-red-400 font-bold py-3 text-sm">Выйти из аккаунта</button>
     </div>
   </div>
 </div>
@@ -304,21 +323,57 @@
 <!-- ЧАСТЬ 2 (JS) -->
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs, orderBy, limit, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs, doc, getDoc, setDoc, runTransaction, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = { apiKey: "AIzaSyBGUkISLQ1Qm9xfYkVgZhoLeR_P_VTSrhM", authDomain: "peshras-delivery.firebaseapp.com", projectId: "peshras-delivery", storageBucket: "peshras-delivery.firebasestorage.app", messagingSenderId: "790787117044", appId: "1:790787117044:web:217ef1bea4edbab24873a1" };
-const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+const app = initializeApp(firebaseConfig); 
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+
+// Инициализация входа
+const authReady = new Promise(resolve => {
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('auth-screen').classList.remove('flex');
+      await initApp();
+      resolve(user);
+    } else {
+      document.getElementById('auth-screen').classList.remove('hidden');
+      document.getElementById('auth-screen').classList.add('flex');
+      resolve(null);
+    }
+  });
+});
+
+document.getElementById('google-login-btn').addEventListener('click', async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    console.error(e);
+    showToast('Ошибка входа: ' + e.message, 'error');
+  }
+});
+
+window.logout = async () => {
+  const sure = await showDialog('Выход', 'Вы уверены, что хотите выйти из аккаунта?', 'Выйти', 'Отмена', 'danger');
+  if (sure) { await signOut(auth); window.location.reload(); }
+};
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' сомонӣ';
 
-// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 let allProducts = [], allRestaurants = [], cart = {}, activeCategory = 'all', activeRestaurantId = null, searchQuery = '', SETTINGS = {}, BLOCKED_PHONES = [];
 let currentTab = 'home';
 const CAT_LABEL = { plov: '🍚 Плов', shashlik: '🍢 Шашлык', pizza: '🍕 Пицца', burger: '🍔 Бургеры', fastfood: '🌭 Фастфуд', soup: '🍲 Супы', salad: '🥗 Салаты', bakery: '🥐 Выпечка', dessert: '🍰 Десерты', drinks: '🥤 Напитки', other: '🍽 Другое' };
 
-// ===== СТЕК НАВИГАЦИИ (Исправление кнопки Назад) =====
+// ===== СТЕК НАВИГАЦИИ =====
 const overlayStack = [];   
 let suppressPop = 0;       
 let exitDialogOpen = false;
@@ -337,15 +392,9 @@ function hideOverlayDOM(name) {
   else if (name.startsWith('panel-')) document.getElementById(name).classList.remove('open');
 }
 
-// Обработчик кнопки Назад
 window.addEventListener('popstate', async () => {
   if (suppressPop > 0) { suppressPop--; return; }
-
-  if (overlayStack.length) {
-    hideOverlayDOM(overlayStack.pop());
-    return;
-  }
-
+  if (overlayStack.length) { hideOverlayDOM(overlayStack.pop()); return; }
   if (exitDialogOpen) return;
   history.pushState({ guard: true }, '', '#home');
   exitDialogOpen = true;
@@ -397,16 +446,22 @@ function showToast(msg, type = 'success') {
 }
 
 // ===== ЗАГРУЗКА ДАННЫХ =====
-async function loadSettings() {
+async function initApp() {
   try { 
     const s = await getDoc(doc(db, 'settings', 'config')); 
     if (s.exists()) SETTINGS = s.data(); 
     const el = document.getElementById('promo-free-from'); 
     if (el) el.innerText = SETTINGS.free_from ?? 100; 
     if (SETTINGS.maintenance) document.getElementById('maintenance-banner').classList.remove('hidden'); 
+    
+    const snap = await getDocs(collection(db, 'blocked_phones')); 
+    BLOCKED_PHONES = snap.docs.map(d => d.data().phone).filter(Boolean); 
   } catch (e) { console.error(e); }
+
+  loadRestaurants(); 
+  loadProducts();
+  setTimeout(() => { loadCartFromStorage(); updateCartUI(); }, 1000);
 }
-async function loadBlockedPhones() { try { const snap = await getDocs(collection(db, 'blocked_phones')); BLOCKED_PHONES = snap.docs.map(d => d.data().phone).filter(Boolean); } catch (e) {} }
 
 function loadRestaurants() {
   onSnapshot(collection(db, 'restaurants'), snap => {
@@ -475,7 +530,7 @@ function loadProducts() {
       if (p.is_hidden === true) return; 
       allProducts.push(p); 
     });
-    renderCategories(); renderProducts(); renderHomeSections(); // <--- Вызов секций
+    renderCategories(); renderProducts(); renderHomeSections();
   });
 }
 function availableProducts() { return allProducts.filter(p => { const r = allRestaurants.find(x => x.id === p.restaurant_id); return !r || r.is_banned !== true; }); }
@@ -667,6 +722,7 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   e.preventDefault();
   if (SETTINGS.maintenance === true) return showToast('🔧 Техработы', 'error');
   if (!document.getElementById('client-privacy').checked) return showToast('Подтвердите согласие с политикой', 'error');
+  if (!currentUser) return showToast('Пожалуйста, авторизуйтесь', 'error');
   
   const btn = document.getElementById('submit-order-btn'); 
   const itemsArray = Object.values(cart).map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.qty }));
@@ -684,54 +740,56 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   const rest = allRestaurants.find(r => r.id === restaurantId);
   if (rest?.shift_open === false) return showToast('⚠️ Ресторан не принимает заказы', 'error');
   
-  let orderNumber = Math.floor(Math.random() * 9000) + 1000; 
-  try { 
-    const counterRef = doc(db, 'settings', 'counters');
-    const snap = await getDoc(counterRef);
-    if (snap.exists()) {
-      orderNumber = (snap.data().orders || 0) + 1;
-      await setDoc(counterRef, { orders: orderNumber }, { merge: true });
-    } else {
-      await setDoc(counterRef, { orders: orderNumber });
-    }
-  } catch (err) { 
-    console.error("Ошибка счетчика (используем случайный номер):", err);
-  }
-  
   const { subtotal, delivery, total } = calcTotals();
-  const orderData = {
-    order_number: orderNumber, client_name: name, client_phone: phone, delivery_address: address, comment: comment, persons: persons,
-    payment_method: payment, items: itemsArray, subtotal: subtotal, delivery_price: delivery, total_price: total,
-    restaurant_id: restaurantId, status: 'new', city: 'Исфара', created_at: serverTimestamp()
-  };
-  
   btn.disabled = true; const oldHTML = btn.innerHTML; btn.innerHTML = '<span>Отправляем...</span>';
-  try { 
-    await addDoc(collection(db, 'orders'), orderData); 
+
+  try {
+    const counterRef = doc(db, 'settings', 'counters');
+    const orderRef = doc(collection(db, 'orders'));
+
+    const orderNumber = await runTransaction(db, async (transaction) => {
+      const counterSnap = await transaction.get(counterRef);
+      if (!counterSnap.exists()) throw new Error("Счётчик не найден");
+      
+      const nextOrderNumber = (counterSnap.data().orders || 1041) + 1;
+      transaction.update(counterRef, { orders: nextOrderNumber });
+      
+      const orderData = {
+        order_number: nextOrderNumber, 
+        client_uid: currentUser.uid, 
+        client_name: name, 
+        client_phone: phone, 
+        delivery_address: address, 
+        comment: comment, 
+        persons: persons,
+        payment_method: payment, 
+        items: itemsArray, 
+        subtotal: subtotal, 
+        delivery_price: delivery, 
+        total_price: total,
+        restaurant_id: restaurantId, 
+        status: 'new', 
+        city: 'Исфара', 
+        created_at: serverTimestamp()
+      };
+      
+      transaction.set(orderRef, orderData);
+      return nextOrderNumber;
+    });
+
     saveUser({ name, phone, address }); 
-    
-    let myOrders = JSON.parse(localStorage.getItem('peshras_my_orders') || '[]');
-    if (!myOrders.includes(orderNumber)) myOrders.push(orderNumber);
-    localStorage.setItem('peshras_my_orders', JSON.stringify(myOrders));
-    
     cart = {}; saveCartToStorage(); updateCartUI(); closeCartModal(); document.getElementById('checkout-form').reset(); 
     showToast(`🎉 Заказ #${orderNumber} отправлен!`); 
   }
   catch (err) { 
-    console.error(err); showToast('Ошибка отправки.', 'error'); 
+    console.error(err); 
+    showToast('Ошибка отправки. Попробуйте еще раз.', 'error'); 
   }
   finally { btn.disabled = false; btn.innerHTML = oldHTML; lucide.createIcons(); }
 });
 
 // ===== ПРОФИЛЬ И ПАНЕЛИ =====
 window.openProfile = function () {
-  let myOrders = [];
-  try { myOrders = JSON.parse(localStorage.getItem('peshras_my_orders') || '[]'); } catch(e){}
-  document.getElementById('profile-stat-orders').textContent = myOrders.length;
-  
-  const saved = getSavedUser();
-  document.getElementById('profile-stat-address').textContent = saved.address ? 1 : 0;
-
   const m = document.getElementById('profile-modal');
   m.classList.remove('hidden'); m.classList.add('flex');
   document.body.style.overflow = 'hidden';
@@ -757,26 +815,17 @@ window.openProfilePanel = async function(key) {
     const listEl = document.getElementById('myorders-list');
     listEl.innerHTML = '<p class="text-gray-500 text-xs text-center py-4">Загрузка...</p>';
     
-    let myOrders = [];
-    try { myOrders = JSON.parse(localStorage.getItem('peshras_my_orders') || '[]'); } catch(e){}
-    
-    if (!myOrders.length) {
-       listEl.innerHTML = '<p class="text-gray-500 text-xs text-center py-8">У вас пока нет заказов.</p>';
-       return;
-    }
-
     try {
-      const promises = myOrders.slice(-10).map(num => 
-        getDocs(query(collection(db, 'orders'), where('order_number', '==', num)))
-      );
-      const snaps = await Promise.all(promises);
-      
+      const q = query(collection(db, 'orders'), where('client_uid', '==', currentUser.uid), limit(20));
+      const snap = await getDocs(q);
       let ordersData = [];
-      snaps.forEach(snap => snap.forEach(d => ordersData.push({ id: d.id, ...d.data() })));
-      ordersData.sort((a, b) => b.order_number - a.order_number);
+      snap.forEach(d => ordersData.push({ id: d.id, ...d.data() }));
+      ordersData.sort((a, b) => (b.order_number || 0) - (a.order_number || 0));
+      
+      document.getElementById('profile-stat-orders').textContent = ordersData.length;
 
       if (!ordersData.length) {
-        listEl.innerHTML = '<p class="text-gray-500 text-xs text-center py-8">Заказы не найдены.</p>';
+        listEl.innerHTML = '<p class="text-gray-500 text-xs text-center py-8">У вас пока нет заказов.</p>';
         return;
       }
 
@@ -835,20 +884,12 @@ window.saveMyData = function() {
   showToast('✅ Данные сохранены'); 
 };
 
-// ===== СТАРТ =====
-(async () => { 
+// Запуск (запускается после входа)
+window.addEventListener('load', () => {
   history.replaceState({ root: true }, '', '#home');
   history.pushState({ guard: true }, '', '#home');
-
-  await loadSettings(); await loadBlockedPhones(); 
-  loadRestaurants(); 
-  loadProducts(); 
-  // Загружаем корзину после загрузки товаров (с задержкой)
-  setTimeout(() => { loadCartFromStorage(); updateCartUI(); }, 1000);
-  
   lucide.createIcons(); 
-  if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(() => {}); } 
-})();
+});
 </script>
 </body>
 </html>
