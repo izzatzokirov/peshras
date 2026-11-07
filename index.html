@@ -100,7 +100,6 @@
       </div>
     </div>
 
-    <!-- РЕСТОРАНЫ РЯДОМ (Квадратные карточки) -->
     <section class="space-y-3">
       <div class="flex items-center justify-between"><h2 class="text-lg font-bold text-white">Рестораны рядом</h2><button onclick="switchMainTab('restaurants')" class="text-xs text-emerald-400 font-bold">Все</button></div>
       <div id="home-restaurants-list" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
@@ -201,18 +200,15 @@
   </div>
 </div>
 
-<!-- ПРОФИЛЬ (НОВЫЙ ДИЗАЙН) -->
 <div id="profile-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
   <div class="bg-gray-900 border border-gray-800 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-4 max-h-[92vh] overflow-y-auto anim-slide-up">
     
     <div id="profile-main-menu" class="space-y-6 pb-6">
-      <!-- Шапка профиля -->
       <div class="flex items-center justify-between border-b border-gray-800 pb-4">
         <h3 class="font-extrabold text-xl text-white">Профиль</h3>
         <button onclick="closeProfile()" class="text-gray-400 hover:text-white bg-gray-950 p-2 rounded-xl"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
-      <!-- Блок статистики -->
       <div class="bg-gradient-to-r from-emerald-500/20 to-yellow-400/20 border border-emerald-500/30 rounded-3xl p-4 flex justify-between gap-2">
         <div class="flex-1 bg-gray-950 rounded-2xl p-3 flex flex-col items-center justify-center shadow-lg">
           <i data-lucide="shopping-bag" class="w-5 h-5 text-yellow-400 mb-1"></i>
@@ -231,7 +227,6 @@
         </div>
       </div>
 
-      <!-- АККАУНТ -->
       <div class="space-y-2">
         <p class="text-[10px] font-black text-gray-500 uppercase tracking-wider ml-2">Аккаунт</p>
         <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
@@ -252,7 +247,6 @@
         </div>
       </div>
 
-      <!-- АКТИВНОСТЬ -->
       <div class="space-y-2">
         <p class="text-[10px] font-black text-gray-500 uppercase tracking-wider ml-2">Активность</p>
         <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
@@ -280,7 +274,6 @@
         </div>
       </div>
 
-      <!-- ПОМОЩЬ -->
       <div class="space-y-2">
         <p class="text-[10px] font-black text-gray-500 uppercase tracking-wider ml-2">Поддержка</p>
         <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 space-y-4">
@@ -299,7 +292,6 @@
   </div>
 </div>
 
-<!-- ПОЛНОЭКРАННЫЕ ПАНЕЛИ ПРОФИЛЯ -->
 <div id="panel-mydata" class="full-screen-panel">
   <div class="flex items-center gap-3 p-4 border-b border-gray-800"><button onclick="closeProfilePanel('mydata')" class="text-gray-400 hover:text-white bg-gray-900 p-2 rounded-xl"><i data-lucide="arrow-left" class="w-5 h-5"></i></button><h3 class="font-extrabold text-white text-lg">Мои данные</h3></div>
   <div class="p-6 space-y-4 flex-1 overflow-y-auto"><div class="space-y-3"><input id="md-name" type="text" placeholder="Имя" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white"><input id="md-phone" type="tel" placeholder="+992..." class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white"><input id="md-address" type="text" placeholder="Адрес" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white"><button onclick="saveMyData()" class="w-full bg-emerald-500 text-black font-bold py-3 rounded-xl mt-2">Сохранить</button></div></div>
@@ -378,10 +370,10 @@
   </div>
 </nav>
 
-<!-- СЮДА ВСТАВЬ ВТОРУЮ ЧАСТЬ (JS) -->
+<!-- ЧАСТЬ 2 (JS) НИЖЕ -->
   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs, orderBy, limit, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs, orderBy, limit, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyBGUkISLQ1Qm9xfYkVgZhoLeR_P_VTSrhM", authDomain: "peshras-delivery.firebaseapp.com", projectId: "peshras-delivery", storageBucket: "peshras-delivery.firebasestorage.app", messagingSenderId: "790787117044", appId: "1:790787117044:web:217ef1bea4edbab24873a1" };
 const app = initializeApp(firebaseConfig); const db = getFirestore(app);
@@ -394,7 +386,6 @@ let allProducts = [], allRestaurants = [], cart = {}, activeCategory = 'all', ac
 let currentTab = 'home';
 const CAT_LABEL = { plov: '🍚 Плов', shashlik: '🍢 Шашлык', pizza: '🍕 Пицца', burger: '🍔 Бургеры', fastfood: '🌭 Фастфуд', soup: '🍲 Супы', salad: '🥗 Салаты', bakery: '🥐 Выпечка', dessert: '🍰 Десерты', drinks: '🥤 Напитки', other: '🍽 Другое' };
 
-// ФИРМЕННЫЕ ДИАЛОГИ
 function showDialog(title, text, confirmText = 'Да', cancelText = 'Отмена', type = 'info') {
   return new Promise((resolve) => {
     const modal = document.getElementById('custom-dialog');
@@ -451,7 +442,6 @@ function loadRestaurants() {
   });
 }
 
-// КВАДРАТНЫЕ КАРТОЧКИ РЕСТОРАНОВ (Сетка)
 function renderRestaurantsList() {
   const list = document.getElementById('restaurants-list'); if (!list) return;
   let filtered = allRestaurants.filter(r => r.is_banned !== true);
@@ -479,19 +469,14 @@ function renderHomeRestaurants() {
   if (!filtered.length) { list.innerHTML = `<div class="col-span-full text-gray-500 text-xs py-4">Ресторанов пока нет</div>`; return; }
   list.innerHTML = filtered.map(r => `
     <div onclick="openSingleRestaurant('${r.id}')" class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden cursor-pointer active:scale-95 transition group">
-      <div class="aspect-square bg-gray-800 relative">
-        ${r.logo_url ? `<img src="${esc(r.logo_url)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">` : ''}
-      </div>
+      <div class="aspect-square bg-gray-800 relative">${r.logo_url ? `<img src="${esc(r.logo_url)}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">` : ''}</div>
       <div class="p-2"><h3 class="font-bold text-[11px] text-white truncate">${esc(r.name)}</h3><p class="text-[9px] text-gray-500 mt-0.5">~35 мин</p></div>
     </div>
   `).join('');
   lucide.createIcons();
 }
 
-window.openCategory = function(cat) {
-  activeCategory = cat;
-  switchMainTab('restaurants');
-};
+window.openCategory = function(cat) { activeCategory = cat; switchMainTab('restaurants'); };
 
 window.openSingleRestaurant = function(id) {
   activeRestaurantId = id; activeCategory = 'all';
@@ -684,29 +669,36 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   if (SETTINGS.maintenance === true) return showToast('🔧 Техработы', 'error');
   if (!document.getElementById('client-privacy').checked) return showToast('Подтвердите согласие с политикой', 'error');
   
-  const btn = document.getElementById('submit-order-btn'); const itemsArray = Object.values(cart).map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.qty }));
+  const btn = document.getElementById('submit-order-btn'); 
+  const itemsArray = Object.values(cart).map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.qty }));
   if (!itemsArray.length) return;
-  const name = document.getElementById('client-name').value.trim(); const phone = document.getElementById('client-phone').value.trim(); const address = document.getElementById('client-address').value.trim();
-  const comment = document.getElementById('client-comment').value.trim(); const persons = Number(document.getElementById('client-persons').value) || 1;
+  
+  const name = document.getElementById('client-name').value.trim(); 
+  const phone = document.getElementById('client-phone').value.trim(); 
+  const address = document.getElementById('client-address').value.trim();
+  const comment = document.getElementById('client-comment').value.trim(); 
+  const persons = Number(document.getElementById('client-persons').value) || 1;
   const payment = document.getElementById('client-payment').value; 
+  
   if (BLOCKED_PHONES.includes(phone)) return showToast('Этот номер не может сделать заказ', 'error');
-  const restaurantId = Object.values(cart)[0].product.restaurant_id; const rest = allRestaurants.find(r => r.id === restaurantId);
+  const restaurantId = Object.values(cart)[0].product.restaurant_id; 
+  const rest = allRestaurants.find(r => r.id === restaurantId);
   if (rest?.shift_open === false) return showToast('⚠️ Ресторан не принимает заказы', 'error');
   
-  let orderNumber = 1000; 
+  // Безопасный счетчик (без runTransaction, с фолбэком)
+  let orderNumber = Math.floor(Math.random() * 9000) + 1000; 
   try { 
     const counterRef = doc(db, 'settings', 'counters');
-    await runTransaction(db, async (transaction) => {
-      const snap = await transaction.get(counterRef);
-      let current = snap.exists() ? (snap.data().orders || 0) : 0;
-      orderNumber = current + 1;
-      transaction.set(counterRef, { orders: orderNumber }, { merge: true });
-    });
+    const snap = await getDoc(counterRef);
+    if (snap.exists()) {
+      orderNumber = (snap.data().orders || 0) + 1;
+      await setDoc(counterRef, { orders: orderNumber }, { merge: true });
+    } else {
+      await setDoc(counterRef, { orders: orderNumber });
+    }
   } catch (err) { 
-    console.error("Ошибка счетчика", err);
-    showToast('Ошибка сети. Попробуйте еще раз.', 'error'); 
-    btn.disabled = false; 
-    return;
+    console.error("Ошибка счетчика (используем случайный номер):", err);
+    // Не прерываем заказ, используем случайный номер
   }
   
   const { subtotal, delivery, total } = calcTotals();
@@ -721,7 +713,6 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
     await addDoc(collection(db, 'orders'), orderData); 
     saveUser({ name, phone, address }); 
     
-    // Сохраняем номер в память для истории
     let myOrders = JSON.parse(localStorage.getItem('peshras_my_orders') || '[]');
     if (!myOrders.includes(orderNumber)) myOrders.push(orderNumber);
     localStorage.setItem('peshras_my_orders', JSON.stringify(myOrders));
@@ -735,7 +726,6 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
   finally { btn.disabled = false; btn.innerHTML = oldHTML; lucide.createIcons(); }
 });
 
-// ПРОФИЛЬ
 window.openProfile = function () { 
   let myOrders = [];
   try { myOrders = JSON.parse(localStorage.getItem('peshras_my_orders') || '[]'); } catch(e){}
@@ -779,7 +769,6 @@ window.openProfilePanel = async function(key) {
     }
 
     try {
-      // Безопасный запрос без индексов (по одному ID)
       const promises = myOrders.slice(-10).map(num => 
         getDocs(query(collection(db, 'orders'), where('order_number', '==', num)))
       );
@@ -823,6 +812,7 @@ window.openProfilePanel = async function(key) {
           <p class="text-[10px] text-gray-500">${date}</p>
           ${trackHTML}
           <p class="text-[11px] text-gray-400 pt-2 border-t border-gray-800 mt-2">${(o.items || []).map(i => `${i.name} ×${i.qty}`).join(', ')}</p>
+          <p class="text-[11px] font-bold ${o.payment_method === 'cash' ? 'text-amber-400' : 'text-blue-400'}">Оплата: ${o.payment_method === 'cash' ? '💵 Наличные' : '💳 Онлайн'}</p>
         </div>`; 
       }).join('');
     } catch(err) {
@@ -851,20 +841,40 @@ window.saveMyData = function() {
 
 // Кнопка "Назад" (WebView)
 window.addEventListener('popstate', async (e) => {
+  // 1. Закрываем профиль (модалку)
+  const profileModal = document.getElementById('profile-modal');
+  if (!profileModal.classList.contains('hidden')) {
+    closeProfile();
+    return;
+  }
+
+  // 2. Закрываем корзину (модалку)
+  const cartModal = document.getElementById('cart-modal');
+  if (!cartModal.classList.contains('hidden')) {
+    closeCartModal();
+    return;
+  }
+
+  // 3. Закрываем полноэкранные панели
   const openPanels = document.querySelectorAll('.full-screen-panel.open');
   if (openPanels.length > 0) {
     openPanels.forEach(p => p.classList.remove('open'));
     return;
   }
+
+  // 4. Возврат из ресторана в список ресторанов
   if (currentTab === 'single-rest') {
     switchMainTab('restaurants');
     return;
   }
+
+  // 5. Возврат на главную с других вкладок
   if (currentTab !== 'home') {
     switchMainTab('home');
     return;
   }
-  
+
+  // 6. Спрашиваем выход только с главной
   history.pushState({}, '', '#home'); 
   const exit = await showDialog('Выход из Peshras', 'Вы действительно хотите закрыть приложение?', 'Выйти', 'Остаться', 'danger');
   if (exit) {
