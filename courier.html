@@ -160,6 +160,7 @@ const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' с.';
 let currentCourierId = null, currentCourierData = null;
 let unsubAvailable = null, unsubMyOrders = null;
 let allMyOrders = [], currentTab = 'orders', statsPeriod = 'today';
+let lastSearchSignal = null;
 
 // Функция звука (вызывается при новом заказе)
 let audioCtx;
@@ -264,10 +265,11 @@ window.toggleShift = async () => {
   const updates = { shift_open: newState };
   if (newState) { 
     updates.shift_start = serverTimestamp();
-    // Разблокируем аудио при клике (требование браузеров)
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if(audioCtx.state === 'suspended') audioCtx.resume();
-    playCourierAlert(); 
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtx.state === 'suspended') await audioCtx.resume();
+      playCourierAlert(); 
+    } catch(e) {}
   }
   await updateDoc(doc(db, 'couriers', currentCourierId), updates);
   currentCourierData.shift_open = newState;
@@ -276,19 +278,32 @@ window.toggleShift = async () => {
   else showToast('Смена закрыта.', 'error');
 };
 
-// СЛУШАЕМ ДОСТУПНЫЕ ЗАКАЗЫ (Ищем те, что ресторан УЖЕ ПРИНЯЛ: accepted или cooking)
+// СЛУШАЕМ ДОСТУПНЫЕ ЗАКАЗЫ
 let lastOrderCount = 0;
 function listenToAvailableOrders() {
   if (unsubAvailable) unsubAvailable();
-  const q = query(collection(db, 'orders'), where('status', 'in', ['accepted', 'cooking']));
+  // Ищем заказы, которые ресторан УЖЕ ПРИНЯЛ (accepted) или готовит (cooking), и у которых нет курьера
+  const q = query(collection(db, 'orders'), where('status', 'in', ['accepted', 'cooking', 'delivering']));
+  
   unsubAvailable = onSnapshot(q, (snap) => {
     const container = document.getElementById('available-orders');
     const orders = [];
-    snap.forEach(d => { const o = { id: d.id, ...d.data() }; if (!o.courier_id) orders.push(o); });
+    snap.forEach(d => { 
+      const o = { id: d.id, ...d.data() }; 
+      if (!o.courier_id) orders.push(o); 
+    });
     
-    // Если появился новый заказ (звук)
+    // Звук при появлении нового заказа
     if (orders.length > lastOrderCount) playCourierAlert();
     lastOrderCount = orders.length;
+
+    // Звук при повторном поиске (когда ресторан нажал "Ищем курьера")
+    orders.forEach(o => {
+      if (o.searching_courier && o.searching_courier !== lastSearchSignal) {
+        playCourierAlert();
+        lastSearchSignal = o.searching_courier;
+      }
+    });
 
     if (!orders.length) { container.innerHTML = '<div class="text-gray-500 text-xs text-center py-4">Нет доступных заказов</div>'; return; }
     container.innerHTML = orders.map(o => `
@@ -296,7 +311,10 @@ function listenToAvailableOrders() {
         <div class="flex justify-between font-bold text-xs"><span class="text-white">#${o.order_number || o.id.substring(0,6)}</span><span class="text-yellow-400">${fmt(o.total_price)}</span></div>
         <p class="text-sm text-white font-bold">${esc(o.client_name)} (${esc(o.client_phone)})</p>
         <p class="text-xs text-gray-400">📍 ${esc(o.delivery_address)}</p>
-        <p class="text-[10px] text-emerald-400 font-bold">${o.status === 'accepted' ? '🍳 Ресторан начал готовить' : '✅ Еда готова'}</p>
+        <p class="text-[10px] font-bold ${o.payment_method === 'cash' ? 'text-amber-400' : 'text-blue-400'}">
+          ${o.payment_method === 'cash' ? '💵 Оплата наличными' : '💳 Оплата онлайн'}
+        </p>
+        <p class="text-[10px] text-emerald-400 font-bold">${o.status === 'accepted' ? '🍳 Ресторан начал готовить' : o.status === 'cooking' ? '✅ Еда готова' : '🛵 Ресторан передает'}</p>
         <button onclick="acceptOrder('${o.id}')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2.5 rounded-xl text-xs mt-2">Принять заказ</button>
       </div>
     `).join('');
@@ -317,7 +335,7 @@ window.acceptOrder = async (orderId) => {
   } catch (e) { showToast(e.message, 'error'); }
 };
 
-// СЛУШАЕМ МОИ ЗАКАЗЫ (В работе и История)
+// СЛУШАЕМ МОИ ЗАКАЗЫ
 function listenToMyOrders() {
   if (unsubMyOrders) unsubMyOrders();
   const q = query(collection(db, 'orders'), where('courier_id', '==', currentCourierId));
@@ -338,6 +356,9 @@ function listenToMyOrders() {
           <div class="flex justify-between font-bold text-xs"><span class="text-white">#${o.order_number || o.id.substring(0,6)}</span><span class="text-yellow-400">${fmt(o.total_price)}</span></div>
           <p class="text-sm text-white font-bold">${esc(o.client_name)} (${esc(o.client_phone)})</p>
           <p class="text-xs text-gray-400">📍 ${esc(o.delivery_address)}</p>
+          <p class="text-[10px] font-bold ${o.payment_method === 'cash' ? 'text-amber-400' : 'text-blue-400'}">
+            ${o.payment_method === 'cash' ? '💵 Наличные' : '💳 Онлайн'}
+          </p>
           <div class="flex gap-2 mt-2">
             <a href="tel:${esc(o.client_phone)}" class="flex-1 text-center bg-gray-800 text-white font-bold py-2 rounded-xl text-[10px]"><i data-lucide="phone" class="w-3 h-3 inline mr-1"></i> Позвонить</a>
             ${o.status === 'courier_accepted' 
@@ -436,7 +457,7 @@ function renderHistory() {
   if (!delivered.length) { container.innerHTML = '<div class="text-gray-500 text-xs text-center py-8">У вас пока нет доставленных заказов</div>'; return; }
   container.innerHTML = delivered.map(o => {
     const date = o.delivered_at?.toDate?.().toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) || '—';
-    return `<div class="bg-gray-900 border border-gray-800 rounded-xl p-3 flex justify-between items-center"><div><p class="font-bold text-xs text-white">#${o.order_number || o.id.substring(0,6)}</p><p class="text-[10px] text-gray-500">${date}</p><p class="text-[10px] text-gray-400 mt-1">${esc(o.delivery_address)}</p></div><div class="text-right"><p class="text-xs font-black text-emerald-400">${fmt(o.courier_rate)}</p><p class="text-[9px] text-gray-500">${o.payment_method === 'cash' ? 'Наличные' : o.payment_method === 'online' ? 'Онлайн' : 'Не оплачен'}</p></div></div>`;
+    return `<div class="bg-gray-900 border border-gray-800 rounded-xl p-3 flex justify-between items-center"><div><p class="font-bold text-xs text-white">#${o.order_number || o.id.substring(0,6)}</p><p class="text-[10px] text-gray-500">${date}</p><p class="text-[10px] text-gray-400 mt-1">${esc(o.delivery_address)}</p></div><div class="text-right"><p class="text-xs font-black text-emerald-400">${fmt(o.courier_rate)}</p><p class="text-[9px] ${o.payment_method === 'cash' ? 'text-amber-400' : o.payment_method === 'online' ? 'text-blue-400' : 'text-red-400'}">${o.payment_method === 'cash' ? '💵 Наличные' : o.payment_method === 'online' ? '💳 Онлайн' : 'Не оплачен'}</p></div></div>`;
   }).join('');
 }
 
