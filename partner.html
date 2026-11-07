@@ -58,12 +58,10 @@
       <button onclick="switchTab('stats')" id="tab-btn-stats" class="tab pb-4 border-b-4 border-transparent text-gray-400 hover:text-gray-200 flex items-center gap-2 whitespace-nowrap"><i data-lucide="bar-chart-3" class="w-5 h-5"></i><span>Статистика</span></button>
     </div>
 
-    <!-- ЗАКАЗЫ -->
     <section id="tab-orders" class="space-y-4">
       <div id="orders-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"><div class="text-gray-500 text-sm col-span-full py-8 text-center">Загрузка заказов...</div></div>
     </section>
 
-    <!-- МЕНЮ -->
     <section id="tab-menu" class="hidden space-y-6">
       <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 space-y-4">
         <h3 class="font-black text-white text-lg">Добавить новое блюдо</h3>
@@ -83,7 +81,6 @@
       </div>
     </section>
 
-    <!-- СТАТИСТИКА -->
     <section id="tab-stats" class="hidden space-y-6">
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5"><p class="text-xs text-gray-500 uppercase font-bold">Заказов</p><p id="st-orders" class="text-3xl font-black text-white mt-1">0</p></div>
@@ -110,7 +107,6 @@ const fmt = n => Number(n || 0).toLocaleString('ru-RU') + ' с.';
 
 let audioContext = null, currentRestaurantId = null, currentRestaurant = null, unsubscribeOrders = null, allOrders = [], allProducts = [], activeCount = 0, soundEnabled = true;
 
-// Автоматический звук
 function playAlertSound() {
   if (!soundEnabled) return;
   try {
@@ -152,7 +148,7 @@ window.toggleShift = async () => {
   if (!confirm(newState ? 'Открыть смену?' : 'Закрыть смену?')) return;
   await updateDoc(doc(db, 'restaurants', currentRestaurantId), { shift_open: newState }); 
   currentRestaurant.shift_open = newState; updateShiftUI();
-  if(newState) playAlertSound(); // Разблокируем звук при клике
+  if(newState) playAlertSound();
 };
 
 const STATUS_LABEL = { new: '🆕 Новый', accepted: '✅ Принят', cooking: '🍳 Готовится', delivering: '🛵 В пути', courier_accepted: '🛵 У курьера', delivered: '🏁 Доставлен', cancelled: '❌ Отменён' };
@@ -162,7 +158,7 @@ function listenOrders() {
   unsubscribeOrders = onSnapshot(query(collection(db, 'orders'), where('restaurant_id', '==', currentRestaurantId)), (snap) => {
     allOrders = []; snap.forEach(d => allOrders.push({ id: d.id, ...d.data() })); allOrders.sort((a, b) => (b.created_at?.toMillis?.() || 0) - (a.created_at?.toMillis?.() || 0));
     let hasNew = false; activeCount = 0;
-    allOrders.forEach(o => { if(['new','accepted','cooking'].includes(o.status)) activeCount++; if (o.status === 'new') hasNew = true; });
+    allOrders.forEach(o => { if(['new','accepted','cooking','courier_accepted','delivering'].includes(o.status)) activeCount++; if (o.status === 'new') hasNew = true; });
     $('#active-orders-count').innerText = activeCount;
     if (hasNew) playAlertSound();
     renderOrders();
@@ -179,12 +175,20 @@ function renderOrders() {
     
     const statusBtns = [];
     if (o.status === 'new') {
-      statusBtns.push(`<button onclick="updateStatus('${o.id}','accepted')" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-2xl text-base transition">Принять (Курьеру)</button>`);
+      statusBtns.push(`<button onclick="updateStatus('${o.id}','accepted')" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-2xl text-base transition">Принять</button>`);
       statusBtns.push(`<button onclick="updateStatus('${o.id}','cancelled')" class="bg-red-500/20 text-red-400 font-bold px-4 py-4 rounded-2xl text-base">Отмена</button>`);
-    } else if (['accepted','cooking','courier_accepted'].includes(o.status)) {
-      statusBtns.push(`<button onclick="updateStatus('${o.id}','delivering')" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-black py-4 rounded-2xl text-base transition">Передать курьеру</button>`);
+    } else if (o.status === 'accepted') {
+      statusBtns.push(`<button onclick="updateStatus('${o.id}','cooking')" class="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-black py-4 rounded-2xl text-base transition">Еда готова</button>`);
+    } else if (o.status === 'cooking') {
+      if (!o.courier_id) {
+        statusBtns.push(`<button onclick="retrySearchCourier('${o.id}')" class="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-black py-4 rounded-2xl text-base transition flex items-center justify-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> Ищем курьера (повтор)</button>`);
+      }
+      statusBtns.push(`<button onclick="updateStatus('${o.id}','delivering')" class="bg-blue-500/20 text-blue-400 font-bold px-4 py-4 rounded-2xl text-base" title="Нажать только если курьер уже забрал">Передать курьеру</button>`);
+    } else if (o.status === 'courier_accepted') {
+      statusBtns.push(`<div class="flex-1 text-center bg-amber-500/20 border border-amber-500/40 text-amber-400 font-black py-4 rounded-2xl text-base">🛵 Курьер уже едет к вам</div>`);
+      statusBtns.push(`<button onclick="updateStatus('${o.id}','delivering')" class="bg-blue-500 text-white font-black px-4 py-4 rounded-2xl text-base">Передать</button>`);
     } else if (o.status === 'delivering') {
-      statusBtns.push(`<div class="flex-1 text-center bg-purple-500/20 border border-purple-500/40 text-purple-400 font-black py-4 rounded-2xl text-base">🛵 Курьер уже забрал</div>`);
+      statusBtns.push(`<div class="flex-1 text-center bg-purple-500/20 border border-purple-500/40 text-purple-400 font-black py-4 rounded-2xl text-base">🛵 Заказ у курьера</div>`);
     }
 
     return `
@@ -197,6 +201,9 @@ function renderOrders() {
           <div class="text-white font-black text-xl">${esc(o.client_name || 'Клиент')}</div>
           <div class="text-gray-300 font-bold text-sm">📞 <a href="tel:${esc(o.client_phone)}" class="hover:text-emerald-400">${esc(o.client_phone || '—')}</a></div>
           <div class="text-gray-300 text-sm">📍 ${esc(o.delivery_address || '—')}</div>
+          <div class="text-sm font-bold ${o.payment_method === 'cash' ? 'text-amber-400' : 'text-blue-400'} mt-1">
+            ${o.payment_method === 'cash' ? '💵 Оплата наличными' : '💳 Оплата онлайн'}
+          </div>
           ${o.comment ? `<div class="text-amber-400 bg-amber-500/10 rounded-xl p-3 mt-2 text-sm font-bold">💬 ${esc(o.comment)}</div>` : ''}
         </div>
         <div class="bg-gray-950 rounded-2xl p-4 space-y-2 border border-gray-800">${itemsHTML}</div>
@@ -215,7 +222,15 @@ window.updateStatus = async (orderId, status) => {
   try { await updateDoc(doc(db, 'orders', orderId), { status }); } catch (e) { alert('Ошибка'); }
 };
 
-// Меню
+window.retrySearchCourier = async (orderId) => {
+  const sure = confirm('Отправить повторное уведомление всем курьерам?');
+  if (!sure) return;
+  try {
+    await updateDoc(doc(db, 'orders', orderId), { searching_courier: Date.now() });
+    alert('Повторный поиск курьера запущен!');
+  } catch(e) { alert('Ошибка'); }
+};
+
 $('#add-product-form').addEventListener('submit', async (e) => {
   e.preventDefault(); const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Добавляем...';
   try { await addDoc(collection(db, 'products'), { name: $('#prod-name').value.trim(), price: Number($('#prod-price').value), image_url: $('#prod-img').value.trim(), description: $('#prod-desc').value.trim(), category: $('#prod-category').value, restaurant_id: currentRestaurantId, in_stock: $('#prod-instock').checked, is_hit: false, is_popular: false, is_new: false, created_at: serverTimestamp() }); e.target.reset(); $('#prod-instock').checked = true; await loadMenu(); alert('Блюдо добавлено'); } catch (err) { alert('Ошибка'); } finally { btn.disabled = false; btn.textContent = 'Добавить блюдо'; }
